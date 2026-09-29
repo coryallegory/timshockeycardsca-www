@@ -1,0 +1,68 @@
+/* The live stock map on Home: legend bar, map frame, status dots, store popups. */
+
+/* ---------- legend bar above the map ---------- */
+.map-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; margin-bottom: 10px; }
+.legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.legend li label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; }
+.legend input { margin: 0; accent-color: var(--red); }
+.legend b { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--muted); }
+.legend li.off { opacity: 0.5; }
+
+/* ---------- the map ---------- */
+.live-map { height: min(70vh, 620px); min-height: 360px; border: 2px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--map-sea); }
+.live .note { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
+
+/* ---------- my-location button (map.js adds it above the zoom buttons, styled like them) ---------- */
+.locate-control a { display: flex; align-items: center; justify-content: center; }
+.locate-control svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.locate-control .centre { fill: none; stroke: none; }
+.locate-control a.active { color: var(--you); }
+.locate-control a.active .centre { fill: var(--you); }
+.locate-control a.busy svg { animation: locate-busy 1s ease-in-out infinite alternate; }
+@keyframes locate-busy { to { opacity: 0.3; } }
+@media (prefers-reduced-motion: reduce) { .locate-control a.busy svg { animation: none; } }
+
+/* ---------- status dots (legend and popups; the map's own dots are drawn by map.js from the same colours) ---------- */
+.dot { width: 13px; height: 13px; border-radius: 50%; flex: none; display: inline-block; box-shadow: 0 0 0 2px var(--panel); }
+.dot.available { background: var(--available); }
+.dot.out-of-stock { background: var(--out-of-stock); }
+.dot.untracked { background: var(--untracked); }
+.dot.problem { background: var(--problem); }
+
+/* ---------- store popup ---------- */
+.leaflet-popup-content-wrapper { border-radius: 14px; background: var(--panel); color: var(--ink); box-shadow: var(--shadow); }
+.leaflet-popup-tip { background: var(--panel); }
+.leaflet-container a.leaflet-popup-close-button { color: var(--muted); }
+.leaflet-popup-content { margin: 14px 16px; font: 15px/1.45 var(--body); }
+.pop h3 { margin: 6px 0 0; font-size: 19px; line-height: 1.2; }
+.pop p { margin: 0; }
+.pop-status { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; }
+.pop-status.available { color: var(--available); }
+.pop-status.out-of-stock { color: var(--out-of-stock); }
+.pop-status.problem { color: var(--problem); }
+.pop-status.untracked { color: var(--muted); }
+.price { font: 700 17px/1 var(--display); color: var(--ink); margin-left: auto; }
+.pop-addr { color: var(--muted); }
+.pop-meta { font-size: 14px; color: var(--muted); margin-top: 6px !important; }
+.pop-contact { margin-top: 8px; }
+.pop-contact:empty { display: none; }
+.pop-contact a { font-weight: 700; }
+.open-now { color: var(--available); font-weight: 700; }
+.closed-now { color: var(--out-of-stock); font-weight: 700; }
+.hours { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 8px; }
+.hours summary { cursor: pointer; font-weight: 700; font-size: 14px; }
+.hours table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.hours caption { text-align: left; color: var(--muted); font-size: 13px; padding-bottom: 2px; }
+.hours th, .hours td { text-align: left; padding: 1px 8px 1px 0; font-weight: 400; white-space: nowrap; }
+.hours thead th { color: var(--muted); font-size: 13px; }
+.hours tbody th { color: var(--muted); width: 3em; }
+.hours tr.today td, .hours tr.today th { font-weight: 700; color: var(--ink); }
+.pop-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 14px; color: var(--muted); }
+.pop-foot a { font-weight: 700; color: var(--red); }
+
+@media (max-width: 640px) {
+  .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; width: 100%; }
+  .legend li label { font-size: 15px; }
+  .live-map { height: min(65vh, 520px); }
+  .leaflet-popup-content { margin: 12px 14px; }
+}

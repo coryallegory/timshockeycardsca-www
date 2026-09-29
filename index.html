@@ -1,1 +1,57 @@
-hello world
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tim Hortons Hockey Cards 2026-27</title>
+<meta name="description" content="2026-27 Upper Deck Tim Hortons Hockey: where to find packs, the full checklist and odds, trade nights and prizes. Unofficial.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='3' width='20' height='26' rx='3' fill='%23b3261e'/%3E%3Crect x='9' y='6' width='14' height='14' rx='1' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="/css/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/home.css">
+<link rel="stylesheet" href="/css/map.css">
+</head>
+<body class="">
+<header class="site-header"><div class="bar">
+  <a class="brand" href="/"><b>Tim Hortons Hockey Cards</b><small><span class="live-dot" aria-hidden="true"></span>2026-27 Live Stock Availability</small></a>
+  <nav class="tabs" aria-label="Pages"><a href="/" aria-current="page">Tracker</a><a href="/checklist">Checklist</a></nav>
+</div></header>
+<div class="stripe" aria-hidden="true"></div>
+<main class="page home">
+  <div class="hero">
+    <div>
+      <h1>2026-27 Tim Hortons <span>Hockey Cards</span></h1>
+      <p class="lede">Packs of NHL hockey cards at Tim Hortons across Canada, September 28, 2026 – November 8, 2026, or while supplies last.</p>
+      <p class="cta"><a class="btn primary" href="#where">Find packs near you</a> <a class="btn" href="/checklist">Browse the checklist</a></p>
+    </div>
+    <aside class="menu" aria-label="Prices and packs">
+      <h2>On the menu</h2>
+      <dl><div class="item hot"><dt>Pack, with any drink</dt><dd>$1.50</dd></div><div class="item"><dt>Pack, on its own</dt><dd>$1.99</dd></div></dl>
+      <p>Plus tax. Espresso shots don't count as the drink.</p>
+      <hr>
+      <dl><div class="item"><dt>Cards per pack</dt><dd>3</dd></div><div class="item"><dt>Packs per box</dt><dd>100</dd></div><div class="item"><dt>Packs produced</dt><dd>11,470,400</dd></div></dl>
+    </aside>
+  </div>
+  <section class="group live" id="where">
+    <h2><span class="live-dot" aria-hidden="true"></span>Live Inventory Tracker</h2>
+    <p class="blurb">Every Tim Hortons in Canada, coloured according to live pack inventory.</p>
+    <div class="map-bar">
+      <ul id="legend" class="legend"><li data-s="available"><label><input type="checkbox" checked><span class="dot available"></span><span>Available</span><b></b></label></li><li data-s="out-of-stock"><label><input type="checkbox" checked><span class="dot out-of-stock"></span><span>Out of stock</span><b></b></label></li><li data-s="untracked"><label><input type="checkbox" checked><span class="dot untracked"></span><span>Untracked</span><b></b></label></li><li data-s="problem"><label><input type="checkbox" checked><span class="dot problem"></span><span>No data</span><b></b></label></li></ul>
+    </div>
+    <div id="map" class="live-map" role="region" aria-label="Map of Tim Hortons locations"></div>
+    <p class="note"><span id="updated" aria-live="polite">Loading…</span> <span id="locate-msg" aria-live="polite"></span></p>
+  </section>
+  <section class="group" id="trade-nights">
+    <h2>Official trade nights</h2>
+    <div class="nights"><div class="night box"><span>Thursday, October<small>6–8 pm</small></span><b>29</b></div><div class="night box"><span>Thursday, November<small>6–8 pm</small></span><b>5</b></div></div>
+    <p>The first 10 fans to arrive get an exclusive Trade Night card. <a href="https://cdn.rbi.digital/hockey/trade_night_map/index.html" rel="noopener">See which restaurants are hosting</a></p>
+  </section>
+</main>
+<footer class="site-footer">Unofficial fan project. Not affiliated with Tim Hortons, Upper Deck, the NHL or the NHLPA.</footer>
+<script src="/vendor/leaflet/leaflet.js"></script>
+<script type="module" src="/js/map.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+/* Page frame: red header band with tabs, the striped rule under it, footer, content container and section headings. */
+
+/* ---------- header ---------- */
+.site-header { background: var(--red); color: var(--on-red); position: relative; z-index: 1000; }
+.site-header .bar {
+  max-width: 1060px; margin: 0 auto; padding: 10px 20px; min-height: 68px;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap;
+}
+.brand { text-decoration: none; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.brand b { font: 700 26px/1 var(--display); }
+.brand small { font-size: 13px; opacity: 0.9; }
+/* the header's live dot is white on the red band */
+.site-header .live-dot { background: var(--on-red); }
+
+.tabs { display: flex; gap: 4px; }
+.tabs a { text-decoration: none; font-weight: 700; padding: 8px 14px; border-radius: 999px; }
+.tabs a:hover { background: rgb(255 255 255 / 14%); }
+.tabs a[aria-current="page"] { background: var(--on-red); color: var(--red); }
+
+/* brown and deep-red stripes under the header */
+.stripe { height: 8px; flex: none; background: repeating-linear-gradient(90deg, var(--board) 0 24px, var(--red-deep) 24px 48px); }
+
+/* ---------- footer ---------- */
+.site-footer { background: var(--board); color: var(--board-muted); text-align: center; font-size: 13px; padding: 18px 20px; }
+
+/* ---------- content pages ---------- */
+.page { width: 100%; max-width: 1060px; margin: 0 auto; padding: 44px 20px 60px; flex: 1; }
+.page h1 { font-size: clamp(34px, 5.5vw, 52px); line-height: 1.05; margin: 0 0 12px; }
+.lede { font-size: 19px; color: var(--ink-2); margin: 0 0 22px; }
+
+.group { margin-bottom: 52px; scroll-margin-top: 16px; }
+.group > h2 { font-size: 32px; margin: 0 0 14px; }
+/* a short red bar under each section heading */
+.group > h2::after { content: ""; display: block; width: 56px; height: 5px; margin-top: 8px; background: var(--red); border-radius: 3px; }
+.count { font: 600 15px/1 var(--body); color: var(--muted); margin-left: 10px; }
+.blurb { color: var(--ink-2); margin: 0 0 16px; max-width: 68ch; }
+
+@media (max-width: 640px) {
+  .site-header .bar { padding: 8px 14px; min-height: 0; }
+  .brand b { font-size: 22px; }
+  .brand small { display: none; }
+  .tabs a { padding: 6px 11px; font-size: 15px; }
+  .page { padding-top: 28px; }
+  .group > h2 { font-size: 27px; }
+}

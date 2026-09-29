@@ -1,0 +1,50 @@
+/* Checklist page: table of contents with search, subsets and card lists. */
+
+/* minmax(0, 1fr): let the content column shrink below its widest line instead of pushing the page sideways */
+.checklist-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 32px; align-items: start; }
+
+/* ---------- table of contents ---------- */
+.toc { position: sticky; top: 16px; font-size: 15px; }
+.toc input {
+  width: 100%; font: inherit; padding: 9px 14px; margin-bottom: 14px;
+  border: 2px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--ink);
+}
+.toc input:focus { outline: none; border-color: var(--red); }
+.toc ul { list-style: none; margin: 0; padding: 0; }
+.toc > ul > li { margin-bottom: 12px; }
+.toc > ul > li > a { font: 700 17px/1.2 var(--display); }
+.toc ul ul { margin-top: 4px; padding-left: 12px; border-left: 3px solid var(--line); }
+.toc ul ul a { color: var(--muted); }
+.toc a { text-decoration: none; display: block; padding: 2px 0; }
+.toc a:hover { color: var(--red); }
+
+/* ---------- subsets ---------- */
+.subset { margin-bottom: 14px; scroll-margin-top: 16px; }
+.subset > header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.subset h3 { margin: 0; font-size: 24px; }
+.alt { font: 400 15px/1 var(--body); color: var(--muted); }
+.odds { color: var(--red); font-weight: 700; margin: 4px 0 10px; }
+
+/* ---------- card lists ---------- */
+.cards { list-style: none; margin: 0; padding: 0; columns: 3 220px; column-gap: 24px; }
+/* Rows carry 8px of padding with a matching negative margin, so the hover highlight has room without moving the text. */
+.cards li {
+  display: flex; gap: 8px; align-items: baseline; break-inside: avoid; padding: 4px 8px; margin: 0 -8px;
+  border-radius: 8px; font-size: 16px; transition: background-color 0.12s ease;
+}
+.cards .no { flex: none; min-width: 3.4em; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; font-size: 15px; transition: color 0.12s ease; }
+.cards .meta { margin-left: auto; color: var(--muted); font-size: 14px; }
+
+/* Hovering a card: a soft red tint, and its number turns red (mouse and trackpad only, so taps don't leave rows lit). */
+@media (hover: hover) {
+  .cards li:hover { background: var(--red-soft); }
+  .cards li:hover .no { color: var(--red); }
+}
+.tba { color: var(--muted); font-style: italic; }
+.empty { color: var(--muted); font-style: italic; margin: 0; }
+
+@media (max-width: 760px) {
+  .checklist-layout { grid-template-columns: minmax(0, 1fr); }
+  .toc { position: static; }
+  .toc > ul { display: none; }
+}
