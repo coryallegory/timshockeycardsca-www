@@ -17,6 +17,7 @@
   --muted: #7a6358;
   --line: #e7dcd4;
   --shadow: 0 6px 16px rgb(58 34 23 / 10%);
+  --floating-control-bg: rgb(255 255 255 / 88%);
 
   /* the menu board (Home prices, footer) */
   --board: #3a2217;
@@ -57,6 +58,7 @@
     --muted: #b39c90;
     --line: #47322a;
     --shadow: 0 6px 16px rgb(0 0 0 / 35%);
+    --floating-control-bg: rgb(36 24 18 / 88%);
     --board: #3d271c;
     --out-of-stock: #e0404a;
     --untracked: #8c817b;

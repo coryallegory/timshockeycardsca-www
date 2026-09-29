@@ -17,6 +17,7 @@
 .toc ul ul a { color: var(--muted); }
 .toc a { text-decoration: none; display: block; padding: 2px 0; }
 .toc a:hover { color: var(--red); }
+.mobile-toc { display: none; }
 
 /* ---------- subsets ---------- */
 .subset { margin-bottom: 14px; scroll-margin-top: 16px; }
@@ -43,8 +44,24 @@
 .tba { color: var(--muted); font-style: italic; }
 .empty { color: var(--muted); font-style: italic; margin: 0; }
 
+/* Mobile counterpart to the section drawer: keep a quiet route back to its top. */
+.back-to-top { display: none; }
+
 @media (max-width: 760px) {
   .checklist-layout { grid-template-columns: minmax(0, 1fr); }
   .toc { position: static; }
-  .toc > ul { display: none; }
+  .desktop-toc { display: none; }
+  .mobile-toc { display: block; border: 2px solid var(--line); border-radius: 12px; background: var(--panel); padding: 0 14px; }
+  .mobile-toc summary { cursor: pointer; font: 700 17px/1.25 var(--display); padding: 11px 0; }
+  .mobile-toc > ul { padding-bottom: 12px; }
+  .mobile-toc > ul > li { margin-bottom: 10px; }
+  .mobile-toc > ul > li > a { font: 700 17px/1.2 var(--display); }
+  .back-to-top {
+    position: fixed; z-index: 900; right: 14px; bottom: 14px; display: inline-flex; align-items: center; gap: 5px;
+    padding: 9px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--floating-control-bg); color: var(--ink);
+    box-shadow: var(--shadow); backdrop-filter: blur(6px); font: 700 14px/1 var(--body); text-decoration: none;
+  }
+  .back-to-top:hover { color: var(--red); }
+  .back-to-top:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+  .back-to-top svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.5; }
 }
