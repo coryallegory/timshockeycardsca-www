@@ -43,12 +43,16 @@
 }
 .tba { color: var(--muted); font-style: italic; }
 .empty { color: var(--muted); font-style: italic; margin: 0; }
+.print-action { margin: 0; text-align: right; }
+.print-action .btn { display: inline-flex; align-items: center; gap: 6px; }
+.print-action svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
 
 /* Mobile counterpart to the section drawer: keep a quiet route back to its top. */
 .back-to-top { display: none; }
 
 @media (max-width: 760px) {
   .checklist-layout { grid-template-columns: minmax(0, 1fr); }
+  .print-action { margin-bottom: 16px; }
   .toc { position: static; }
   .desktop-toc { display: none; }
   .mobile-toc { display: block; border: 2px solid var(--line); border-radius: 12px; background: var(--panel); padding: 0 14px; }

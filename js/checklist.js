@@ -1,6 +1,9 @@
 /* Checklist search: filters cards by player, number or team as you type. */
 (() => {
   'use strict';
+  const print = document.getElementById('print-checklist');
+  print?.addEventListener('click', () => window.print());
+
   const q = document.getElementById('q');
   if (!q) return;
   const items = [...document.querySelectorAll('.cards li[data-q]')];
