@@ -57,6 +57,14 @@ function ago(iso) {
   return `${Math.round(h / 24)} days ago`;
 }
 
+/** A time in the viewer's own time zone: "8:21 p.m. CDT", with the date when it isn't today ("Sep 29, 8:21 p.m. CDT"). */
+function localStamp(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const today = d.toDateString() === new Date().toDateString();
+  return d.toLocaleString([], { ...(today ? {} : { month: 'short', day: 'numeric' }), hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+}
+
 const radiusForZoom = (z) => (z <= 4 ? 2.5 : z <= 6 ? 3.5 : z <= 9 ? 5 : z <= 12 ? 7 : 8);
 const style = (s) => ({
   renderer,
@@ -74,7 +82,7 @@ const place = (s) => [s.city, s.province].filter(Boolean).join(', ');
 function statusLine(s) {
   const lines = [];
   if (s.s === 'available' || s.s === 'out-of-stock') {
-    if (s.checkedAt) lines.push(`Checked ${esc(ago(s.checkedAt))}${s.since ? ` · ${s.s === 'available' ? 'available' : 'out of stock'} since ${esc(ago(s.since))}` : ''}`);
+    if (s.checkedAt) lines.push(`Checked ${esc(ago(s.checkedAt))} (${esc(localStamp(s.checkedAt))})${s.since ? ` · ${s.s === 'available' ? 'available' : 'out of stock'} since ${esc(ago(s.since))}` : ''}`);
   } else if (s.s === 'untracked') {
     lines.push('We can\'t track this location: the Tims app has no menu for it (often an airport, campus, hospital or gas station). Packs may still be sold at the counter.');
   } else {
@@ -182,9 +190,8 @@ async function load() {
       li.querySelector('b').textContent = n.toLocaleString();
       if (li.dataset.s === 'problem') li.hidden = n === 0; // "No data" only shows when there is some
     }
-    const when = status ? `last updated ${new Date(status.generatedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}` : 'no stock checks yet';
-    // Canadian times end in "a.m."/"p.m.": don't add a second full stop.
-    updated.textContent = `${locations.length.toLocaleString()} locations · ${when}${when.endsWith('.') ? '' : '.'}`;
+    const when = status ? `last updated ${localStamp(status.generatedAt)}` : 'no stock checks yet';
+    updated.textContent = `${locations.length.toLocaleString()} locations · ${when}.`;
   } catch (err) {
     updated.textContent = `Couldn't load stores: ${err.message}`;
   }
