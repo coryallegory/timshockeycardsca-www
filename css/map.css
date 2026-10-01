@@ -12,6 +12,9 @@
 .live-map { height: min(70vh, 620px); min-height: 360px; border: 2px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--map-sea); }
 .live .note { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
 
+/* "You are here" dot: drawn above the stores, but clicks go through to them. */
+.leaflet-you-pane { z-index: 450; pointer-events: none; }
+
 /* ---------- my-location button (map.js adds it above the zoom buttons, styled like them) ---------- */
 .locate-control a { display: flex; align-items: center; justify-content: center; }
 .locate-control svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }

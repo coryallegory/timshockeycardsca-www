@@ -40,6 +40,10 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 const renderer = L.canvas({ padding: 0.5, tolerance: 4 });
+// "You are here" gets its own pane above the stores. Clicks pass through it (map.css): a second canvas on top of the
+// stores' canvas would otherwise swallow every click on a store.
+map.createPane('you');
+const youRenderer = L.canvas({ pane: 'you' });
 const layers = Object.fromEntries(ORDER.map((k) => [k, L.layerGroup().addTo(map)]));
 const markers = new Map(); // id -> { marker, store }
 let youMarker = null;
@@ -247,7 +251,7 @@ function locate(explicit) {
       const ll = [p.coords.latitude, p.coords.longitude];
       if (youMarker) youMarker.setLatLng(ll);
       else {
-        youMarker = L.circleMarker(ll, { radius: 7, color: colour('marker-outline'), weight: 2.5, fillColor: colour('you'), fillOpacity: 1, interactive: false }).addTo(map);
+        youMarker = L.circleMarker(ll, { renderer: youRenderer, radius: 7, color: colour('marker-outline'), weight: 2.5, fillColor: colour('you'), fillOpacity: 1, interactive: false }).addTo(map);
       }
       try {
         localStorage.setItem(LAST_SPOT_KEY, JSON.stringify(ll.map((v) => Math.round(v * 100) / 100)));
