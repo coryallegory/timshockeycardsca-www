@@ -1,9 +1,11 @@
 /* The live stock map on Home: one dot per Tim Hortons, coloured by hockey-card-pack status.
-   Data: /data/locations.json (stores, hours; changes rarely) + /data/status.json (pack status; rewritten after each
-   worker pass), joined by store id. Everything else is computed here. Never calls Tim Hortons. */
+   Data: /data/locations.json (stores, hours; changes rarely) + status.json (pack status; rewritten after each pass) from
+   the map element's data-status-url (the Lambda's file in S3 on the live site, /data/status.json locally), joined by
+   store id. Everything else is computed here. Never calls Tim Hortons. */
 import { displayStatus, formatPhone, isOpenAt, localWeekday, nextOpeningLabel, readableHours, storeSpans } from './store.js';
 
 const REFRESH_MS = 60_000;
+const STATUS_URL = document.getElementById('map').dataset.statusUrl || '/data/status.json';
 const CANADA = [[41.6, -141.0], [70.0, -52.6]];
 const NEAR_ZOOM = 12; // a city and its suburbs
 // Where the visitor was last located (rounded to about 1 km, kept only in their own browser), so the map can open there
@@ -164,7 +166,7 @@ async function load() {
   try {
     // Locations change rarely: the browser cache handles them. Status is revalidated every time (a cheap 304 when unchanged).
     if (!locations) locations = (await getJson('/data/locations.json', 'default'))?.locations ?? [];
-    const status = await getJson('/data/status.json', 'no-cache');
+    const status = await getJson(STATUS_URL, 'no-cache');
     const counts = Object.fromEntries(ORDER.map((k) => [k, 0]));
     for (const loc of locations) {
       const entry = status?.stores[loc.id];
