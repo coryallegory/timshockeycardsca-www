@@ -45,6 +45,7 @@
 .empty { color: var(--muted); font-style: italic; margin: 0; }
 .print-action { margin: 0; text-align: right; }
 .print-action .btn { display: inline-flex; align-items: center; gap: 6px; }
+.print-action .btn + .btn { margin-left: 8px; }
 .print-action svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
 
 /* Mobile counterpart to the section drawer: keep a quiet route back to its top. */
