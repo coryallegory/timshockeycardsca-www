@@ -42,10 +42,19 @@ export const login = (email, password) => call('POST', '/auth/login', { email, p
 export const register = (email, password) => call('POST', '/auth/register', { email, password });
 /** Ends this session (succeeds when already signed out too). */
 export const logout = () => call('POST', '/auth/logout');
-/** The card ids the user owns, sorted. */
-export const getCollection = async () => (await call('GET', '/collection')).cards;
-/** Marks (owned) or unmarks a card; both are idempotent. */
-export const setOwned = (cardId, owned) => call(owned ? 'PUT' : 'DELETE', `/collection/cards/${encodeURIComponent(cardId)}`);
+/**
+ * The user's collection as a Map of card id -> copies (1 to 99). The API lists every owned id in `cards` and only the
+ * counts above 1 in `copies`; a card without one (or an API without copy counts) has 1.
+ */
+export async function getCollection() {
+  const { cards, copies = {} } = await call('GET', '/collection');
+  return new Map(cards.map((id) => [id, copies[id] ?? 1]));
+}
+const cardPath = (cardId) => `/collection/cards/${encodeURIComponent(cardId)}`;
+/** Marks (owned, keeping any copy count) or unmarks a card (all its copies); both are idempotent. */
+export const setOwned = (cardId, owned) => call(owned ? 'PUT' : 'DELETE', cardPath(cardId));
+/** Marks a card owned with `copies` copies in all (1 to 99; extras are the copies beyond the first). Idempotent. */
+export const setCopies = (cardId, copies) => call('PUT', cardPath(cardId), { copies });
 /** Asks for a reset link by email. Always succeeds the same way, whether or not the address has an account. */
 export const forgotPassword = (email) => call('POST', '/auth/forgot-password', { email });
 /** Sets a new password with the emailed token; ends every session and signs this browser in: { email }. */

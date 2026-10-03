@@ -27,6 +27,7 @@
 <link rel="stylesheet" href="/css/components.css">
 <link rel="stylesheet" href="/css/checklist.css">
 <link rel="stylesheet" href="/css/account.css">
+<link rel="stylesheet" href="/css/collection.css">
 <link rel="stylesheet" href="/css/print.css">
 </head>
 <body class="">
@@ -72,7 +73,7 @@
         </div>
         <div id="account-signed-in" class="account-signed-in" data-view="signed-in" hidden>
           <h2 id="signed-in-title" class="popover-title" tabindex="-1">Your collection</h2>
-          <p class="popover-note">Signed in as <b id="account-email-shown"></b>. Tick the box beside each card you have; changes save straight away.</p>
+          <p class="popover-note">Signed in as <b id="account-email-shown"></b>. Tick the box beside each card you have and use its + badge for extras; changes save straight away.</p>
           <p id="signed-in-status" class="popover-note" role="status"></p>
           <button id="account-logout" class="btn small" type="button">Sign out</button>
           <button id="account-change" class="btn small" type="button">Change password</button>
@@ -108,6 +109,17 @@
   <div class="checklist-layout">
     <nav class="toc" aria-label="Sections"><input id="q" type="search" placeholder="Search players or numbers" aria-label="Search the checklist"><details class="mobile-toc"><summary>Jump to a section</summary><ul><li><a href="#base-set">Base set</a><ul><li><a href="#base">Base</a></li></ul></li><li><a href="#inserts">Insert sets</a><ul><li><a href="#sc">Sensational Cellys</a></li><li><a href="#fl">First Liners</a></li><li><a href="#pp">Platinum Profiles</a></li><li><a href="#ai">Above the Ice</a></li><li><a href="#aa">Attack Angle</a></li><li><a href="#sk">Sidekicks</a></li><li><a href="#ng">Next Gen Phenoms</a></li><li><a href="#po">Powerhouse Pillars</a></li></ul></li><li><a href="#hits">Autographs, relics and specials</a><ul><li><a href="#jr">NHL Jersey Relics</a></li><li><a href="#sig">NHL Signatures</a></li><li><a href="#mm">Sidney Crosby Major Milestones</a></li><li><a href="#tdp">Top Draft Pick</a></li><li><a href="#sjr">NHL Signature Jersey Relics</a></li><li><a href="#ss">Superstars Signatures</a></li><li><a href="#tba">Timbits Autographs</a></li></ul></li><li><a href="#prizes">Prizes</a></li></ul></details><ul class="desktop-toc"><li><a href="#base-set">Base set</a><ul><li><a href="#base">Base</a></li></ul></li><li><a href="#inserts">Insert sets</a><ul><li><a href="#sc">Sensational Cellys</a></li><li><a href="#fl">First Liners</a></li><li><a href="#pp">Platinum Profiles</a></li><li><a href="#ai">Above the Ice</a></li><li><a href="#aa">Attack Angle</a></li><li><a href="#sk">Sidekicks</a></li><li><a href="#ng">Next Gen Phenoms</a></li><li><a href="#po">Powerhouse Pillars</a></li></ul></li><li><a href="#hits">Autographs, relics and specials</a><ul><li><a href="#jr">NHL Jersey Relics</a></li><li><a href="#sig">NHL Signatures</a></li><li><a href="#mm">Sidney Crosby Major Milestones</a></li><li><a href="#tdp">Top Draft Pick</a></li><li><a href="#sjr">NHL Signature Jersey Relics</a></li><li><a href="#ss">Superstars Signatures</a></li><li><a href="#tba">Timbits Autographs</a></li></ul></li><li><a href="#prizes">Prizes</a></li></ul></nav>
     <div class="sections">
+      <div class="filter-bar" id="filter-bar" hidden>
+        <div class="filter-head"><h2 id="filter-label">Show</h2><p>Your 278 cards</p></div>
+        <div class="filter" role="group" aria-labelledby="filter-label"><button type="button" data-filter="all" aria-pressed="true"><b data-count="all">278</b><span>All</span></button><button type="button" data-filter="collected" aria-pressed="false"><b data-count="collected">0</b><span>Collected</span></button><button type="button" data-filter="missing" aria-pressed="false"><b data-count="missing">278</b><span>Missing</span></button><button type="button" data-filter="extras" aria-pressed="false"><b data-count="extras">0</b><span>Extras</span></button></div>
+        <p class="filter-note" id="filter-note" role="status"></p>
+      </div>
+      <div id="extras-popover" class="popover extras-popover" popover role="dialog" aria-labelledby="extras-title">
+        <h2 id="extras-title" class="extras-title"><span id="extras-card"></span><span id="extras-set" class="visually-hidden"></span></h2>
+        <p class="extras-note">Extras are copies beyond the first: your trade binder.</p>
+        <div class="extras-row"><span id="extras-label">Extras</span><span class="extras-step" role="group" aria-labelledby="extras-label"><button id="extras-less" type="button" aria-label="One fewer extra">−</button><output id="extras-count" aria-live="polite">0</output><button id="extras-more" type="button" aria-label="One more extra">+</button></span></div>
+        <div class="extras-foot"><p id="extras-total"></p><button id="extras-done" class="btn small" type="button">Done</button></div>
+      </div>
 <section class="group" id="base-set">
   <h2>Base set <span class="count">120 cards</span></h2>
   <p class="blurb">The main set. Base cards make up most of every pack.</p>
