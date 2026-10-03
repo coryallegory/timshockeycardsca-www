@@ -2,7 +2,7 @@
 @page { size: letter portrait; margin: 0.5in; }
 
 @media print {
-  .site-header, .stripe, .site-footer, .intro, .toc, .back-to-top, #prizes { display: none !important; }
+  .site-header, .stripe, .site-footer, .intro, .toc, .back-to-top, #prizes, .cards .own { display: none !important; }
   html, body { background: #fff !important; color: #000 !important; font-size: 10pt; }
   .page { max-width: none; margin: 0; padding: 0; }
   .checklist-layout { display: block; }
