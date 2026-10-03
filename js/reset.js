@@ -1,8 +1,9 @@
 /* The /reset-password page (built only with API_URL): the emailed link brings the reset token in `?token=`. It is read
    once and removed from the address bar straight away (history.replaceState), so it isn't left in the history entry, a
    bookmark or a copied URL; the page also sends no referrer. Submitting posts it with the new password through
-   account.js; on success this browser is signed in, so the Checklist opens signed in. */
+   account.js; on success this browser is signed in (the header shows it), so the Checklist opens signed in. */
 import * as account from './account.js';
+import * as header from './header-account.js';
 
 const $ = (id) => document.getElementById(id);
 const form = $('reset-form');
@@ -41,7 +42,7 @@ form.addEventListener('submit', async (e) => {
   submit.disabled = true;
   try {
     const res = await account.resetPassword(token, password.value);
-    account.rememberSignedIn(true);
+    header.signedIn(res.email);
     form.reset();
     form.hidden = true;
     $('reset-email').textContent = res.email;

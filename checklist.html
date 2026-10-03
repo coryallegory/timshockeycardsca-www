@@ -25,8 +25,8 @@
 <link rel="stylesheet" href="/css/base.css">
 <link rel="stylesheet" href="/css/layout.css">
 <link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/header-account.css">
 <link rel="stylesheet" href="/css/checklist.css">
-<link rel="stylesheet" href="/css/account.css">
 <link rel="stylesheet" href="/css/collection.css">
 <link rel="stylesheet" href="/css/print.css">
 </head>
@@ -34,6 +34,18 @@
 <header class="site-header"><div class="bar">
   <a class="brand" href="/"><b>Tim Hortons Hockey Cards</b><small><span class="live-dot" aria-hidden="true"></span>2026-27 Live Stock Availability</small></a>
   <nav class="tabs" aria-label="Pages"><a href="/">Tracker</a><a href="/checklist" aria-current="page">Checklist</a></nav>
+  <div class="acct" id="acct" data-api-url="https://api.timshockeycards.ca" data-total="278">
+    <a class="signin-link" id="acct-signin" href="/account?next=/checklist"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.2-6.5 8-6.5s7 2 8 6.5"/></svg>Sign in</a>
+    <button class="avatar" id="acct-button" type="button" popovertarget="acct-menu" aria-controls="acct-menu" aria-expanded="false" hidden></button>
+    <div class="acct-menu" id="acct-menu" popover>
+      <div class="who"><small>Signed in as</small><b id="acct-email"></b><p class="mini" id="acct-count"></p></div>
+      <nav aria-label="Account"><a href="/account"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Account settings</a><a href="/checklist" aria-current="page"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="m8 12 3 3 5-6"/></svg>Your collection</a></nav>
+      <hr>
+      <button class="item" id="acct-signout" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sign out</button>
+      <p class="form-error" id="acct-error" role="alert" hidden></p>
+    </div>
+    <span class="visually-hidden" id="acct-status" role="status"></span>
+  </div>
 </div></header>
 <div class="stripe" aria-hidden="true"></div>
 <main class="page checklist" id="top">
@@ -41,67 +53,7 @@
     <h1>2026-27 Upper Deck Tim Hortons Hockey</h1>
     <p class="lede">278 cards across 16 sets. Odds are per pack, from the official odds sheet.</p>
     <div class="checklist-actions">
-    <div class="account" id="account" data-api-url="https://api.timshockeycards.ca">
-      <button id="account-button" class="btn small primary account-button" type="button" popovertarget="account-popover" aria-controls="account-popover" aria-expanded="false"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="m8 12 3 3 5-6"/></svg><span id="account-label">Track collection</span></button>
-      <div id="account-popover" class="popover account-popover" popover role="dialog" aria-labelledby="account-title">
-        <form id="account-form" class="account-form" data-view="login">
-          <h2 id="account-title" class="popover-title" tabindex="-1">Sign in</h2>
-          <p class="popover-note">Sign in to tick off the cards you have. Your collection is saved to your account.</p>
-          <p id="account-error" class="form-error" role="alert" hidden></p>
-          <label for="account-email">Email</label>
-          <input id="account-email" name="email" type="email" autocomplete="email" maxlength="254" required>
-          <label for="account-password">Password</label>
-          <input id="account-password" name="password" type="password" autocomplete="current-password" maxlength="128" required>
-          <p id="account-password-hint" class="field-hint" hidden>8 to 128 characters.</p>
-          <button id="account-submit" class="btn primary" type="submit">Sign in</button>
-          <p class="field-hint account-privacy">What we keep and why: <a href="/privacy">Privacy</a></p>
-          <p class="popover-links"><button id="account-mode" class="link-button" type="button">Create an account</button><button id="account-forgot" class="link-button" type="button">Forgot password?</button></p>
-        </form>
-        <form id="forgot-form" class="account-form" data-view="forgot" hidden>
-          <h2 id="forgot-title" class="popover-title" tabindex="-1">Reset your password</h2>
-          <p class="popover-note">Enter your account's email and we'll send you a link to choose a new password.</p>
-          <p id="forgot-error" class="form-error" role="alert" hidden></p>
-          <label for="forgot-email">Email</label>
-          <input id="forgot-email" name="email" type="email" autocomplete="email" maxlength="254" required>
-          <button id="forgot-submit" class="btn primary" type="submit">Send reset link</button>
-          <p class="popover-links"><button class="link-button" type="button" data-show="login">Back to sign in</button></p>
-        </form>
-        <div id="forgot-sent" data-view="forgot-sent" hidden>
-          <h2 id="forgot-sent-title" class="popover-title" tabindex="-1">Check your email</h2>
-          <p class="popover-note">If that address has an account, we've emailed a link. It expires in 1 hour.</p>
-          <p class="popover-links"><button class="link-button" type="button" data-show="login">Back to sign in</button></p>
-        </div>
-        <div id="account-signed-in" class="account-signed-in" data-view="signed-in" hidden>
-          <h2 id="signed-in-title" class="popover-title" tabindex="-1">Your collection</h2>
-          <p class="popover-note">Signed in as <b id="account-email-shown"></b>. Tick the box beside each card you have and use its + badge for extras; changes save straight away.</p>
-          <p id="signed-in-status" class="popover-note" role="status"></p>
-          <button id="account-logout" class="btn small" type="button">Sign out</button>
-          <button id="account-change" class="btn small" type="button">Change password</button>
-          <p class="popover-links"><button id="account-delete" class="link-button" type="button">Delete account</button></p>
-        </div>
-        <form id="change-form" class="account-form" data-view="change" hidden>
-          <h2 id="change-title" class="popover-title" tabindex="-1">Change password</h2>
-          <p class="popover-note">You'll stay signed in here; other browsers and devices will be signed out.</p>
-          <p id="change-error" class="form-error" role="alert" hidden></p>
-          <label for="change-current">Current password</label>
-          <input id="change-current" name="current" type="password" autocomplete="current-password" maxlength="128" required>
-          <label for="change-new">New password</label>
-          <input id="change-new" name="new" type="password" autocomplete="new-password" minlength="8" maxlength="128" required aria-describedby="change-hint">
-          <p id="change-hint" class="field-hint">8 to 128 characters.</p>
-          <button id="change-submit" class="btn primary" type="submit">Change password</button>
-          <p class="popover-links"><button class="link-button" type="button" data-show="signed-in">Cancel</button></p>
-        </form>
-        <form id="delete-form" class="account-form" data-view="delete" hidden>
-          <h2 id="delete-title" class="popover-title" tabindex="-1">Delete account</h2>
-          <p class="danger-note">This permanently deletes your account and your collection. It can't be undone.</p>
-          <p id="delete-error" class="form-error" role="alert" hidden></p>
-          <label for="delete-password">Password</label>
-          <input id="delete-password" name="password" type="password" autocomplete="current-password" maxlength="128" required>
-          <button id="delete-submit" class="btn danger" type="submit">Delete my account</button>
-          <p class="popover-links"><button class="link-button" type="button" data-show="signed-in">Cancel</button></p>
-        </form>
-      </div>
-    </div>
+    <p class="signin-prompt" id="signin-prompt"><span>Sign in to tick off your collection and track extras to trade.</span> <a class="btn small primary" href="/account?next=/checklist">Sign in</a></p>
     <p class="print-action"><button id="print-checklist" class="btn small" type="button"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4V9h16v9h-2M6 14h12v7H6z"/></svg>Print checklist</button> <a class="btn small" href="/binder-checklist-2026-27.pdf" target="_blank" rel="noopener" aria-label="Binder PDF: scan of the official binder checklist (opens in a new tab)"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4M9 13h6M9 17h6"/></svg>Binder PDF</a></p>
   </div>
   <p id="account-msg" class="account-msg" role="status"></p>
@@ -227,5 +179,6 @@
 <footer class="site-footer">Unofficial fan project. Not affiliated with Tim Hortons, Upper Deck, the NHL or the NHLPA. <a href="/privacy">Privacy</a></footer>
 <script src="/js/checklist.js"></script>
 <script type="module" src="/js/collection.js"></script>
+<script type="module" src="/js/header-account.js"></script>
 </body>
 </html>

@@ -1,55 +1,89 @@
 /* Collection tracking on the Checklist, loaded only when the site is built with API_URL (docs/DATABASE-AUTH-PLAN.md,
-   Collection UI). account-panel.js runs the Track collection button and its popover (sign in, create an account, reset
-   or change the password); this file does what signing in and out means for the page and keeps the collection: card id
-   -> copies. Signed in, every card row gets a checkbox ("have it") and, once ticked, an extras badge (extras.js); the
-   filter bar (filter.js) shows All / Collected / Missing / Extras. Every change saves at once, optimistically: a failed
-   save puts the row back with a message. All API calls go through account.js.
-   No request is made for a visitor who has never signed in on this browser: the page only asks the API who is signed in
-   when account.js's non-secret localStorage hint says a sign-in happened here before. */
+   Collection UI). Signing in happens on /account (the prompt at the top links there and comes back) and signing out in
+   the header's account menu (header-account.js); this file does what being signed in or out means for the page and
+   keeps the collection: card id -> copies. Signed out, the page shows the sign-in prompt. Signed in, every card row gets
+   a checkbox ("have it") and, once ticked, an extras badge (extras.js); the filter bar (filter.js) shows All / Collected
+   / Missing / Extras. Every change saves at once, optimistically: a failed save puts the row back with a message. All
+   API calls go through account.js.
+   No request is made for a visitor who has never signed in on this browser: who is signed in comes from the header's
+   one check (`header.ready`), made only with account.js's localStorage hint. The collection is fetched once here and
+   handed to the header's menu for its count (header.countWith), so the menu doesn't fetch it again. */
 import * as account from './account.js';
-import * as panel from './account-panel.js';
 import * as extras from './extras.js';
 import * as filter from './filter.js';
+import * as header from './header-account.js';
 
 const TOAST_MS = 8000;
+const MSG_MS = 8000;
 
 const page = document.querySelector('main.checklist');
+const prompt = document.getElementById('signin-prompt');
+const msg = document.getElementById('account-msg');
 const rows = [...document.querySelectorAll('.cards li[data-card-id]')];
 /** Card id -> copies (1 to 99) for the cards the user owns; empty while signed out. */
 const owned = new Map();
 const countOf = (li) => owned.get(li.dataset.cardId) ?? 0;
+let tracking = false;
 
-panel.init({ signedIn, signedOut, sessionEnded });
 extras.init({ countOf, change, names });
 filter.init({ rows, countOf });
+header.onSignOut(() => {
+  signedOut();
+  say('Signed out.');
+});
+
+// ---------- messages ----------
+let msgTimer;
+/** A short note in the status line under the prompt and print buttons (signed out, save failures). */
+function say(text, isError = false) {
+  clearTimeout(msgTimer);
+  msg.textContent = text;
+  msg.classList.toggle('is-error', isError);
+  if (text) msgTimer = setTimeout(() => say(''), MSG_MS);
+}
 
 // ---------- signed in and out ----------
-async function signedIn(address) {
-  panel.showSignedIn(address);
+/** The menu's "N of 278 collected · M extra copies", from the cards on this page. */
+function counts() {
+  let extras = 0;
+  for (const copies of owned.values()) extras += copies - 1;
+  return { collected: owned.size, extras };
+}
+async function signedIn() {
+  prompt.hidden = true;
   try {
     const collection = await account.getCollection();
     owned.clear();
     for (const [id, copies] of collection) owned.set(id, copies);
     track(true);
+    header.countWith(counts);
   } catch (err) {
-    if (err.signedOut) return sessionEnded();
-    panel.say(`Couldn't load your collection. ${account.sentence(err.message)} Reload the page to try again.`, true);
+    if (err.signedOut) {
+      header.signedOut();
+      prompt.hidden = false;
+      return;
+    }
+    say(`Couldn't load your collection. ${account.sentence(err.message)} Reload the page to try again.`, true);
   }
 }
+/** Back to the signed-out page: the prompt, no checkboxes, badges or filter. */
 function signedOut() {
-  panel.showSignedOut();
   owned.clear();
   track(false);
+  header.countWith(null);
+  prompt.hidden = false;
 }
-/** The session is gone mid-visit (expired, or signed out elsewhere): back to signed out, with the sign-in popover. */
+/** The session is gone mid-visit (expired, or signed out elsewhere): signed out, with the prompt and a short note. */
 function sessionEnded() {
-  if (!panel.signedIn()) return;
+  if (!tracking) return;
   signedOut();
-  panel.askToSignInAgain();
+  header.signedOut();
+  say('Your session has ended. Sign in again to keep tracking your collection.', true);
 }
 
 /** Adds (signed in) or removes the row controls and the filter. */
 function track(on) {
+  tracking = on;
   page.classList.toggle('tracking', on);
   if (!on) {
     extras.close(false);
@@ -131,7 +165,7 @@ function save(li, copies, before) {
     .catch((err) => {
       if (err.signedOut) return sessionEnded();
       if (countOf(li) === copies) apply(li, before); // put it back, unless it has been changed again since
-      panel.say(`Couldn't save ${names(li).full}. ${account.sentence(err.message)}`, true);
+      say(`Couldn't save ${names(li).full}. ${account.sentence(err.message)}`, true);
     });
   queues.set(id, run);
   run.then(() => { if (queues.get(id) === run) queues.delete(id); });
@@ -176,13 +210,10 @@ for (const [type, keep] of [['pointerenter', true], ['focusin', true], ['pointer
   });
 }
 
-// ---------- on load: only if this browser has signed in before ----------
-if (account.maybeSignedIn()) {
-  account.me().then(
-    (res) => signedIn(res.email),
-    (err) => {
-      if (err.signedOut) account.rememberSignedIn(false);
-      else panel.say(`Couldn't check whether you're signed in. ${account.sentence(err.message)}`, true);
-    },
-  );
-}
+// ---------- on load: the header's check (made only if this browser has signed in before) ----------
+if (account.maybeSignedIn()) prompt.hidden = true; // until the check answers, rather than a prompt that may be wrong
+header.ready.then(({ email, error }) => {
+  if (email) return signedIn();
+  prompt.hidden = false;
+  if (error) say(`Couldn't check whether you're signed in. ${account.sentence(error.message)}`, true);
+});

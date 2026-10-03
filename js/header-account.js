@@ -1,0 +1,153 @@
+/* The header's account control on every page (loaded only when the site is built with API_URL; docs/DATABASE-AUTH-PLAN.md,
+   Account UI). Signed out: the Sign in pill, linking to /account?next=<this page>. Signed in: a round button with the
+   email's first letter, opening a small menu (native `popover`: Escape and outside clicks close it, and focus goes back
+   to the button) with the email, "N of 278 collected · M extra copies", Account settings, Your collection and Sign out.
+
+   No request is made for a visitor who has never signed in on this browser: only with account.js's localStorage hint
+   does the page ask the API who is signed in, once (`ready`, which page scripts share instead of asking again). The
+   collection count is fetched when the menu first opens, unless the page already has the collection (the Checklist and
+   /account hand it over with countWith). All API calls go through account.js.
+
+   For page scripts: `ready` (who is signed in, from that one check), `signedIn(email)` / `signedOut()` to update the
+   header after the page signs in or out, `countWith(fn)` and `onSignOut(fn)` (the menu's Sign out succeeded). */
+import * as account from './account.js';
+import { signInHref } from './next.js';
+
+const MSG_MS = 8000;
+
+const $ = (id) => document.getElementById(id);
+const box = $('acct');
+const signInLink = $('acct-signin');
+const button = $('acct-button');
+const menu = $('acct-menu');
+const emailShown = $('acct-email');
+const countShown = $('acct-count');
+const signOutButton = $('acct-signout');
+const error = $('acct-error');
+const status = $('acct-status');
+const TOTAL = Number(box.dataset.total);
+
+// The Sign in pill returns to this page (on /account itself, it keeps the page's own ?next=).
+signInLink.href = location.pathname === '/account' ? location.pathname + location.search : signInHref(location.pathname);
+
+let user = null; // the signed-in email, or null
+let counter = null; // the page's live counts, () => ({ collected, extras }), when it has the collection
+let fetched = null; // otherwise, the counts from GET /collection (a promise), fetched once
+const signOutHandlers = [];
+
+/** "Signed out." for screen readers, since the control under focus changes. */
+let statusTimer;
+function announce(text) {
+  clearTimeout(statusTimer);
+  status.textContent = text;
+  statusTimer = setTimeout(() => { status.textContent = ''; }, MSG_MS);
+}
+function showError(text) {
+  error.textContent = text;
+  error.hidden = !text;
+}
+
+/** Shows the pill (null) or the initial button for `email`; doesn't touch the hint. */
+function display(email) {
+  user = email;
+  if (!email && menu.matches(':popover-open')) menu.hidePopover();
+  signInLink.hidden = Boolean(email);
+  button.hidden = !email;
+  if (!email) return;
+  button.textContent = [...email][0].toLocaleUpperCase();
+  button.setAttribute('aria-label', `Account menu, signed in as ${email}`);
+  emailShown.textContent = email;
+  emailShown.title = email;
+}
+
+/** After the page signs in (or a reset signs this browser in): remembers it and shows the account. */
+export function signedIn(email) {
+  account.rememberSignedIn(true);
+  fetched = null;
+  display(email);
+}
+/** After signing out, deleting the account, or a 401: forgets the session and shows the Sign in pill. */
+export function signedOut() {
+  account.rememberSignedIn(false);
+  counter = null;
+  fetched = null;
+  display(null);
+}
+/** The page has the collection and keeps it current: the menu counts from `fn` instead of fetching (null: no longer). */
+export function countWith(fn) {
+  counter = fn;
+}
+/** `fn()` runs after the menu's Sign out succeeds, for the page to drop what it shows signed in. */
+export function onSignOut(fn) {
+  signOutHandlers.push(fn);
+}
+
+/**
+ * Who is signed in, asked once per page: { email } (null when signed out), or { email: null, error } when the API
+ * couldn't be reached (the hint stays, so the next page asks again). Never rejects. No request without the hint.
+ */
+export const ready = account.maybeSignedIn() ? whoIsSignedIn() : Promise.resolve({ email: null });
+function whoIsSignedIn() {
+  signInLink.hidden = true; // neither control until the API answers, rather than a Sign in pill that may be wrong
+  return account.me().then(
+    (res) => {
+      display(res.email);
+      return { email: res.email };
+    },
+    (err) => {
+      if (err.signedOut) signedOut();
+      else display(null);
+      return { email: null, error: err.signedOut ? undefined : err };
+    },
+  );
+}
+
+// ---------- the menu ----------
+/** "42 of 278 collected · 7 extra copies": copies beyond the first, summed (the filter's Extras counts cards instead). */
+const countsText = ({ collected, extras }) => `${collected} of ${TOTAL} collected · ${extras} extra ${extras === 1 ? 'copy' : 'copies'}`;
+
+async function showCount() {
+  if (counter) {
+    countShown.textContent = countsText(counter());
+    return;
+  }
+  if (!fetched) {
+    countShown.textContent = 'Loading your collection…';
+    fetched = account.getCollection().then((collection) => {
+      let extras = 0;
+      for (const copies of collection.values()) extras += copies - 1;
+      return { collected: collection.size, extras };
+    });
+  }
+  const asked = fetched;
+  try {
+    countShown.textContent = countsText(await asked);
+  } catch (err) {
+    if (asked === fetched) fetched = null; // ask again next time
+    if (err.signedOut) signedOut();
+    else countShown.textContent = "Couldn't load your collection.";
+  }
+}
+
+menu.addEventListener('toggle', (e) => {
+  const open = e.newState === 'open';
+  button.setAttribute('aria-expanded', String(open));
+  if (open && user) showCount();
+  if (!open) showError('');
+});
+
+signOutButton.addEventListener('click', async () => {
+  showError('');
+  signOutButton.disabled = true;
+  try {
+    await account.logout();
+    signedOut(); // closes the menu
+    signInLink.focus();
+    announce('Signed out.');
+    for (const fn of signOutHandlers) fn();
+  } catch (err) {
+    showError(`Couldn't sign out. ${account.sentence(err.message)}`);
+  } finally {
+    signOutButton.disabled = false;
+  }
+});

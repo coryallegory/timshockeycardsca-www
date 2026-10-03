@@ -1,0 +1,82 @@
+/* The header's account control (mockup option B), on every page when the site is built with API_URL (the plain site
+   doesn't load this file, so its header stays as it is): signed out a Sign in pill, signed in a round initial button
+   whose small menu is a native popover. Desktop: name, tabs, account control on one row. Phones: the control moves up
+   beside the name and the tabs get the row below. Also the visually-hidden helper the account pages share. */
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+.site-header .bar { flex-wrap: nowrap; }
+.acct { flex: none; display: flex; align-items: center; }
+.acct .ico { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.acct a:focus-visible, .acct button:focus-visible { outline: 3px solid var(--on-red); outline-offset: 2px; }
+
+/* signed out: an outlined pill */
+.signin-link {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 4px 14px 4px 10px;
+  color: var(--on-red); text-decoration: none; font-weight: 700; border-radius: 999px; border: 2px solid rgb(255 255 255 / 70%); white-space: nowrap;
+}
+.signin-link:hover { background: rgb(255 255 255 / 14%); }
+.signin-link[aria-current="page"] { background: var(--on-red); color: var(--red); border-color: var(--on-red); }
+
+/* signed in: the email's first letter in a white circle; a soft ring on hover, while open, and on /account */
+.avatar {
+  width: 40px; height: 40px; border-radius: 50%; padding: 0; cursor: pointer; display: grid; place-items: center;
+  border: 2px solid var(--on-red); background: var(--on-red); color: var(--red); font: 700 20px/1 var(--display);
+  box-shadow: 0 0 0 3px rgb(255 255 255 / 0%); transition: box-shadow 0.12s ease;
+}
+.avatar:hover, .avatar[aria-expanded="true"] { box-shadow: 0 0 0 4px rgb(255 255 255 / 30%); }
+.avatar.on-page { box-shadow: 0 0 0 4px rgb(255 255 255 / 45%); }
+
+/* ---------- the menu: under the button with its right edge lined up (anchor positioning), else top right ---------- */
+.acct-menu {
+  position: fixed; inset: 72px 16px auto auto; margin: 0; width: 270px; overflow: visible;
+  background: var(--panel); color: var(--ink); border: 2px solid var(--line); border-radius: 14px; box-shadow: var(--shadow);
+  padding: 14px 8px 8px; text-align: left;
+}
+@supports (anchor-name: --a) {
+  .avatar { anchor-name: --acct-button; }
+  .acct-menu { position-anchor: --acct-button; inset: auto; top: calc(anchor(bottom) + 10px); right: anchor(right); }
+  /* a little notch pointing at the button */
+  .acct-menu::before {
+    content: ""; position: absolute; top: -8px; right: 13px; width: 12px; height: 12px; transform: rotate(45deg);
+    background: var(--panel); border-left: 2px solid var(--line); border-top: 2px solid var(--line);
+  }
+}
+.acct-menu .who { padding: 0 10px 10px; border-bottom: 1px solid var(--line); margin-bottom: 6px; }
+.acct-menu .who small { display: block; color: var(--muted); font-size: 13px; }
+.acct-menu .who b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; }
+.acct-menu .who .mini { color: var(--ink-2); font-size: 14px; margin: 4px 0 0; }
+.acct-menu a, .acct-menu .item {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 6px 10px; border-radius: 10px;
+  font: 600 16px/1.2 var(--body); color: var(--ink); text-decoration: none; background: none; border: 0; cursor: pointer; text-align: left;
+}
+.acct-menu a:hover, .acct-menu .item:hover { background: var(--red-soft); color: var(--red); }
+.acct-menu a[aria-current="page"] { font-weight: 700; }
+.acct-menu .ico { color: var(--muted); }
+.acct-menu a:hover .ico, .acct-menu .item:hover .ico { color: var(--red); }
+.acct-menu .item:disabled { opacity: 0.6; cursor: progress; }
+.acct-menu a:focus-visible, .acct-menu .item:focus-visible { outline: 3px solid var(--red); outline-offset: -3px; }
+.acct-menu hr { border: 0; border-top: 1px solid var(--line); margin: 6px 0; }
+.acct-menu .form-error { margin: 6px 2px 0; }
+
+/* ---------- phones: name and account control on the first row, the tabs on the second ---------- */
+@media (max-width: 640px) {
+  .site-header .bar { flex-wrap: wrap; row-gap: 8px; column-gap: 10px; padding: 9px 14px 10px; }
+  .brand { flex: 1 1 auto; min-width: 0; }
+  .acct { order: 2; }
+  .tabs { order: 3; flex: 1 1 100%; }
+  .tabs a { padding: 7px 12px; min-height: 34px; display: inline-flex; align-items: center; }
+  .avatar { width: 36px; height: 36px; font-size: 18px; }
+  .signin-link { min-height: 36px; padding: 3px 13px; font-size: 15px; }
+  .signin-link .ico { display: none; }
+  .acct-menu { width: min(290px, calc(100vw - 28px)); inset: 60px 14px auto auto; }
+  @supports (anchor-name: --a) {
+    .acct-menu { inset: auto; top: calc(anchor(bottom) + 10px); right: anchor(right); }
+  }
+}
+@media (max-width: 370px) {
+  .brand b { font-size: 20px; }
+}

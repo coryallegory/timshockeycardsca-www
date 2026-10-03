@@ -1,13 +1,92 @@
-/* Account pieces of the Checklist's Track collection popover that the plain site doesn't have (loaded only when the
-   site is built with API_URL, so the live site's styles stay as they are): the Privacy note under sign-in and the
-   Delete account view. */
+/* The /account page (built only with API_URL; mockup layout 1): one column of panels. Signed out, a single panel
+   with the sign-in, create-account and forgot-password views; signed in, Sign-in details, Your collection, Privacy and
+   the Danger zone. Form fields look like the reset page's (reset-password.css). */
 
-.account-privacy { margin-top: 10px; text-align: center; }
+.account-page { max-width: 720px; }
+.account-page h1:focus, .account-page h3:focus { outline: none; }
+.acct-lede { color: var(--ink-2); margin: 0 0 26px; font-size: 18px; overflow-wrap: anywhere; }
+.acct-lede b { color: var(--ink); }
 
-/* Delete account: a warning, and a destructive button that looks unlike the red primary one (outlined, filling on hover). */
-.danger-note {
+/* ---------- panels ---------- */
+.sec { padding: 20px 22px; margin-bottom: 18px; scroll-margin-top: 16px; }
+.sec > header { display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.sec h2 { font-size: 24px; margin: 0; }
+.sec p { margin: 0 0 12px; }
+.sec .sub { color: var(--ink-2); font-size: 16px; }
+.sec a.text-link { color: var(--red); font-weight: 700; }
+.sec header .btn { display: inline-flex; align-items: center; gap: 6px; }
+.sec .ico { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* a label and value pair */
+.kv { display: grid; grid-template-columns: 9em minmax(0, 1fr); gap: 4px 12px; align-items: baseline; margin: 0 0 14px; }
+.kv dt { color: var(--muted); font-size: 15px; font-weight: 700; }
+.kv dd { margin: 0; overflow-wrap: anywhere; font-weight: 600; }
+.row-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+/* ---------- forms: the signed-out views, and Change password / Delete account opening in place ---------- */
+.inline-form { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); max-width: 420px; }
+.inline-form h3 { font-size: 19px; margin: 0 0 4px; }
+.acct-form label { display: block; font-weight: 700; font-size: 15px; margin: 12px 0 4px; }
+.acct-form input {
+  width: 100%; font: inherit; font-size: 16px; padding: 8px 12px; min-height: 42px;
+  border: 2px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink);
+}
+.acct-form input:focus { outline: none; border-color: var(--red); }
+.form-buttons { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 16px; }
+.ok-note {
+  background: color-mix(in srgb, var(--available) 14%, transparent); color: var(--ink); font-size: 15px;
+  border-left: 4px solid var(--available); border-radius: 10px; padding: 8px 12px; margin: 0 0 12px;
+}
+
+/* ---------- collection summary ---------- */
+.stat { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 18px; margin: 2px 0 10px; }
+.stat .big { font: 700 40px/1 var(--display); }
+.stat .big small { font: 600 18px/1 var(--body); color: var(--muted); margin-left: 6px; }
+.stat .extra { font-weight: 700; color: var(--ink-2); }
+.bar-track {
+  display: block; width: 100%; height: 10px; margin: 0 0 8px; appearance: none;
+  border-radius: 999px; background: var(--paper); border: 1px solid var(--line); overflow: hidden; color: var(--red);
+}
+.bar-track::-webkit-progress-bar { background: var(--paper); }
+.bar-track::-webkit-progress-value { background: var(--red); border-radius: 999px; }
+.bar-track::-moz-progress-bar { background: var(--red); border-radius: 999px; }
+.subset-mini { display: flex; flex-wrap: wrap; gap: 6px 16px; color: var(--muted); font-size: 14px; }
+.sec .subset-mini { margin-bottom: 14px; }
+.subset-mini b { color: var(--ink-2); }
+
+/* ---------- danger zone: sign out and delete account ---------- */
+.sec.danger { border-color: color-mix(in srgb, var(--red) 45%, var(--line)); }
+.sec.danger h2 { color: var(--red); }
+.danger-row { display: flex; align-items: center; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; padding: 12px 0; border-top: 1px solid var(--line); }
+.danger-row:first-of-type { border-top: 0; padding-top: 0; }
+.sec .danger-row p { margin: 0; flex: 1 1 260px; }
+.danger-row p b { display: block; }
+.danger-row p span { color: var(--muted); font-size: 15px; }
+/* a warning, and a destructive button that looks unlike the red primary one (outlined, filling on hover) */
+.sec .danger-note {
   background: var(--red-soft); color: var(--ink); font-size: 15px;
   border-left: 4px solid var(--red); border-radius: 10px; padding: 8px 12px; margin: 0 0 8px;
 }
 .btn.danger { background: transparent; border-color: var(--red); color: var(--red); }
 .btn.danger:hover { background: var(--red); color: var(--on-red); }
+
+/* ---------- signed out: one panel, centred ---------- */
+.signed-out-wrap { display: flex; justify-content: center; }
+.auth-panel { width: 100%; max-width: 460px; padding: 24px 24px 20px; }
+.auth-panel h1 { font-size: clamp(30px, 6vw, 38px); margin: 0 0 8px; }
+.auth-panel .note { color: var(--ink-2); margin: 0 0 6px; overflow-wrap: anywhere; }
+.auth-panel .form-error { margin-top: 8px; }
+.auth-panel .acct-form .btn[type="submit"] { width: 100%; margin-top: 18px; }
+.auth-panel .popover-links { margin-top: 14px; }
+.auth-privacy { text-align: center; margin-top: 12px; }
+.auth-privacy a { color: var(--red); }
+
+@media (max-width: 640px) {
+  .sec { padding: 16px; }
+  .sec h2 { font-size: 22px; }
+  .kv { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .kv dd { margin-bottom: 8px; }
+  .stat .big { font-size: 34px; }
+  .auth-panel { padding: 18px 16px 16px; }
+  .row-actions .btn, .danger-row .btn, .form-buttons .btn { min-height: 38px; display: inline-flex; align-items: center; }
+}

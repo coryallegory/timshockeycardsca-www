@@ -25,12 +25,25 @@
 <link rel="stylesheet" href="/css/base.css">
 <link rel="stylesheet" href="/css/layout.css">
 <link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/header-account.css">
 <link rel="stylesheet" href="/css/privacy.css">
 </head>
 <body class="">
 <header class="site-header"><div class="bar">
   <a class="brand" href="/"><b>Tim Hortons Hockey Cards</b><small><span class="live-dot" aria-hidden="true"></span>2026-27 Live Stock Availability</small></a>
   <nav class="tabs" aria-label="Pages"><a href="/">Tracker</a><a href="/checklist">Checklist</a></nav>
+  <div class="acct" id="acct" data-api-url="https://api.timshockeycards.ca" data-total="278">
+    <a class="signin-link" id="acct-signin" href="/account?next=/privacy"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.2-6.5 8-6.5s7 2 8 6.5"/></svg>Sign in</a>
+    <button class="avatar" id="acct-button" type="button" popovertarget="acct-menu" aria-controls="acct-menu" aria-expanded="false" hidden></button>
+    <div class="acct-menu" id="acct-menu" popover>
+      <div class="who"><small>Signed in as</small><b id="acct-email"></b><p class="mini" id="acct-count"></p></div>
+      <nav aria-label="Account"><a href="/account"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Account settings</a><a href="/checklist"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="m8 12 3 3 5-6"/></svg>Your collection</a></nav>
+      <hr>
+      <button class="item" id="acct-signout" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sign out</button>
+      <p class="form-error" id="acct-error" role="alert" hidden></p>
+    </div>
+    <span class="visually-hidden" id="acct-status" role="status"></span>
+  </div>
 </div></header>
 <div class="stripe" aria-hidden="true"></div>
 <main class="page privacy-page">
@@ -65,7 +78,7 @@
     <thead><tr><th scope="col">Name</th><th scope="col">What it is</th><th scope="col">How long</th></tr></thead>
     <tbody>
       <tr><td><code>sid</code></td><td>The sign-in cookie, set by <code>api.timshockeycards.ca</code> when you sign in or create an account. Its only job is to keep you signed in. Scripts can't read it (<code>HttpOnly</code>), it's only sent over HTTPS (<code>Secure</code>) and browsers hold it back from requests other sites start in the background (<code>SameSite=Lax</code>).</td><td data-label="How long">30 days, renewed while you use the site; removed when you sign out or delete your account</td></tr>
-      <tr><td><code>tims.signedIn</code></td><td>Browser storage on this site, set to <code>1</code> after you sign in, so the Checklist only asks our server who you are when you've signed in on this browser before. It holds nothing about you.</td><td data-label="How long">Until you sign out, delete your account, or the server says you're no longer signed in</td></tr>
+      <tr><td><code>tims.signedIn</code></td><td>Browser storage on this site, set to <code>1</code> after you sign in, so the site's pages only ask our server who you are when you've signed in on this browser before. It holds nothing about you.</td><td data-label="How long">Until you sign out, delete your account, or the server says you're no longer signed in</td></tr>
       <tr><td><code>map.lastSpot</code></td><td>Browser storage: the last spot the map found you, rounded to about 1&nbsp;km. Never sent to us.</td><td data-label="How long">Until you clear your browser's site data</td></tr>
     </tbody>
   </table>
@@ -103,7 +116,7 @@
   <p>We keep no backups of the account database, so deleted data is gone for good.</p>
 
   <h2>Deleting your account</h2>
-  <p>On the <a href="/checklist">Checklist</a>, press the button with your email address, choose <b>Delete account</b> and enter your password. Your account, email address, collection, sign-ins and reset links are deleted straight away, and you're signed out everywhere. The email address can be used for a new account afterwards. Only the server log lines (2 weeks) and abuse counters (above) outlast it.</p>
+  <p>On your <a href="/account">account page</a> (the round button with your initial at the top of any page, then <b>Account settings</b>), choose <b>Delete account</b> and enter your password. Your account, email address, collection, sign-ins and reset links are deleted straight away, and you're signed out everywhere. The email address can be used for a new account afterwards. Only the server log lines (2 weeks) and abuse counters (above) outlast it.</p>
 
   <h2>Sharing</h2>
   <p>We don't sell your data or share it with anyone. The only other parties involved are the services that run the site, named above: Amazon Web Services, Cloudflare, GitHub and OpenStreetMap.</p>
@@ -113,5 +126,6 @@
   <p>If this page changes, the date at the top changes too.</p>
 </main>
 <footer class="site-footer">Unofficial fan project. Not affiliated with Tim Hortons, Upper Deck, the NHL or the NHLPA. <a href="/privacy">Privacy</a></footer>
+<script type="module" src="/js/header-account.js"></script>
 </body>
 </html>

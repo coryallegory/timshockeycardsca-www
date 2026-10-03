@@ -1,10 +1,16 @@
-/* The signed-in collection on the Checklist (loaded only when the site is built with API_URL, so the live site's styles
-   stay as they are): row checkboxes and extras badges, the extras panel, the filter bar, collapsed subsets and the
-   Undo toast. `.tracking` is on the page while signed in (collection.js). */
+/* Collection tracking on the Checklist (loaded only when the site is built with API_URL, so the plain site's styles
+   stay as they are): the signed-out sign-in prompt, and signed in, row checkboxes and extras badges, the extras panel,
+   the filter bar, collapsed subsets and the Undo toast. `.tracking` is on the page while signed in (collection.js).
+   `.visually-hidden` is in header-account.css, which every account page loads. */
 
-.visually-hidden {
-  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
-  clip-path: inset(50%); white-space: nowrap; border: 0;
+/* ---------- signed out: one line inviting a sign-in, left of the print buttons (checklist.css .checklist-actions) ---------- */
+.signin-prompt {
+  margin: 0 auto 0 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px;
+  padding: 6px 6px 6px 14px; border: 2px solid var(--line); border-radius: 999px; background: var(--paper); color: var(--ink-2); font-size: 15px;
+}
+.signin-prompt .btn { min-height: 32px; display: inline-flex; align-items: center; }
+@media (max-width: 640px) {
+  .signin-prompt { border-radius: 14px; padding: 8px 8px 8px 12px; flex: 1 1 100%; justify-content: space-between; }
 }
 
 /* ---------- card rows while signed in: checkbox, number, name (truncated so desktop keeps 3 columns), badge ---------- */
