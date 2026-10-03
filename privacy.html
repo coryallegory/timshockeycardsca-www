@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-8080880445104035">
+<title>Privacy · Tim Hortons Hockey Cards 2026-27</title>
+<meta name="description" content="What this site keeps about you, why, where and for how long, and how to delete your account.">
+<link rel="canonical" href="https://timshockeycards.ca/privacy">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tim Hortons Hockey Cards 2026-27">
+<meta property="og:title" content="Privacy · Tim Hortons Hockey Cards 2026-27">
+<meta property="og:description" content="What this site keeps about you, why, where and for how long, and how to delete your account.">
+<meta property="og:url" content="https://timshockeycards.ca/privacy">
+<meta property="og:image" content="https://timshockeycards.ca/social-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Privacy · Tim Hortons Hockey Cards 2026-27">
+<meta name="twitter:description" content="What this site keeps about you, why, where and for how long, and how to delete your account.">
+<meta name="twitter:image" content="https://timshockeycards.ca/social-card.png">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='3' width='20' height='26' rx='3' fill='%23b3261e'/%3E%3Crect x='9' y='6' width='14' height='14' rx='1' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/css/fonts.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/privacy.css">
+</head>
+<body class="">
+<header class="site-header"><div class="bar">
+  <a class="brand" href="/"><b>Tim Hortons Hockey Cards</b><small><span class="live-dot" aria-hidden="true"></span>2026-27 Live Stock Availability</small></a>
+  <nav class="tabs" aria-label="Pages"><a href="/">Tracker</a><a href="/checklist">Checklist</a></nav>
+</div></header>
+<div class="stripe" aria-hidden="true"></div>
+<main class="page privacy-page">
+  <h1>Privacy</h1>
+  <p class="updated">Last updated October 3, 2026</p>
+  <p class="lede">This is an unofficial fan site. The stock map and the checklist work without an account, and we don't know who you are. If you create an account to track your collection, this page says what we keep, why, where, for how long, and how to delete it.</p>
+
+  <h2>Without an account</h2>
+  <ul>
+    <li><b>No cookies from us.</b> The site's pages set none. Cloudflare, which delivers the site, may set a security cookie of its own to tell people from bots.</li>
+    <li><b>Your location stays in your browser.</b> If you allow it, your browser gives the map your location to centre it. It is never sent to us. The map remembers the last spot it found you, rounded to about 1&nbsp;km, in your browser's storage (<code>map.lastSpot</code>), so it opens near you next time.</li>
+    <li><b>Map images come from OpenStreetMap</b> (<code>tile.openstreetmap.org</code>), whose servers see your IP address and the part of the map you're looking at (<a href="https://osmfoundation.org/wiki/Privacy_Policy">their privacy policy</a>). The Directions link opens Google Maps only if you choose it.</li>
+    <li><b>Visit counts, no ads.</b> Cloudflare Web Analytics counts page views, without cookies or tracking you across sites.</li>
+    <li><b>Hosting.</b> The pages are hosted on GitHub Pages behind Cloudflare, and the stock data comes from Amazon S3 through Cloudflare. Like any web host, these services see your IP address and the pages you request.</li>
+  </ul>
+
+  <h2>With an account: what we keep and why</h2>
+  <p>Only what the account and collection features need:</p>
+  <ul>
+    <li><b>Your email address</b>, to sign you in and to send you a password-reset link when you ask for one. We send no other email: no sign-up confirmation, no newsletters.</li>
+    <li><b>Your password, as a hash only.</b> We store a salted scrypt hash, from which the password can't be read back. The password itself is never stored or written to a log.</li>
+    <li><b>Your collection:</b> the IDs of the cards you've ticked, and the date each was first ticked.</li>
+    <li><b>When the account was created</b> and when its password last changed.</li>
+    <li><b>Your sign-ins (sessions):</b> for each browser you're signed in on, a hash of its random session key, and when it started and expires.</li>
+    <li><b>Password-reset links you've asked for:</b> a hash of each link's key and when it expires.</li>
+  </ul>
+  <p>We don't ask for your name, and we don't use any of this for advertising or profiling.</p>
+
+  <h2>Cookies and browser storage</h2>
+  <div class="table-wrap">
+  <table class="data-table stack">
+    <thead><tr><th scope="col">Name</th><th scope="col">What it is</th><th scope="col">How long</th></tr></thead>
+    <tbody>
+      <tr><td><code>sid</code></td><td>The sign-in cookie, set by <code>api.timshockeycards.ca</code> when you sign in or create an account. Its only job is to keep you signed in. Scripts can't read it (<code>HttpOnly</code>), it's only sent over HTTPS (<code>Secure</code>) and browsers hold it back from requests other sites start in the background (<code>SameSite=Lax</code>).</td><td data-label="How long">30 days, renewed while you use the site; removed when you sign out or delete your account</td></tr>
+      <tr><td><code>tims.signedIn</code></td><td>Browser storage on this site, set to <code>1</code> after you sign in, so the Checklist only asks our server who you are when you've signed in on this browser before. It holds nothing about you.</td><td data-label="How long">Until you sign out, delete your account, or the server says you're no longer signed in</td></tr>
+      <tr><td><code>map.lastSpot</code></td><td>Browser storage: the last spot the map found you, rounded to about 1&nbsp;km. Never sent to us.</td><td data-label="How long">Until you clear your browser's site data</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>There are no tracking or advertising cookies.</p>
+
+  <h2>Stopping abuse</h2>
+  <p>To slow down password guessing and floods of requests, the server counts attempts: per IP address (sign-in, creating an account, forgotten and reset passwords), per email address (sign-in, forgotten password) and per account (changing the password, deleting the account). Each count is stored with the IP address, email address or account ID it belongs to, and is deleted automatically once its 15-minute or 1-hour window is over (the database's automatic clean-up can take up to 2 days).</p>
+
+  <h2>Server logs</h2>
+  <p>The account server's logs are kept for 2 weeks. They record:</p>
+  <ul>
+    <li>each request's type, address (such as which card was ticked or unticked, but not by whom), result and how long it took: no IP address, cookies, passwords or form contents;</li>
+    <li>your account ID when a password-reset email is sent or fails to send, and when an account is deleted;</li>
+    <li>details of errors, with email addresses removed;</li>
+    <li>the IP address of requests that try to reach the server directly instead of through <code>api.timshockeycards.ca</code> (these are refused).</li>
+  </ul>
+
+  <h2>Where it's kept</h2>
+  <p>Account data lives with Amazon Web Services in the <b>us-east-1 region (Northern Virginia, United States)</b>: the database (Amazon DynamoDB), the server (AWS Lambda) and the password-reset email (Amazon SES). Requests to the account server pass through Amazon CloudFront and its firewall, which see your IP address in order to block attacks.</p>
+
+  <h2>How long</h2>
+  <div class="table-wrap">
+  <table class="data-table">
+    <thead><tr><th scope="col">What</th><th scope="col">Kept</th></tr></thead>
+    <tbody>
+      <tr><td>Email, password hash, collection</td><td>Until you delete your account</td></tr>
+      <tr><td>Sign-ins (sessions)</td><td>30 days from your last visit that renewed them, or until you sign out, change or reset your password, or delete your account</td></tr>
+      <tr><td>Password-reset links</td><td>1 hour, or until used, until your password changes, or until you delete your account</td></tr>
+      <tr><td>Abuse counters</td><td>Their 15-minute or 1-hour window (deleted within about 2 days)</td></tr>
+      <tr><td>Server logs</td><td>2 weeks</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>We keep no backups of the account database, so deleted data is gone for good.</p>
+
+  <h2>Deleting your account</h2>
+  <p>On the <a href="/checklist">Checklist</a>, press the button with your email address, choose <b>Delete account</b> and enter your password. Your account, email address, collection, sign-ins and reset links are deleted straight away, and you're signed out everywhere. The email address can be used for a new account afterwards. Only the server log lines (2 weeks) and abuse counters (above) outlast it.</p>
+
+  <h2>Sharing</h2>
+  <p>We don't sell your data or share it with anyone. The only other parties involved are the services that run the site, named above: Amazon Web Services, Cloudflare, GitHub and OpenStreetMap.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about your data: <a href="mailto:admin@timshockeycards.ca">admin@timshockeycards.ca</a></p>
+  <p>If this page changes, the date at the top changes too.</p>
+</main>
+<footer class="site-footer">Unofficial fan project. Not affiliated with Tim Hortons, Upper Deck, the NHL or the NHLPA. <a href="/privacy">Privacy</a></footer>
+</body>
+</html>
