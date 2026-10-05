@@ -1,22 +1,17 @@
-/* The Collection page, /collection (loaded only when the site is built with API_URL, after checklist.css for the
-   contents and card lists; print.css comes last): the status line, the lede and action buttons (components.css
-   .page-actions), the progress panel, each set's progress, card rows with checkboxes and extras badges, the extras
-   panel, the filter bar, collapsed subsets, the Undo toast, and signed out, the pitch with its still preview. `.visually-hidden` is in
+/* The Collection dashboard, /collection (loaded only when the site is built with API_URL; print.css comes last): the
+   lede and its action button (components.css .page-actions), the progress panel, the set tiles, the Missing and trade
+   binder boxes, signed out the pitch with its still preview, and the print-only list. `.visually-hidden` is in
    header-account.css, which every account page loads. */
 
 .coll-page h1 { margin-bottom: 8px; }
 .coll-page .lede { margin-bottom: 20px; max-width: 62ch; }
-/* signed in: the lede, with Print and Open the Checklist on its right (under it on phones) */
+/* signed in: the lede, with Tick cards on the Checklist on its right (under it on phones) */
 .coll-top { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 24px; margin: 0 0 20px; }
-.coll-top .lede { flex: 1 1 400px; margin: 0; }
+.coll-top .lede { flex: 1 1 360px; margin: 0; }
 .coll-top .page-actions { margin: 0 0 0 auto; }
+.coll-page .ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
-/* ---------- the status line under the title (signed out, save failures, a session that ended) ---------- */
-.account-msg { margin: 0 0 14px; font-size: 15px; color: var(--muted); }
-.account-msg:empty { display: none; }
-.account-msg.is-error { color: var(--red); font-weight: 700; }
-
-/* ---------- progress: count and extra copies, the percentage on the right, the bar, Base / Inserts / Hits ---------- */
+/* ---------- progress: count and extra copies, the percentage on the right, the bar, Base / Inserts / Short prints ---------- */
 .coll-summary {
   display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 24px; align-items: end;
   padding: 18px 22px 16px; margin-bottom: 30px;
@@ -37,121 +32,82 @@
 .subset-mini { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 0; color: var(--muted); font-size: 15px; }
 .subset-mini b { color: var(--ink-2); }
 
-/* ---------- each set shows your progress instead of odds ---------- */
-.coll-page .subset > header { flex-wrap: nowrap; margin-bottom: 8px; }
-.coll-page .subset h3 { flex: 1 1 auto; min-width: 0; }
-.subset-count { flex: none; font: 700 15px/1 var(--body); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.subset-count.done { color: var(--available); }
-.coll-page .subset.is-empty .subset-count { display: none; }
-.coll-page .group > h2 .count { font-variant-numeric: tabular-nums; }
-/* jumps from the contents land below the sticky filter bar */
-.coll-page .group, .coll-page .subset { scroll-margin-top: 112px; }
+/* ---------- the dashboard: sets in the main column, Missing and the trade binder in a sidebar ---------- */
+.dash-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) 340px; grid-template-rows: auto 1fr; gap: 20px 28px; align-items: start;
+  grid-template-areas: "sets missing" "sets binder";
+}
+.dash-sets { grid-area: sets; }
+.dash-missing { grid-area: missing; }
+.dash-binder { grid-area: binder; }
+.dash-sets > h2 { font-size: 28px; margin: 0 0 14px; }
+.dash-sets > h2::after { content: ""; display: block; width: 56px; height: 5px; margin-top: 8px; background: var(--red); border-radius: 3px; }
+.dash-sets > h2 .count, .dash-box h2 .count { font-variant-numeric: tabular-nums; }
 
-/* ---------- card rows: checkbox, number, name (truncated so desktop keeps 3 columns), badge ---------- */
-@media screen {
-  .coll-page .cards li { min-height: 36px; align-items: center; }
-  .coll-page .cards .no { min-width: 2.9em; }
-  .coll-page .cards .who { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  /* a 32px tap area round the 20px checkbox */
-  .cards .hit {
-    flex: none; display: inline-flex; align-items: center; justify-content: center;
-    width: 32px; height: 32px; margin: -6px -4px -6px -7px; border-radius: 8px; cursor: pointer;
-  }
-  .cards .own { width: 20px; height: 20px; margin: 0; accent-color: var(--red); cursor: pointer; }
-  .cards .hit:has(:focus-visible) { outline: 3px solid var(--red); outline-offset: -2px; }
+/* a tile per set: kind, name, "4 / 18" and what's left, a thin bar; the whole tile opens the set on the Checklist */
+.set-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.set-grid > li { display: flex; min-width: 0; }
+/* the base set, about half the cards, gets a full-width tile; the eight others then fill the rows evenly */
+.set-grid > li.wide { grid-column: 1 / -1; }
+.set-tile {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; padding: 11px 14px 13px; min-height: 104px;
+  background: var(--panel); border: 2px solid var(--line); border-radius: 12px; color: var(--ink); text-decoration: none;
+  transition: border-color 0.12s ease, background-color 0.12s ease;
 }
+.wide .set-tile { min-height: 0; }
+a.set-tile:hover { border-color: var(--red); background: var(--red-soft); }
+a.set-tile:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.tile-tier { font: 700 11px/1 var(--body); text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
+.tile-name { flex: 1; font: 700 18px/1.15 var(--display); }
+.wide .tile-name { flex: none; }
+.tile-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 4px; }
+.tile-foot b { font-size: 15px; font-variant-numeric: tabular-nums; }
+.tile-left { font-size: 14px; color: var(--muted); white-space: nowrap; }
+.tile-left.done { color: var(--available); font-weight: 700; }
+.tile-bar {
+  display: block; width: 100%; height: 6px; appearance: none; border: 0; border-radius: 999px; overflow: hidden;
+  background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); color: var(--red);
+}
+.wide .tile-bar { height: 8px; }
+.tile-bar::-webkit-progress-bar { background: var(--paper); }
+.tile-bar::-webkit-progress-value { background: var(--red); border-radius: 999px; }
+.tile-bar::-moz-progress-bar { background: var(--red); border-radius: 999px; }
+.is-done .tile-bar { color: var(--available); }
+.is-done .tile-bar::-webkit-progress-value { background: var(--available); }
+.is-done .tile-bar::-moz-progress-bar { background: var(--available); }
+.set-tile.is-done { border-color: color-mix(in srgb, var(--available) 45%, var(--line)); }
+.set-tile.is-none .tile-foot b { color: var(--muted); }
 
-/* the extras badge: a quiet dashed "+" with no extras, a solid "+N" with N. Colours keep WCAG 1.4.11 / 1.4.3 contrast
-   against the panel and the row's hover tint: the dashed border uses --muted (5.6:1 light, 6.7:1 dark), not --line and
-   no opacity; the solid badge is dark brown in light mode and cream with dark text in dark mode, where brown on the
-   espresso panel nearly vanished (1.2:1). */
-:root { --xbadge-fill: var(--board); --xbadge-ink: var(--board-ink); }
-@media (prefers-color-scheme: dark) {
-  :root { --xbadge-fill: var(--board-title); --xbadge-ink: var(--board); }
-}
-.xbadge {
-  flex: none; margin-left: auto; min-width: 32px; height: 32px; padding: 0 8px; border-radius: 999px; cursor: pointer;
-  display: inline-flex; align-items: center; justify-content: center;
-  font: 700 15px/1 var(--display); font-variant-numeric: tabular-nums;
-  background: transparent; border: 2px dashed var(--muted); color: var(--muted);
-}
-.xbadge svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
-.xbadge:hover { border-color: var(--red); color: var(--red); }
-.xbadge.has { background: var(--xbadge-fill); color: var(--xbadge-ink); border: 2px solid var(--xbadge-fill); }
-.xbadge.has:hover { background: var(--red); border-color: var(--red); color: var(--on-red); }
-.xbadge.is-open { background: var(--red); border-color: var(--red); border-style: solid; color: var(--on-red); }
-.xbadge:focus-visible { outline: 3px solid var(--red); outline-offset: 1px; }
+/* the side boxes: Missing and the trade binder */
+.dash-box { padding: 16px 18px 18px; }
+.dash-box h2 { font-size: 22px; margin: 0 0 6px; }
+.dash-box h2 .count { margin-left: 6px; font-size: 14px; white-space: nowrap; display: inline-block; }
+.dash-big { font: 700 40px/1 var(--display); margin: 4px 0 6px; font-variant-numeric: tabular-nums; }
+.dash-big small { font: 600 17px/1 var(--body); color: var(--muted); margin-left: 6px; }
+.dash-note, .box-empty { margin: 0; color: var(--ink-2); font-size: 15px; }
+.box-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.box-actions .btn { flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; }
 
-/* ---------- the extras panel (native popover): under the badge where anchor positioning works, centred elsewhere ---------- */
-.extras-popover { width: min(260px, calc(100vw - 32px)); padding: 14px 16px 12px; }
-@supports (anchor-name: --a) {
-  .xbadge.is-open { anchor-name: --extras-badge; }
-  .extras-popover {
-    position-anchor: --extras-badge; inset: auto; top: anchor(bottom); right: anchor(right); margin: 6px 0;
-    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
-  }
+.binder { list-style: none; margin: 6px 0 0; padding: 0; }
+.binder li { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line); }
+.binder li:first-child { border-top: 0; }
+.binder .no { flex: none; min-width: 3.1em; font-weight: 700; font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.binder .who { flex: 1 1 auto; min-width: 0; line-height: 1.2; overflow-wrap: anywhere; }
+.binder .who small { display: block; font-size: 13px; color: var(--muted); }
+/* "+2": the Checklist's badge number and colours, not a button */
+.xn {
+  flex: none; min-width: 34px; height: 26px; padding: 0 8px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center;
+  font: 700 15px/1 var(--display); background: var(--xbadge-fill); color: var(--xbadge-ink); font-variant-numeric: tabular-nums;
 }
-.extras-title { font: 700 18px/1.2 var(--display); margin: 0 0 2px; overflow-wrap: anywhere; }
-.extras-note, .extras-foot p { margin: 0; font-size: 14px; color: var(--muted); }
-.extras-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 10px 0; }
-.extras-row > span:first-child { font-weight: 700; }
-.extras-step { display: inline-flex; align-items: center; gap: 4px; }
-.extras-step button {
-  width: 40px; height: 40px; padding: 0; border-radius: 999px; border: 2px solid var(--red); background: var(--panel); color: var(--red);
-  font: 700 22px/1 var(--body); cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
-}
-.extras-step button:hover:not(:disabled) { background: var(--red); color: var(--on-red); }
-.extras-step button:disabled { opacity: 0.35; cursor: default; }
-.extras-step button:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
-.extras-step output { min-width: 2ch; text-align: center; font: 700 26px/1 var(--display); font-variant-numeric: tabular-nums; }
-.extras-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 4px; }
+.binder-more { margin: 8px 0 0; font-size: 15px; }
+.binder-more a { color: var(--red); font-weight: 700; }
 
-/* ---------- filter bar: four equal segments (number on top, label under); sticks to the top. The negative top margin
-   cancels the padding it needs once stuck, so its segments line up with the search box beside it ---------- */
-.filter-bar { position: sticky; top: 0; z-index: 50; margin: -10px 0 22px; padding: 10px 0 12px; background: var(--bg); border-bottom: 2px solid transparent; }
-.filter-bar.is-stuck { border-bottom-color: var(--line); box-shadow: var(--shadow); }
-.filter {
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 4px;
-  border: 2px solid var(--line); border-radius: 16px; background: var(--paper);
-}
-.filter button {
-  font: inherit; color: var(--ink-2); background: transparent; border: 0; border-radius: 12px; cursor: pointer;
-  padding: 7px 4px 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 52px; min-width: 0;
-}
-.filter button b { font: 700 24px/1 var(--display); color: var(--ink); font-variant-numeric: tabular-nums; }
-.filter button span { font: 700 14px/1 var(--body); }
-.filter button:hover { background: var(--panel); }
-.filter button[aria-pressed="true"] { background: var(--red); color: var(--on-red); box-shadow: var(--shadow); }
-.filter button[aria-pressed="true"] b { color: var(--on-red); }
-.filter button:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
-.filter-note { margin: 6px 2px 0; font-size: 14px; color: var(--muted); }
-.filter-note:empty { display: none; }
-.filter-note .link-button { font-size: 14px; }
-
-/* ---------- filtered rows; a subset with nothing left is one line ---------- */
-.cards li.is-filtered { display: none; }
-.cards li.is-leaving { opacity: 0.55; }
-.subset.is-empty { padding-top: 11px; padding-bottom: 11px; }
-.subset.is-empty > header { margin-bottom: 0; }
-.subset.is-empty > header h3 { font-size: 19px; color: var(--muted); }
-.subset.is-empty .cards { display: none; }
-.filter-none { margin: 0 0 0 auto; font-size: 15px; color: var(--muted); font-style: italic; }
-
-/* ---------- toast with Undo ---------- */
-.toast {
-  position: fixed; z-index: 2000; left: 50%; bottom: 18px; transform: translateX(-50%); width: max-content; max-width: calc(100vw - 32px);
-  display: flex; gap: 14px; align-items: center; padding: 10px 16px; border-radius: 12px;
-  background: var(--board); color: var(--board-ink); box-shadow: var(--shadow); font-size: 15px;
-}
-.toast .link-button { color: var(--board-title); font-weight: 700; }
-.toast .link-button:focus-visible { outline-color: var(--board-title); }
-
-/* ---------- signed out: the pitch, beside a still preview of signed-in rows ---------- */
+/* ---------- signed out: the pitch, beside a still preview of the dashboard ---------- */
 .pitch { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 36px; align-items: center; margin-top: 8px; }
 .pitch-list { list-style: none; margin: 0 0 26px; padding: 0; }
 .pitch-list li { display: flex; gap: 14px; align-items: flex-start; margin: 0 0 18px; }
 .pitch-ico { flex: none; width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--red-soft); color: var(--red); }
-.pitch-ico .ico { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pitch-ico .ico { width: 24px; height: 24px; }
 .pitch-list h2 { font-size: 21px; margin: 2px 0 3px; }
 .pitch-list p { margin: 0; color: var(--ink-2); }
 .pitch-actions { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: center; margin: 0; }
@@ -159,16 +115,20 @@
 .pitch-foot { margin: 16px 0 0; color: var(--muted); font-size: 15px; }
 .pitch-foot a { color: var(--red); font-weight: 700; }
 .preview-wrap { margin: 0; }
-.preview { padding: 16px 18px 12px; user-select: none; box-shadow: var(--shadow); }
-.preview .filter { margin: 0 0 12px; }
-.preview .filter button { min-height: 44px; padding: 5px 2px; cursor: default; }
-.preview .filter button b { font-size: 19px; }
-.preview .filter button span { font-size: 12px; }
-.preview > header { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 6px; }
-.preview h3 { margin: 0; font-size: 20px; }
-.preview .cards { columns: 1; }
+.preview { padding: 16px 18px 14px; user-select: none; box-shadow: var(--shadow); }
+.preview .stat { margin: 0 0 8px; }
+.preview .stat .big { font-size: 32px; }
+.preview .stat .big small { font-size: 15px; }
+.preview .bar-track { margin: 0 0 14px; height: 10px; }
+.preview .set-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.preview .set-tile { min-height: 84px; padding: 9px 11px; }
+.preview .tile-name { font-size: 16px; }
 .preview-cap { text-align: center; color: var(--muted); font-size: 13px; margin: 8px 0 0; }
 
+@media (max-width: 860px) {
+  /* one column: progress, Missing, the sets, the trade binder */
+  .dash-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "missing" "sets" "binder"; gap: 18px; }
+}
 @media (max-width: 760px) {
   .pitch { grid-template-columns: minmax(0, 1fr); gap: 22px; }
   .coll-summary { padding: 14px 16px; margin-bottom: 22px; }
@@ -176,13 +136,9 @@
   .pct { font-size: 22px; }
 }
 @media (max-width: 640px) {
-  .filter button b { font-size: 21px; }
-  .filter button span { font-size: 13px; }
-  .toast { bottom: 64px; }
   .pitch-list h2 { font-size: 19px; }
   .coll-top .page-actions { flex: 1 1 100%; }
-  .coll-page .checklist-layout { row-gap: 16px; }
-  /* a compact progress panel, so the first cards come sooner */
+  /* a compact progress panel */
   .coll-summary { padding: 10px 14px 12px; margin-bottom: 16px; column-gap: 12px; }
   .stat { gap: 2px 12px; margin-bottom: 8px; }
   .stat .big { font-size: 28px; }
@@ -192,14 +148,28 @@
   .pct small { font-size: 12px; }
   .bar-track { height: 10px; margin: 0 0 8px; }
   .subset-mini { font-size: 14px; gap: 4px 14px; }
+  /* sets two to a row */
+  .set-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .set-tile { padding: 9px 11px 11px; min-height: 92px; }
+  .tile-name { font-size: 16px; }
+  .tile-left { font-size: 13px; }
+  .dash-sets > h2 { font-size: 24px; }
+  .dash-big { font-size: 34px; }
+}
+@media (max-width: 360px) {
+  .tile-foot { flex-wrap: wrap; gap: 0 8px; }
 }
 
-/* ---------- printing: the chosen list (filter.js re-applies it first) under its own title, without the controls ---------- */
-.print-title { display: none; }
+/* ---------- printing from the dashboard: only the print-only list (laid out by print.css like the Checklist's
+   printout), under its title; without a list chosen, the page itself without its buttons ---------- */
+.print-list { display: none; }
 @media print {
-  .coll-page .lede, .coll-top, .coll-summary, .filter-bar, .extras-popover, .toast, .cards .hit, .xbadge { display: none !important; }
-  .print-title { display: block; font: 700 16pt/1.2 var(--display); margin: 0 0 0.15in; }
-  .subset-count { font-size: 9pt; color: #000; }
-  /* sets and groups with nothing left to print are left out, rather than printed as one-line notes */
-  .subset.is-empty, .group:not(:has(.subset:not(.is-empty))) { display: none !important; }
+  .printing-list .print-list { display: block; color: #000; }
+  .printing-list .coll-page > :not(#coll-in), .printing-list #coll-in > :not(.print-list) { display: none !important; }
+  .coll-page .page-actions, .coll-page .box-actions, .binder-more { display: none !important; }
+  .print-head { font: 700 16pt/1.2 var(--display); margin: 0 0 2pt; }
+  .print-sub { font-size: 9pt; margin: 0 0 0.15in; }
+  .print-list .subset > header { gap: 6pt; }
+  .print-list .subset-count { font-size: 9pt; font-weight: 400; }
+  .print-list .xn { height: auto; min-width: 0; margin-left: auto; padding: 0 4pt; font-size: 8pt; background: none; color: #000; border: 1px solid #000; }
 }

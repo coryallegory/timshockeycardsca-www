@@ -37,6 +37,11 @@
   /* OpenStreetMap's sea colour: fills the map beyond the tiles so it doesn't show as a pale band */
   --map-sea: #aad3df;
 
+  /* the solid "+N" extras badge (Checklist) and the trade binder's "+N" (Collection): dark brown in light mode; in dark
+     mode cream with dark text, since brown on the espresso panel nearly vanished (1.2:1; now 13.2:1, text 10.6:1) */
+  --xbadge-fill: var(--board);
+  --xbadge-ink: var(--board-ink);
+
   /* type */
   --display: "Zilla Slab", Georgia, serif;
   --body: "Source Sans 3", system-ui, sans-serif;
@@ -62,6 +67,8 @@
     --board: #3d271c;
     --out-of-stock: #e0404a;
     --untracked: #8c817b;
+    --xbadge-fill: var(--board-title);
+    --xbadge-ink: var(--board);
     color-scheme: dark;
   }
 }

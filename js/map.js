@@ -2,7 +2,7 @@
    Data: /data/locations.json (stores, hours; changes rarely) + status.json (pack status; rewritten after each pass) from
    the map element's data-status-url (the Lambda's file in S3 on the live site, /data/status.json locally), joined by
    store id. Everything else is computed here. Never calls Tim Hortons. */
-import { displayStatus, formatPhone, isOpenAt, localWeekday, nextOpeningLabel, readableHours, storeSpans } from './store.js?v=2dc98f880f';
+import { displayStatus, formatPhone, isOpenAt, localWeekday, nextOpeningLabel, readableHours, storeSpans } from './store.js?v=f6f9bb8701';
 
 const REFRESH_MS = 60_000;
 const STATUS_URL = document.getElementById('map').dataset.statusUrl || '/data/status.json';

@@ -1,4 +1,7 @@
-/* Checklist page: table of contents with search, subsets and card lists. */
+/* Checklist page: table of contents with search, subsets and card lists. With accounts, signed in (<main> gets
+   `tracking` from ticking.js): checkboxes on the set's cards, extras badges and their panel, each set's progress, the
+   sticky filter bar, filtered rows, the Undo toast and the ring on a set a dashboard link landed on. Without
+   `tracking` none of that shows. print.css comes last. */
 
 /* minmax(0, 1fr): let the content column shrink below its widest line instead of pushing the page sideways */
 .checklist-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 32px; align-items: start; }
@@ -44,16 +47,28 @@
 .tba { color: var(--muted); font-style: italic; }
 .empty { color: var(--muted); font-style: italic; margin: 0; }
 
-/* Mobile counterpart to the section drawer: keep a quiet route back to its top. */
+/* Mobile counterpart to the section links: keep a quiet route back to the top. */
 .back-to-top { display: none; }
 
 @media (max-width: 760px) {
   .checklist-layout { grid-template-columns: minmax(0, 1fr); }
-  .toc { position: static; }
   .desktop-toc { display: none; }
-  .mobile-toc { display: block; border: 2px solid var(--line); border-radius: 12px; background: var(--panel); padding: 0 14px; }
-  .mobile-toc summary { cursor: pointer; font: 700 17px/1.25 var(--display); padding: 11px 0; }
-  .mobile-toc > ul { padding-bottom: 12px; }
+  /* the search box and a Sections button share one row; the sections open in a panel under it */
+  .toc { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: stretch; }
+  .toc input { margin: 0; }
+  .mobile-toc { display: block; border: 2px solid var(--line); border-radius: 999px; background: var(--panel); }
+  .mobile-toc summary {
+    list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; height: 100%; min-height: 44px; padding: 0 14px;
+    font: 700 15px/1 var(--body); border-radius: 999px;
+  }
+  .mobile-toc summary::-webkit-details-marker { display: none; }
+  .mobile-toc summary:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+  .mobile-toc summary .ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .mobile-toc[open] summary { color: var(--red); }
+  .mobile-toc > ul {
+    position: absolute; z-index: 60; left: 0; right: 0; top: calc(100% + 6px); max-height: 70vh; overflow: auto;
+    padding: 12px 16px; background: var(--panel); border: 2px solid var(--line); border-radius: 12px; box-shadow: var(--shadow);
+  }
   .mobile-toc > ul > li { margin-bottom: 10px; }
   .mobile-toc > ul > li > a { font: 700 17px/1.2 var(--display); }
   .back-to-top {
@@ -65,10 +80,147 @@
   .back-to-top:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
   .back-to-top svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.5; }
 }
+@media (max-width: 640px) {
+  .checklist .intro .lede { font-size: 17px; margin-bottom: 16px; }
+}
 
 /* ---------- prizes on narrow phones: tighter cells and slightly smaller text, so the table fits at 320 px ---------- */
 @media (max-width: 480px) {
   #prizes .data-table { font-size: 15px; }
   #prizes .data-table th, #prizes .data-table td { padding: 8px 9px; }
   #prizes .data-table .tag { white-space: normal; }
+}
+
+/* ======================= signed in: ticking (with accounts; shown only with `tracking`) ======================= */
+.checklist:not(.tracking) :is(.cards .hit, .subset-count, .filter-bar) { display: none; }
+/* under Collected / Missing / Extras the reference sections (hits, prizes: not tracked) step aside */
+.tracking:not([data-show="all"]) .reference { display: none; }
+
+/* ---------- each set: name and tags, your progress on the right ("12 / 18", "✓ Complete"), the odds under it ---------- */
+.tracking .subset > header { flex-wrap: nowrap; }
+.tracking .subset h3 { min-width: 0; }
+.subset-count { flex: none; margin-left: auto; font: 700 15px/1 var(--body); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.subset-count.done { color: var(--available); }
+.tracking .group > h2 .count { font-variant-numeric: tabular-nums; }
+/* jumps from the contents and the dashboard land below the sticky filter bar */
+.tracking .group, .tracking .subset { scroll-margin-top: 132px; }
+/* the set a dashboard link landed on: a red ring that fades */
+.subset.is-target { animation: target-ring 2.4s ease-out 0.2s both; }
+@keyframes target-ring { 0%, 40% { border-color: var(--red); box-shadow: 0 0 0 4px var(--red-soft); } 100% { border-color: var(--line); box-shadow: none; } }
+@media (prefers-reduced-motion: reduce) { .subset.is-target { animation: none; border-color: var(--red); } }
+
+/* ---------- card rows: checkbox, number, name (truncated so desktop keeps 3 columns), badge ---------- */
+@media screen {
+  .tracking .cards li[data-card-id] { min-height: 36px; align-items: center; }
+  .tracking .cards li[data-card-id] .no { min-width: 2.9em; }
+  .tracking .cards li[data-card-id] .who { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* a 32px tap area round the 20px checkbox */
+  .cards .hit {
+    flex: none; display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; margin: -6px -4px -6px -7px; border-radius: 8px; cursor: pointer;
+  }
+  .cards .own { width: 20px; height: 20px; margin: 0; accent-color: var(--red); cursor: pointer; }
+  .cards .hit:has(:focus-visible) { outline: 3px solid var(--red); outline-offset: -2px; }
+}
+
+/* the extras badge: a quiet dashed "+" with no extras, a solid "+N" with N. Colours keep WCAG 1.4.11 / 1.4.3 contrast
+   against the panel and the row's hover tint: the dashed border uses --muted (5.6:1 light, 6.7:1 dark), not --line and
+   no opacity; the solid badge's colours are base.css's --xbadge-fill / --xbadge-ink. */
+.xbadge {
+  flex: none; margin-left: auto; min-width: 32px; height: 32px; padding: 0 8px; border-radius: 999px; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  font: 700 15px/1 var(--display); font-variant-numeric: tabular-nums;
+  background: transparent; border: 2px dashed var(--muted); color: var(--muted);
+}
+.xbadge svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
+.xbadge:hover { border-color: var(--red); color: var(--red); }
+.xbadge.has { background: var(--xbadge-fill); color: var(--xbadge-ink); border: 2px solid var(--xbadge-fill); }
+.xbadge.has:hover { background: var(--red); border-color: var(--red); color: var(--on-red); }
+.xbadge.is-open { background: var(--red); border-color: var(--red); border-style: solid; color: var(--on-red); }
+.xbadge:focus-visible { outline: 3px solid var(--red); outline-offset: 1px; }
+
+/* ---------- the extras panel (native popover): under the badge where anchor positioning works, centred elsewhere ---------- */
+.extras-popover { width: min(260px, calc(100vw - 32px)); padding: 14px 16px 12px; }
+@supports (anchor-name: --a) {
+  .xbadge.is-open { anchor-name: --extras-badge; }
+  .extras-popover {
+    position-anchor: --extras-badge; inset: auto; top: anchor(bottom); right: anchor(right); margin: 6px 0;
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  }
+}
+.extras-title { font: 700 18px/1.2 var(--display); margin: 0 0 2px; overflow-wrap: anywhere; }
+.extras-note, .extras-foot p { margin: 0; font-size: 14px; color: var(--muted); }
+.extras-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 10px 0; }
+.extras-row > span:first-child { font-weight: 700; }
+.extras-step { display: inline-flex; align-items: center; gap: 4px; }
+.extras-step button {
+  width: 40px; height: 40px; padding: 0; border-radius: 999px; border: 2px solid var(--red); background: var(--panel); color: var(--red);
+  font: 700 22px/1 var(--body); cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+}
+.extras-step button:hover:not(:disabled) { background: var(--red); color: var(--on-red); }
+.extras-step button:disabled { opacity: 0.35; cursor: default; }
+.extras-step button:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.extras-step output { min-width: 2ch; text-align: center; font: 700 26px/1 var(--display); font-variant-numeric: tabular-nums; }
+.extras-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 4px; }
+
+/* ---------- filter bar: four equal segments (number on top, label under); sticks to the top. The negative top margin
+   cancels the padding it needs once stuck, so its segments line up with the search box beside it ---------- */
+.filter-bar { position: sticky; top: 0; z-index: 50; margin: -10px 0 22px; padding: 10px 0 12px; background: var(--bg); border-bottom: 2px solid transparent; }
+.filter-bar.is-stuck { border-bottom-color: var(--line); box-shadow: var(--shadow); }
+.filter {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 4px;
+  border: 2px solid var(--line); border-radius: 16px; background: var(--paper);
+}
+.filter button {
+  font: inherit; color: var(--ink-2); background: transparent; border: 0; border-radius: 12px; cursor: pointer;
+  padding: 7px 4px 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 52px; min-width: 0;
+}
+.filter button b { font: 700 24px/1 var(--display); color: var(--ink); font-variant-numeric: tabular-nums; }
+.filter button span { font: 700 14px/1 var(--body); }
+.filter button:hover { background: var(--panel); }
+.filter button[aria-pressed="true"] { background: var(--red); color: var(--on-red); box-shadow: var(--shadow); }
+.filter button[aria-pressed="true"] b { color: var(--on-red); }
+.filter button:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.filter-note { margin: 6px 2px 0; font-size: 14px; color: var(--muted); }
+.filter-note:empty { display: none; }
+.filter-note .link-button { font-size: 14px; }
+
+/* ---------- filtered rows; a set with nothing left is one line ---------- */
+.cards li.is-filtered { display: none; }
+.cards li.is-leaving { opacity: 0.55; }
+.subset.is-empty { padding-top: 11px; padding-bottom: 11px; }
+.subset.is-empty > header h3 { font-size: 19px; color: var(--muted); }
+.subset.is-empty :is(.cards, .odds, .subset-count) { display: none; }
+.filter-none { margin: 0 0 0 auto; font-size: 15px; color: var(--muted); font-style: italic; }
+
+/* ---------- toast with Undo ---------- */
+.toast {
+  position: fixed; z-index: 2000; left: 50%; bottom: 18px; transform: translateX(-50%); width: max-content; max-width: calc(100vw - 32px);
+  display: flex; gap: 14px; align-items: center; padding: 10px 16px; border-radius: 12px;
+  background: var(--board); color: var(--board-ink); box-shadow: var(--shadow); font-size: 15px;
+}
+.toast .link-button { color: var(--board-title); font-weight: 700; }
+.toast .link-button:focus-visible { outline-color: var(--board-title); }
+
+@media (max-width: 760px) {
+  .tracking .checklist-layout { row-gap: 14px; }
+  /* the bar's negative top margin (it lines up with the search box on desktop) would overlap the search row */
+  .filter-bar { margin-top: -6px; }
+}
+@media (max-width: 640px) {
+  .filter button { min-height: 46px; padding: 6px 2px; }
+  .filter button b { font-size: 21px; }
+  .filter button span { font-size: 13px; }
+  .filter-bar { margin-bottom: 16px; }
+  .toast { bottom: 64px; }
+}
+
+/* ---------- printing: the chosen list (filter.js re-applies it first) under its own title, without the controls ---------- */
+.print-title { display: none; }
+@media print {
+  .filter-bar, .extras-popover, .toast, .account-msg, .cards .hit, .xbadge { display: none !important; }
+  .tracking .print-title:not(:empty) { display: block; font: 700 16pt/1.2 var(--display); margin: 0 0 0.15in; }
+  .subset-count { font-size: 9pt; color: #000; }
+  /* sets and groups with nothing left to print are left out, rather than printed as one-line notes */
+  .tracking .subset.is-empty, .tracking .group:not(.reference):not(:has(.subset:not(.is-empty))) { display: none !important; }
 }

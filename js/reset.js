@@ -2,8 +2,8 @@
    once and removed from the address bar straight away (history.replaceState), so it isn't left in the history entry, a
    bookmark or a copied URL; the page also sends no referrer. Submitting posts it with the new password through
    account.js; on success this browser is signed in (the header shows it), and the page links to Collection. */
-import * as account from './account.js?v=2dc98f880f';
-import * as header from './header-account.js?v=2dc98f880f';
+import * as account from './account.js?v=f6f9bb8701';
+import * as header from './header-account.js?v=f6f9bb8701';
 
 const $ = (id) => document.getElementById(id);
 const form = $('reset-form');

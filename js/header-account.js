@@ -1,21 +1,22 @@
 /* The header's account control on every page (loaded only when the site is built with API_URL; docs/DATABASE-AUTH-PLAN.md,
    Account UI). Signed out: the Sign in pill, linking to /account?next=<this page>. Signed in: a round button with the
    email's first letter, opening a small menu (native `popover`: Escape and outside clicks close it, and focus goes back
-   to the button) with the email, "N of 278 collected · M extra copies", Account settings and Sign out (the Collection
-   tab is the way to the collection). Also the tab row's safety net: on a screen too narrow for the tabs (or with large
-   text), the row scrolls sideways and fades the edge that hides a tab.
+   to the button) with the email, "N of 234 collected · M extra copies" (the set's cards only: set.js), Account settings
+   and Sign out (the Collection tab is the way to the collection). Also the tab row's safety net: on a screen too narrow
+   for the tabs (or with large text), the row scrolls sideways and fades the edge that hides a tab.
 
    No request is made for a visitor who has never signed in on this browser: only with account.js's localStorage hint
    does the page ask the API who is signed in, once (`ready`, which page scripts share instead of asking again). The
-   collection count is fetched when the menu first opens (or when the Checklist's Your collection button asks for it),
-   once, unless the page already has the collection (/collection hands it over with countWith). All API calls go through
-   account.js.
+   collection is fetched at most once per page (`collection()`), by the page (the Checklist, the Collection dashboard)
+   or else when the menu first opens, and shared; a page that edits it gives the menu its live counts (countWith). All
+   API calls go through account.js.
 
    For page scripts: `ready` (who is signed in, from that one check), `signedIn(email)` / `signedOut()` to update the
-   header after the page signs in or out, `countWith(fn)`, `collectionCounts()` (the menu's counts, shared) and
-   `onSignOut(fn)` (the menu's Sign out succeeded). */
-import * as account from './account.js?v=2dc98f880f';
-import { signInHref } from './next.js?v=2dc98f880f';
+   header after the page signs in or out, `collection()` (the set's cards, fetched once), `countWith(fn)`,
+   `collectionCounts()` (the menu's counts) and `onSignOut(fn)` (the menu's Sign out succeeded). */
+import * as account from './account.js?v=f6f9bb8701';
+import { signInHref } from './next.js?v=f6f9bb8701';
+import { extraCopies, SET_TOTAL, setOnly, tally } from './set.js?v=f6f9bb8701';
 
 const MSG_MS = 8000;
 
@@ -29,14 +30,13 @@ const countShown = $('acct-count');
 const signOutButton = $('acct-signout');
 const error = $('acct-error');
 const status = $('acct-status');
-const TOTAL = Number(box.dataset.total);
 
 // The Sign in pill returns to this page (on /account itself, it keeps the page's own ?next=).
 signInLink.href = location.pathname === '/account' ? location.pathname + location.search : signInHref(location.pathname);
 
 let user = null; // the signed-in email, or null
 let counter = null; // the page's live counts, () => ({ collected, extras }), when it has the collection
-let fetched = null; // otherwise, the counts from GET /collection (a promise), fetched once
+let fetched = null; // the set's cards from GET /collection (a promise of a Map), fetched once
 const signOutHandlers = [];
 
 /** "Signed out." for screen readers, since the control under focus changes. */
@@ -107,29 +107,29 @@ function whoIsSignedIn() {
 }
 
 // ---------- the menu ----------
-/** "42 of 278 collected · 7 extra copies": copies beyond the first, summed (the filter's Extras counts cards instead). */
-const countsText = ({ collected, extras }) => `${collected} of ${TOTAL} collected · ${extras} extra ${extras === 1 ? 'copy' : 'copies'}`;
+/** "42 of 234 collected · 7 extra copies": copies beyond the first, summed (the filter's Extras counts cards instead). */
+const countsText = ({ collected, extras }) => `${collected} of ${SET_TOTAL} collected · ${extraCopies(extras)}`;
 
 /**
- * The signed-in user's { collected, extras }: from the page when it has the collection (countWith), otherwise from one
- * GET /collection, kept for the page's life and shared by the menu and the Checklist's Your collection button. Rejects with the ApiError
- * when that fails (the next call asks again; a 401 also signs the header out).
+ * The signed-in user's collection, the set's cards only (card id -> copies; saved ticks for other cards are ignored):
+ * one GET /collection, kept for the page's life and shared by the page and the menu. Each call gets its own copy of
+ * the Map. Rejects with the ApiError when that fails (the next call asks again; a 401 also signs the header out).
  */
-export function collectionCounts() {
-  if (counter) return Promise.resolve(counter());
+export function collection() {
   if (!fetched) {
-    const asked = account.getCollection().then((collection) => {
-      let extras = 0;
-      for (const copies of collection.values()) extras += copies - 1;
-      return { collected: collection.size, extras };
-    });
+    const asked = account.getCollection().then(setOnly);
     fetched = asked;
     asked.catch((err) => {
       if (fetched === asked) fetched = null;
       if (err.signedOut) signedOut();
     });
   }
-  return fetched;
+  return fetched.then((c) => new Map(c));
+}
+
+/** The menu's { collected, extras }: the page's live counts when it edits the collection (countWith), otherwise from collection(). */
+export function collectionCounts() {
+  return counter ? Promise.resolve(counter()) : collection().then(tally);
 }
 
 async function showCount() {

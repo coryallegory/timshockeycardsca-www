@@ -1,8 +1,14 @@
-/* Search on the Checklist and Collection pages: filters cards by player, number or team as you type; the Checklist's Print button. */
+/* The Checklist: search (filters cards by player, number or team as you type), the Print button, and on phones the
+   Sections dropdown closing once a section is picked. Signed in, filter.js also follows the search and Print. */
 (() => {
   'use strict';
   const print = document.getElementById('print-checklist');
   print?.addEventListener('click', () => window.print());
+
+  const sections = document.querySelector('.mobile-toc');
+  sections?.addEventListener('click', (e) => {
+    if (e.target instanceof Element && e.target.closest('a')) sections.open = false;
+  });
 
   const q = document.getElementById('q');
   if (!q) return;

@@ -1,9 +1,9 @@
-/* The extras badge on each ticked card and the small panel it opens, on the Collection page (docs/DATABASE-AUTH-PLAN.md,
-   Collection UI), loaded by collection.js only when the site is built with API_URL. Extras are copies beyond the first:
-   the trade binder.
+/* The extras badge on each ticked card and the small panel it opens, on the Checklist signed in
+   (docs/DATABASE-AUTH-PLAN.md, Checklist UI), loaded by ticking.js only when the site is built with API_URL. Extras are
+   copies beyond the first: the trade binder.
    A ticked card with none shows a faint "+" badge, one with extras a solid "+N"; the badge opens the panel (native
-   `popover`: Escape and outside clicks close it) with large − / + buttons. collection.js owns the counts and the saves:
-   init() gives this file `countOf(li)`, `change(li, copies)` and `names(li)`, and collection.js calls render() after
+   `popover`: Escape and outside clicks close it) with large − / + buttons. ticking.js owns the counts and the saves:
+   init() gives this file `countOf(li)`, `change(li, copies)` and `names(li)`, and ticking.js calls render() after
    every change. */
 
 const MAX_COPIES = 99;

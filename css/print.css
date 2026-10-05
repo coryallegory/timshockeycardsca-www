@@ -1,5 +1,6 @@
-/* Printer-friendly Checklist and Collection: paper is the only target; screen styles stay in checklist.css (the
-   Collection page adds its own print rules in collection.css). */
+/* Printer-friendly card lists, for the Checklist and the Collection dashboard's printouts (the same group, set and row
+   markup): paper is the only target. The rules for card lists stand on their own, since the dashboard doesn't load
+   checklist.css; each page adds its own print rules (checklist.css, collection.css). */
 @page { size: letter portrait; margin: 0.5in; }
 
 @media print {
@@ -12,9 +13,9 @@
   .group > h2::after { display: none; }
   .group > .blurb, .odds, .tag, .alt, .meta { display: none; }
   .subset { break-inside: auto; margin: 0 0 0.12in; padding: 0; border: 0; background: transparent; }
-  .subset > header { break-after: avoid; }
-  .subset h3 { font-size: 12pt; }
-  .cards { columns: 3 2in; column-gap: 0.22in; }
-  .cards li { break-inside: avoid; gap: 5pt; margin: 0; padding: 1pt 0; border-radius: 0; font-size: 9pt; line-height: 1.25; }
-  .cards .no { min-width: 3.2em; color: #000; font-size: 8.5pt; }
+  .subset > header { display: flex; align-items: baseline; gap: 8px; break-after: avoid; }
+  .subset h3 { margin: 0; font-size: 12pt; }
+  .cards { list-style: none; margin: 0; padding: 0; columns: 3 2in; column-gap: 0.22in; }
+  .cards li { display: flex; align-items: baseline; break-inside: avoid; gap: 5pt; margin: 0; padding: 1pt 0; border-radius: 0; font-size: 9pt; line-height: 1.25; }
+  .cards .no { flex: none; min-width: 3.2em; font-weight: 700; color: #000; font-size: 8.5pt; }
 }

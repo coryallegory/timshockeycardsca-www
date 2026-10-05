@@ -16,12 +16,18 @@
 .page-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; margin: 0 0 16px; }
 .page-actions .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; }
 .page-actions .ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
-/* a count inside a pill ("Your collection | 42 of 278"), set off by a faint divider in the text colour */
+/* a count inside a pill ("Your collection | 42 of 234"), set off by a faint divider in the text colour */
 .btn-count { margin-left: 3px; padding-left: 9px; border-left: 1px solid color-mix(in srgb, currentColor 50%, transparent); font-weight: 600; font-variant-numeric: tabular-nums; }
 @media (max-width: 640px) {
   .page-actions .btn { flex: 1 1 auto; min-height: 40px; }
   .page-actions .btn.primary { flex-basis: 100%; }
 }
+
+/* ---------- a page's status line under its title (Checklist and Collection, with accounts: save failures, a session
+   that ended) ---------- */
+.account-msg { margin: 0 0 14px; font-size: 15px; color: var(--muted); }
+.account-msg:empty { display: none; }
+.account-msg.is-error { color: var(--red); font-weight: 700; }
 
 /* ---------- tags ---------- */
 .tag {
