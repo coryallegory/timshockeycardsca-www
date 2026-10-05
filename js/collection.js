@@ -1,9 +1,9 @@
 /* The Collection page, /collection (built only with API_URL; docs/DATABASE-AUTH-PLAN.md, Collection UI). Signing in
    happens on /account (the pitch's buttons link there and come back) and signing out in the header's account menu
    (header-account.js); this file does what being signed in or out means for the page and keeps the collection: card
-   id -> copies. Signed out, the page shows the pitch. Signed in, it shows the progress summary (progress.js), every card
+   id -> copies. Signed out, the page shows the pitch. Signed in, it shows the progress panel (progress.js), every card
    with its checkbox ("have it") and, once ticked, an extras badge (extras.js), each set's progress, and the filter bar
-   with Print (filter.js). Every change saves at once, optimistically: a failed save puts the row back with a message.
+   with the action row's Print (filter.js). Every change saves at once, optimistically: a failed save puts the row back with a message.
    All API calls go through account.js.
    No request is made for a visitor who has never signed in on this browser: who is signed in comes from the header's
    one check (`header.ready`), made only with account.js's localStorage hint. The collection is fetched once here and

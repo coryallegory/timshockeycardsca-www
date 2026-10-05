@@ -7,8 +7,8 @@
 
    No request is made for a visitor who has never signed in on this browser: only with account.js's localStorage hint
    does the page ask the API who is signed in, once (`ready`, which page scripts share instead of asking again). The
-   collection count is fetched when the menu first opens (or when the Checklist's link asks for it), once, unless the
-   page already has the collection (/collection and /account hand it over with countWith). All API calls go through
+   collection count is fetched when the menu first opens (or when the Checklist's Your collection button asks for it),
+   once, unless the page already has the collection (/collection hands it over with countWith). All API calls go through
    account.js.
 
    For page scripts: `ready` (who is signed in, from that one check), `signedIn(email)` / `signedOut()` to update the
@@ -112,7 +112,7 @@ const countsText = ({ collected, extras }) => `${collected} of ${TOTAL} collecte
 
 /**
  * The signed-in user's { collected, extras }: from the page when it has the collection (countWith), otherwise from one
- * GET /collection, kept for the page's life and shared by the menu and the Checklist's link. Rejects with the ApiError
+ * GET /collection, kept for the page's life and shared by the menu and the Checklist's Your collection button. Rejects with the ApiError
  * when that fails (the next call asks again; a 401 also signs the header out).
  */
 export function collectionCounts() {

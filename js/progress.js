@@ -1,8 +1,8 @@
-/* The collection's progress summary, shared by /account and /collection (markup: apps/web/src/components.ts,
+/* The Collection page's progress panel, loaded by collection.js (markup: apps/web/src/pages/collection.ts,
    progressSummary): "N of 278 collected", "M extra copies" (copies beyond the first, summed: the trade binder's size;
-   the Collection filter's Extras counts cards instead), the percentage where the page shows one, the progress bar and
-   Base / Inserts / Hits. Each group lists its subsets' card-id prefixes (ids are `2026-27-th-<subset>-...`, permanent),
-   so an owned id is placed without the cards list. No API calls: pages hand it the collection they have. */
+   the filter's Extras counts cards instead), the percentage, the progress bar and Base / Inserts / Hits. Each group
+   lists its subsets' card-id prefixes (ids are `2026-27-th-<subset>-...`, permanent), so an owned id is placed without
+   the cards list. No API calls: collection.js hands it the collection. */
 
 const $ = (id) => document.getElementById(id);
 const count = $('coll-count');
@@ -22,7 +22,7 @@ export function drawProgress(collection) {
   extrasShown.textContent = `${extras} extra ${extras === 1 ? 'copy' : 'copies'}`;
   bar.value = collection.size;
   // Rounded down, so 100% means every card.
-  if (percent) percent.textContent = `${Math.floor((collection.size / bar.max) * 100)}%`;
+  percent.textContent = `${Math.floor((collection.size / bar.max) * 100)}%`;
   for (const g of groups) {
     let n = 0;
     for (const id of collection.keys()) if (g.prefixes.some((p) => id.startsWith(p))) n++;

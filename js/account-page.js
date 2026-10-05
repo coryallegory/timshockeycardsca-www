@@ -1,13 +1,12 @@
 /* The /account page (built only with API_URL; docs/DATABASE-AUTH-PLAN.md, Account UI). Signed out, it shows one view
    at a time (data-view): sign in (which switches to create an account; ?view=create opens on it), forgot password and
    its confirmation; signing in goes back to the page in ?next= (next.js allows only paths on this site; otherwise the
-   Collection page). Signed in, it shows the account's panels: the email, Change password (opening in place), the
-   collection's progress (progress.js, shared with /collection), and Sign out / Delete account. All API calls go through account.js; who is signed in
-   comes from the header's one check (header.ready), and the header is told when that changes. */
+   Collection page). Signed in, it shows the account's panels: the email, Change password (opening in place), and Sign
+   out / Delete account. All API calls go through account.js; who is signed in comes from the header's one check
+   (header.ready), and the header is told when that changes. */
 import * as account from './account.js';
 import * as header from './header-account.js';
 import { safeNext } from './next.js';
-import { drawProgress } from './progress.js';
 
 const $ = (id) => document.getElementById(id);
 const out = $('acct-out');
@@ -38,8 +37,6 @@ const changeError = $('change-error');
 const changeCurrent = $('change-current');
 const changeNew = $('change-new');
 const changeSubmit = $('change-submit');
-// Signed in: collection
-const collError = $('coll-error');
 // Signed in: danger zone
 const dangerError = $('danger-error');
 const signOutButton = $('signout-button');
@@ -145,18 +142,11 @@ forgotForm.addEventListener('submit', async (e) => {
 });
 
 // ---------- signed in ----------
-async function showSignedIn(address) {
+function showSignedIn(address) {
   out.hidden = true;
   inside.hidden = false;
   $('acct-in-email').textContent = address;
   $('details-email').textContent = address;
-  try {
-    const counts = drawProgress(await account.getCollection());
-    header.countWith(() => counts);
-  } catch (err) {
-    if (err.signedOut) sessionEnded();
-    else show(collError, `Couldn't load your collection. ${account.sentence(err.message)} Reload the page to try again.`);
-  }
 }
 
 /** The API says the session is gone (expired, or signed out elsewhere): the sign-in view, saying why. */

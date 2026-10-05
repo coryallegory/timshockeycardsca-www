@@ -43,17 +43,12 @@
 }
 .tba { color: var(--muted); font-style: italic; }
 .empty { color: var(--muted); font-style: italic; margin: 0; }
-.print-action { margin: 0; text-align: right; }
-.print-action .btn { display: inline-flex; align-items: center; gap: 6px; }
-.print-action .btn + .btn { margin-left: 8px; }
-.print-action svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
 
 /* Mobile counterpart to the section drawer: keep a quiet route back to its top. */
 .back-to-top { display: none; }
 
 @media (max-width: 760px) {
   .checklist-layout { grid-template-columns: minmax(0, 1fr); }
-  .print-action { margin-bottom: 16px; }
   .toc { position: static; }
   .desktop-toc { display: none; }
   .mobile-toc { display: block; border: 2px solid var(--line); border-radius: 12px; background: var(--panel); padding: 0 14px; }
@@ -69,28 +64,6 @@
   .back-to-top:hover { color: var(--red); }
   .back-to-top:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
   .back-to-top svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.5; }
-}
-
-/* ---------- the link to the Collection page (only when built with API_URL), left of the print buttons ---------- */
-.checklist-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px 16px; }
-.checklist-actions .print-action { margin: 0; }
-.track-link {
-  margin: 0 auto 0 0; display: inline-flex; align-items: center; gap: 7px; min-height: 32px;
-  color: var(--red); font-weight: 700; font-size: 16px; text-decoration: none;
-}
-.track-link .ico { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
-.track-link .arrow { width: 16px; height: 16px; transition: transform 0.12s ease; }
-.track-link small { font: 600 15px/1 var(--body); color: var(--muted); }
-.track-link:hover span { text-decoration: underline; text-underline-offset: 3px; }
-.track-link:hover .arrow { transform: translateX(3px); }
-.track-link:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; border-radius: 6px; }
-@media (prefers-reduced-motion: reduce) { .track-link .arrow { transition: none; } }
-
-@media (max-width: 760px) {
-  .checklist-actions { margin-bottom: 16px; }
-}
-@media (max-width: 640px) {
-  .track-link { flex: 1 1 100%; }
 }
 
 /* ---------- prizes on narrow phones: tighter cells and slightly smaller text, so the table fits at 320 px ---------- */

@@ -11,6 +11,18 @@
 .btn.primary:hover { background: var(--red-deep); border-color: var(--red-deep); }
 .btn.small { font-size: 14px; padding: 6px 13px; }
 
+/* ---------- a page's action buttons under its title (Checklist, Collection): matching pills in one row,
+   right-aligned; on phones they share the width evenly, the main (red) one on a row of its own ---------- */
+.page-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; margin: 0 0 16px; }
+.page-actions .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; }
+.page-actions .ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+/* a count inside a pill ("Your collection | 42 of 278"), set off by a faint divider in the text colour */
+.btn-count { margin-left: 3px; padding-left: 9px; border-left: 1px solid color-mix(in srgb, currentColor 50%, transparent); font-weight: 600; font-variant-numeric: tabular-nums; }
+@media (max-width: 640px) {
+  .page-actions .btn { flex: 1 1 auto; min-height: 40px; }
+  .page-actions .btn.primary { flex-basis: 100%; }
+}
+
 /* ---------- tags ---------- */
 .tag {
   font: 700 12px/1 var(--body); text-transform: uppercase; letter-spacing: 0.06em;

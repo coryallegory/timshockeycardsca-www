@@ -1,5 +1,5 @@
 /* The collection filter on the Collection page (docs/DATABASE-AUTH-PLAN.md, Collection UI), loaded by collection.js:
-   All / Collected / Missing / Extras (2+ copies), with live counts, and the Print button, which names what it prints
+   All / Collected / Missing / Extras (2+ copies), with live counts, and the Print button in the action row above, which names what it prints
    ("Print all 278", "Print missing (236)") and gives the printout its own title. Rows that don't match get the class
    `is-filtered` (hidden, on screen and in print); a subset with none left collapses to a one-line note. It works
    alongside checklist.js's search, which hides rows with the `hidden` attribute: a row shows only if it passes both, and
