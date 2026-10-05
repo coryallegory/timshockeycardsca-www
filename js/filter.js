@@ -9,7 +9,7 @@
    undoes the other.
    A card changed while a filter is on stays shown, faded (`is-leaving`), until a filter is chosen again, so it doesn't
    vanish under the finger. Printing re-applies the filter, so the printout is exactly the chosen list. */
-import { withShow } from './show.js?v=f6f9bb8701';
+import { withShow } from './show.js?v=08063f1e16';
 
 const TESTS = {
   all: () => true,

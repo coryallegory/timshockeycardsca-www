@@ -204,8 +204,9 @@
 
 @media (max-width: 760px) {
   .tracking .checklist-layout { row-gap: 14px; }
-  /* the bar's negative top margin (it lines up with the search box on desktop) would overlap the search row */
-  .filter-bar { margin-top: -6px; }
+  /* the bar's negative top margin only lines it up with the search box beside it on desktop; stacked under the search
+     row, any negative margin lets the bar's opaque background cover the bottom of the search and Sections pills */
+  .filter-bar { margin-top: 4px; padding-top: 8px; }
 }
 @media (max-width: 640px) {
   .filter button { min-height: 46px; padding: 6px 2px; }
