@@ -1,11 +1,11 @@
 /* Where signing in returns to: the `next` in /account?next=<path> (docs/DECISIONS.md, "Return after sign-in"). Only a
    path on this site is followed, so a link can't use the sign-in page to send someone elsewhere: it must start with a
    single "/" (not "//", which browsers read as another host) and hold no backslash, space or control character
-   (browsers read "/\" as "//" and drop tabs and newlines). Anything else, or nothing, goes to the Checklist. No DOM
-   access, so tests import it. */
+   (browsers read "/\" as "//" and drop tabs and newlines). Anything else, or nothing, goes to the Collection page,
+   where most sign-ins start. No DOM access, so tests import it. */
 
 /** Where signing in goes when `next` is missing or not allowed. */
-export const FALLBACK = '/checklist';
+export const FALLBACK = '/collection';
 
 /** The path to go to after signing in: `raw` (from ?next=) when it is a path on `origin`, else FALLBACK. */
 export function safeNext(raw, origin) {

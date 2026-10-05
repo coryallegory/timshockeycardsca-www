@@ -1,15 +1,19 @@
 /* The header's account control on every page (loaded only when the site is built with API_URL; docs/DATABASE-AUTH-PLAN.md,
    Account UI). Signed out: the Sign in pill, linking to /account?next=<this page>. Signed in: a round button with the
    email's first letter, opening a small menu (native `popover`: Escape and outside clicks close it, and focus goes back
-   to the button) with the email, "N of 278 collected · M extra copies", Account settings, Your collection and Sign out.
+   to the button) with the email, "N of 278 collected · M extra copies", Account settings and Sign out (the Collection
+   tab is the way to the collection). Also the tab row's safety net: on a screen too narrow for the tabs (or with large
+   text), the row scrolls sideways and fades the edge that hides a tab.
 
    No request is made for a visitor who has never signed in on this browser: only with account.js's localStorage hint
    does the page ask the API who is signed in, once (`ready`, which page scripts share instead of asking again). The
-   collection count is fetched when the menu first opens, unless the page already has the collection (the Checklist and
-   /account hand it over with countWith). All API calls go through account.js.
+   collection count is fetched when the menu first opens (or when the Checklist's link asks for it), once, unless the
+   page already has the collection (/collection and /account hand it over with countWith). All API calls go through
+   account.js.
 
    For page scripts: `ready` (who is signed in, from that one check), `signedIn(email)` / `signedOut()` to update the
-   header after the page signs in or out, `countWith(fn)` and `onSignOut(fn)` (the menu's Sign out succeeded). */
+   header after the page signs in or out, `countWith(fn)`, `collectionCounts()` (the menu's counts, shared) and
+   `onSignOut(fn)` (the menu's Sign out succeeded). */
 import * as account from './account.js';
 import { signInHref } from './next.js';
 
@@ -106,26 +110,34 @@ function whoIsSignedIn() {
 /** "42 of 278 collected · 7 extra copies": copies beyond the first, summed (the filter's Extras counts cards instead). */
 const countsText = ({ collected, extras }) => `${collected} of ${TOTAL} collected · ${extras} extra ${extras === 1 ? 'copy' : 'copies'}`;
 
-async function showCount() {
-  if (counter) {
-    countShown.textContent = countsText(counter());
-    return;
-  }
+/**
+ * The signed-in user's { collected, extras }: from the page when it has the collection (countWith), otherwise from one
+ * GET /collection, kept for the page's life and shared by the menu and the Checklist's link. Rejects with the ApiError
+ * when that fails (the next call asks again; a 401 also signs the header out).
+ */
+export function collectionCounts() {
+  if (counter) return Promise.resolve(counter());
   if (!fetched) {
-    countShown.textContent = 'Loading your collection…';
-    fetched = account.getCollection().then((collection) => {
+    const asked = account.getCollection().then((collection) => {
       let extras = 0;
       for (const copies of collection.values()) extras += copies - 1;
       return { collected: collection.size, extras };
     });
+    fetched = asked;
+    asked.catch((err) => {
+      if (fetched === asked) fetched = null;
+      if (err.signedOut) signedOut();
+    });
   }
-  const asked = fetched;
+  return fetched;
+}
+
+async function showCount() {
+  if (!counter && !fetched) countShown.textContent = 'Loading your collection…';
   try {
-    countShown.textContent = countsText(await asked);
+    countShown.textContent = countsText(await collectionCounts());
   } catch (err) {
-    if (asked === fetched) fetched = null; // ask again next time
-    if (err.signedOut) signedOut();
-    else countShown.textContent = "Couldn't load your collection.";
+    if (!err.signedOut) countShown.textContent = "Couldn't load your collection.";
   }
 }
 
@@ -151,3 +163,20 @@ signOutButton.addEventListener('click', async () => {
     signOutButton.disabled = false;
   }
 });
+
+// ---------- the tab row's safety net ----------
+// The tabs fit down to 320 px (one step smaller below 390, header-account.css); if they ever don't, the row scrolls
+// sideways (never the page), starts scrolled to the current tab, and fades the edge that hides one.
+const tabs = document.querySelector('.site-header .tabs');
+function fadeTabs() {
+  const over = tabs.scrollWidth > tabs.clientWidth + 1;
+  tabs.classList.toggle('fade-start', over && tabs.scrollLeft > 2);
+  tabs.classList.toggle('fade-end', over && tabs.scrollLeft + tabs.clientWidth < tabs.scrollWidth - 2);
+}
+const current = tabs.querySelector('[aria-current="page"]');
+const hiddenBy = current ? current.getBoundingClientRect().right - tabs.getBoundingClientRect().right : 0;
+if (hiddenBy > 0) tabs.scrollLeft = hiddenBy + 12;
+tabs.addEventListener('scroll', fadeTabs, { passive: true });
+addEventListener('resize', fadeTabs);
+document.fonts?.ready.then(fadeTabs);
+fadeTabs();

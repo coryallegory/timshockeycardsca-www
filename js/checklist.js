@@ -1,4 +1,4 @@
-/* Checklist search: filters cards by player, number or team as you type. */
+/* Search on the Checklist and Collection pages: filters cards by player, number or team as you type; the Checklist's Print button. */
 (() => {
   'use strict';
   const print = document.getElementById('print-checklist');

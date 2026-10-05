@@ -1,30 +1,50 @@
-/* Collection tracking on the Checklist (loaded only when the site is built with API_URL, so the plain site's styles
-   stay as they are): the signed-out sign-in prompt, and signed in, row checkboxes and extras badges, the extras panel,
-   the filter bar, collapsed subsets and the Undo toast. `.tracking` is on the page while signed in (collection.js).
-   `.visually-hidden` is in header-account.css, which every account page loads. */
+/* The Collection page, /collection (loaded only when the site is built with API_URL, after checklist.css for the
+   contents and card lists and progress.css for the summary; print.css comes last): the status line, the progress panel,
+   each set's progress, card rows with checkboxes and extras badges, the extras panel, the filter bar with Print,
+   collapsed subsets, the Undo toast, and signed out, the pitch with its still preview. `.visually-hidden` is in
+   header-account.css, which every account page loads. */
 
-/* ---------- signed out: one line inviting a sign-in, left of the print buttons (checklist.css .checklist-actions) ---------- */
-.signin-prompt {
-  margin: 0 auto 0 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px;
-  padding: 6px 6px 6px 14px; border: 2px solid var(--line); border-radius: 999px; background: var(--paper); color: var(--ink-2); font-size: 15px;
-}
-.signin-prompt .btn { min-height: 32px; display: inline-flex; align-items: center; }
-@media (max-width: 640px) {
-  .signin-prompt { border-radius: 14px; padding: 8px 8px 8px 12px; flex: 1 1 100%; justify-content: space-between; }
-}
+.coll-page h1 { margin-bottom: 8px; }
+.coll-page .lede { margin-bottom: 20px; max-width: 62ch; }
 
-/* ---------- card rows while signed in: checkbox, number, name (truncated so desktop keeps 3 columns), badge ---------- */
+/* ---------- the status line under the title (signed out, save failures, a session that ended) ---------- */
+.account-msg { margin: 0 0 14px; font-size: 15px; color: var(--muted); }
+.account-msg:empty { display: none; }
+.account-msg.is-error { color: var(--red); font-weight: 700; }
+
+/* ---------- progress: count and extra copies, the percentage on the right, the bar, Base / Inserts / Hits ---------- */
+.coll-summary {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 24px; align-items: end;
+  padding: 18px 22px 16px; margin-bottom: 30px;
+}
+.coll-summary .stat { margin: 0 0 10px; }
+.coll-summary .stat .big { font-size: 44px; }
+.coll-summary .pct { font: 700 28px/1 var(--display); color: var(--red); margin: 0 0 10px; text-align: right; }
+.coll-summary .pct small { display: block; font: 600 13px/1.3 var(--body); color: var(--muted); }
+.coll-summary .bar-track { grid-column: 1 / -1; height: 12px; margin: 2px 0 10px; }
+.coll-summary .subset-mini { grid-column: 1 / -1; font-size: 15px; gap: 6px 20px; margin: 0; }
+
+/* ---------- each set shows your progress instead of odds ---------- */
+.coll-page .subset > header { flex-wrap: nowrap; margin-bottom: 8px; }
+.coll-page .subset h3 { flex: 1 1 auto; min-width: 0; }
+.subset-count { flex: none; font: 700 15px/1 var(--body); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.subset-count.done { color: var(--available); }
+.coll-page .subset.is-empty .subset-count { display: none; }
+.coll-page .group > h2 .count { font-variant-numeric: tabular-nums; }
+/* jumps from the contents land below the sticky filter bar */
+.coll-page .group, .coll-page .subset { scroll-margin-top: 150px; }
+
+/* ---------- card rows: checkbox, number, name (truncated so desktop keeps 3 columns), badge ---------- */
 @media screen {
-  .tracking .cards li { min-height: 36px; align-items: center; }
-  .tracking .cards .no { min-width: 2.9em; }
-  .tracking .cards .who { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .tracking .cards .meta { flex: none; white-space: nowrap; }
+  .coll-page .cards li { min-height: 36px; align-items: center; }
+  .coll-page .cards .no { min-width: 2.9em; }
+  .coll-page .cards .who { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* a 32px tap area round the 20px checkbox */
   .cards .hit {
     flex: none; display: inline-flex; align-items: center; justify-content: center;
     width: 32px; height: 32px; margin: -6px -4px -6px -7px; border-radius: 8px; cursor: pointer;
   }
-  .cards .hit .own { width: 20px; height: 20px; }
+  .cards .own { width: 20px; height: 20px; margin: 0; accent-color: var(--red); cursor: pointer; }
   .cards .hit:has(:focus-visible) { outline: 3px solid var(--red); outline-offset: -2px; }
 }
 
@@ -42,7 +62,6 @@
   font: 700 15px/1 var(--display); font-variant-numeric: tabular-nums;
   background: transparent; border: 2px dashed var(--muted); color: var(--muted);
 }
-.cards .meta + .xbadge { margin-left: 0; }
 .xbadge svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
 .xbadge:hover { border-color: var(--red); color: var(--red); }
 .xbadge.has { background: var(--xbadge-fill); color: var(--xbadge-ink); border: 2px solid var(--xbadge-fill); }
@@ -74,12 +93,13 @@
 .extras-step output { min-width: 2ch; text-align: center; font: 700 26px/1 var(--display); font-variant-numeric: tabular-nums; }
 .extras-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 4px; }
 
-/* ---------- filter bar: four equal segments, number on top, label under; sticks to the top while scrolling ---------- */
+/* ---------- filter bar: Show and Print, then four equal segments (number on top, label under); sticks to the top ---------- */
 .filter-bar { position: sticky; top: 0; z-index: 50; margin: 0 0 22px; padding: 10px 0 12px; background: var(--bg); border-bottom: 2px solid transparent; }
 .filter-bar.is-stuck { border-bottom-color: var(--line); box-shadow: var(--shadow); }
-.filter-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin: 0 0 6px; }
+.filter-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 0 0 6px; }
 .filter-head h2 { font: 700 15px/1 var(--body); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0; }
-.filter-head p { margin: 0; font-size: 14px; color: var(--muted); }
+.filter-head .btn { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 5px 12px; }
+.filter-head .ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 .filter {
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 4px;
   border: 2px solid var(--line); border-radius: 16px; background: var(--paper);
@@ -97,15 +117,14 @@
 .filter-note { margin: 6px 2px 0; font-size: 14px; color: var(--muted); }
 .filter-note:empty { display: none; }
 .filter-note .link-button { font-size: 14px; }
-/* jumps from the contents land below the sticky bar */
-.tracking .group, .tracking .subset { scroll-margin-top: 150px; }
 
 /* ---------- filtered rows; a subset with nothing left is one line ---------- */
 .cards li.is-filtered { display: none; }
 .cards li.is-leaving { opacity: 0.55; }
 .subset.is-empty { padding-top: 11px; padding-bottom: 11px; }
+.subset.is-empty > header { margin-bottom: 0; }
 .subset.is-empty > header h3 { font-size: 19px; color: var(--muted); }
-.subset.is-empty .odds, .subset.is-empty .cards { display: none; }
+.subset.is-empty .cards { display: none; }
 .filter-none { margin: 0 0 0 auto; font-size: 15px; color: var(--muted); font-style: italic; }
 
 /* ---------- toast with Undo ---------- */
@@ -117,14 +136,48 @@
 .toast .link-button { color: var(--board-title); font-weight: 700; }
 .toast .link-button:focus-visible { outline-color: var(--board-title); }
 
+/* ---------- signed out: the pitch, beside a still preview of signed-in rows ---------- */
+.pitch { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 36px; align-items: center; margin-top: 8px; }
+.pitch-list { list-style: none; margin: 0 0 26px; padding: 0; }
+.pitch-list li { display: flex; gap: 14px; align-items: flex-start; margin: 0 0 18px; }
+.pitch-ico { flex: none; width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--red-soft); color: var(--red); }
+.pitch-ico .ico { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pitch-list h2 { font-size: 21px; margin: 2px 0 3px; }
+.pitch-list p { margin: 0; color: var(--ink-2); }
+.pitch-actions { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: center; margin: 0; }
+.pitch-actions .btn { display: inline-flex; align-items: center; min-height: 44px; }
+.pitch-foot { margin: 16px 0 0; color: var(--muted); font-size: 15px; }
+.pitch-foot a { color: var(--red); font-weight: 700; }
+.preview-wrap { margin: 0; }
+.preview { padding: 16px 18px 12px; user-select: none; box-shadow: var(--shadow); }
+.preview .filter { margin: 0 0 12px; }
+.preview .filter button { min-height: 44px; padding: 5px 2px; cursor: default; }
+.preview .filter button b { font-size: 19px; }
+.preview .filter button span { font-size: 12px; }
+.preview > header { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 6px; }
+.preview h3 { margin: 0; font-size: 20px; }
+.preview .cards { columns: 1; }
+.preview-cap { text-align: center; color: var(--muted); font-size: 13px; margin: 8px 0 0; }
+
+@media (max-width: 760px) {
+  .pitch { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .coll-summary { padding: 14px 16px; margin-bottom: 22px; }
+  .coll-summary .stat .big { font-size: 36px; }
+  .coll-summary .pct { font-size: 22px; }
+}
 @media (max-width: 640px) {
   .filter button b { font-size: 21px; }
   .filter button span { font-size: 13px; }
   .toast { bottom: 64px; }
+  .pitch-list h2 { font-size: 19px; }
 }
 
-/* Printing keeps the chosen filter (filter.js re-applies it first) but none of the controls. */
+/* ---------- printing: the chosen list (filter.js re-applies it first) under its own title, without the controls ---------- */
+.print-title { display: none; }
 @media print {
-  .filter-bar, .extras-popover, .toast, .cards .hit, .xbadge { display: none !important; }
-  .subset.is-empty > header h3 { font-size: 12pt; }
+  .coll-page .lede, .coll-summary, .filter-bar, .extras-popover, .toast, .cards .hit, .xbadge { display: none !important; }
+  .print-title { display: block; font: 700 16pt/1.2 var(--display); margin: 0 0 0.15in; }
+  .subset-count { font-size: 9pt; color: #000; }
+  /* sets and groups with nothing left to print are left out, rather than printed as one-line notes */
+  .subset.is-empty, .group:not(:has(.subset:not(.is-empty))) { display: none !important; }
 }

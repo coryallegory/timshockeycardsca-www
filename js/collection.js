@@ -1,10 +1,10 @@
-/* Collection tracking on the Checklist, loaded only when the site is built with API_URL (docs/DATABASE-AUTH-PLAN.md,
-   Collection UI). Signing in happens on /account (the prompt at the top links there and comes back) and signing out in
-   the header's account menu (header-account.js); this file does what being signed in or out means for the page and
-   keeps the collection: card id -> copies. Signed out, the page shows the sign-in prompt. Signed in, every card row gets
-   a checkbox ("have it") and, once ticked, an extras badge (extras.js); the filter bar (filter.js) shows All / Collected
-   / Missing / Extras. Every change saves at once, optimistically: a failed save puts the row back with a message. All
-   API calls go through account.js.
+/* The Collection page, /collection (built only with API_URL; docs/DATABASE-AUTH-PLAN.md, Collection UI). Signing in
+   happens on /account (the pitch's buttons link there and come back) and signing out in the header's account menu
+   (header-account.js); this file does what being signed in or out means for the page and keeps the collection: card
+   id -> copies. Signed out, the page shows the pitch. Signed in, it shows the progress summary (progress.js), every card
+   with its checkbox ("have it") and, once ticked, an extras badge (extras.js), each set's progress, and the filter bar
+   with Print (filter.js). Every change saves at once, optimistically: a failed save puts the row back with a message.
+   All API calls go through account.js.
    No request is made for a visitor who has never signed in on this browser: who is signed in comes from the header's
    one check (`header.ready`), made only with account.js's localStorage hint. The collection is fetched once here and
    handed to the header's menu for its count (header.countWith), so the menu doesn't fetch it again. */
@@ -12,18 +12,27 @@ import * as account from './account.js';
 import * as extras from './extras.js';
 import * as filter from './filter.js';
 import * as header from './header-account.js';
+import { drawProgress } from './progress.js';
 
 const TOAST_MS = 8000;
 const MSG_MS = 8000;
 
-const page = document.querySelector('main.checklist');
-const prompt = document.getElementById('signin-prompt');
-const msg = document.getElementById('account-msg');
-const rows = [...document.querySelectorAll('.cards li[data-card-id]')];
+const $ = (id) => document.getElementById(id);
+const out = $('coll-out');
+const inside = $('coll-in');
+const msg = $('account-msg');
+const rows = [...inside.querySelectorAll('.cards li[data-card-id]')];
+/** Each set's "4 / 18" and each group's "30 of 120", with the rows they count. */
+const tallies = [...inside.querySelectorAll('[data-progress]')].map((el) => ({
+  el,
+  rows: [...el.closest('.subset, .group').querySelectorAll('.cards li[data-card-id]')],
+  total: Number(el.dataset.total),
+}));
 /** Card id -> copies (1 to 99) for the cards the user owns; empty while signed out. */
 const owned = new Map();
 const countOf = (li) => owned.get(li.dataset.cardId) ?? 0;
 let tracking = false;
+let counts = { collected: 0, extras: 0 }; // for the header menu
 
 extras.init({ countOf, change, names });
 filter.init({ rows, countOf });
@@ -34,7 +43,7 @@ header.onSignOut(() => {
 
 // ---------- messages ----------
 let msgTimer;
-/** A short note in the status line under the prompt and print buttons (signed out, save failures). */
+/** A short note in the status line under the title (signed out, save failures). */
 function say(text, isError = false) {
   clearTimeout(msgTimer);
   msg.textContent = text;
@@ -43,37 +52,36 @@ function say(text, isError = false) {
 }
 
 // ---------- signed in and out ----------
-/** The menu's "N of 278 collected · M extra copies", from the cards on this page. */
-function counts() {
-  let extras = 0;
-  for (const copies of owned.values()) extras += copies - 1;
-  return { collected: owned.size, extras };
+/** Shows the signed-in page ('in'), the pitch ('out'), or neither (null: until the check answers, or on an error). */
+function showState(state) {
+  out.hidden = state !== 'out';
+  inside.hidden = state !== 'in';
 }
 async function signedIn() {
-  prompt.hidden = true;
   try {
     const collection = await account.getCollection();
     owned.clear();
     for (const [id, copies] of collection) owned.set(id, copies);
     track(true);
-    header.countWith(counts);
+    showState('in');
+    header.countWith(() => counts);
   } catch (err) {
     if (err.signedOut) {
       header.signedOut();
-      prompt.hidden = false;
+      showState('out');
       return;
     }
     say(`Couldn't load your collection. ${account.sentence(err.message)} Reload the page to try again.`, true);
   }
 }
-/** Back to the signed-out page: the prompt, no checkboxes, badges or filter. */
+/** Back to the signed-out page: the pitch. */
 function signedOut() {
   owned.clear();
   track(false);
   header.countWith(null);
-  prompt.hidden = false;
+  showState('out');
 }
-/** The session is gone mid-visit (expired, or signed out elsewhere): signed out, with the prompt and a short note. */
+/** The session is gone mid-visit (expired, or signed out elsewhere): signed out, with a short note. */
 function sessionEnded() {
   if (!tracking) return;
   signedOut();
@@ -81,28 +89,35 @@ function sessionEnded() {
   say('Your session has ended. Sign in again to keep tracking your collection.', true);
 }
 
-/** Adds (signed in) or removes the row controls and the filter. */
+/** Draws every row, the filter and the progress for the collection (signed in), or clears them (signed out). */
 function track(on) {
   tracking = on;
-  page.classList.toggle('tracking', on);
   if (!on) {
     extras.close(false);
     hideToast();
   }
-  for (const li of rows) {
-    if (on) render(li);
-    else {
-      li.querySelector('.hit')?.remove();
-      extras.render(li, 0);
-    }
+  for (const li of rows) render(li);
+  filter.reset();
+  progress();
+}
+
+/** The summary, each set's and group's count, and the header menu's numbers. */
+function progress() {
+  counts = drawProgress(owned);
+  for (const t of tallies) {
+    const n = t.rows.reduce((sum, li) => sum + (countOf(li) > 0 ? 1 : 0), 0);
+    const set = t.el.classList.contains('subset-count');
+    const done = set && n === t.total;
+    t.el.textContent = done ? '✓ Complete' : set ? `${n} / ${t.total}` : `${n} of ${t.total}`;
+    t.el.classList.toggle('done', done);
   }
-  filter.show(on);
 }
 
 // ---------- names ----------
 /** The card's subset ("Superstar Cards"): hits have no number and players appear in several sets. */
 const setName = (li) => li.closest('.subset')?.querySelector('h3')?.firstChild?.textContent ?? '';
-/** How the page names a card: `short` "#2 Evan Bouchard" or "SC-2 Erik Karlsson", `full` adds the set for screen readers. */
+/** How the page names a card: `short` "#2 Evan Bouchard" or "SC-2 Erik Karlsson", `full` adds the set for screen readers
+    (collection.ts labels the checkboxes the same way). */
 function names(li) {
   const no = li.querySelector('.no')?.textContent ?? '';
   const who = li.querySelector('.who')?.textContent ?? '';
@@ -112,20 +127,9 @@ function names(li) {
 }
 
 // ---------- rows ----------
-/** Draws a row's controls for its count: the checkbox (in a 32px label) and the extras badge once ticked. */
+/** Draws a row for its count: the checkbox and, once ticked, the extras badge. */
 function render(li) {
-  let box = li.querySelector('.own');
-  if (!box) {
-    const hit = document.createElement('label');
-    hit.className = 'hit';
-    box = document.createElement('input');
-    box.type = 'checkbox';
-    box.className = 'own';
-    box.setAttribute('aria-label', names(li).full);
-    hit.append(box);
-    li.prepend(hit);
-  }
-  box.checked = countOf(li) > 0;
+  li.querySelector('.own').checked = countOf(li) > 0;
   extras.render(li, countOf(li));
 }
 
@@ -142,11 +146,12 @@ function apply(li, copies) {
   else owned.delete(li.dataset.cardId);
   render(li);
   filter.refresh();
+  progress();
 }
 
 document.addEventListener('change', (e) => {
   const box = e.target;
-  if (!(box instanceof HTMLInputElement) || !box.matches('.cards .own')) return;
+  if (!(box instanceof HTMLInputElement) || !box.matches('#coll-in .cards .own')) return;
   const li = box.closest('li');
   const before = countOf(li);
   change(li, box.checked ? 1 : 0);
@@ -211,9 +216,9 @@ for (const [type, keep] of [['pointerenter', true], ['focusin', true], ['pointer
 }
 
 // ---------- on load: the header's check (made only if this browser has signed in before) ----------
-if (account.maybeSignedIn()) prompt.hidden = true; // until the check answers, rather than a prompt that may be wrong
+if (account.maybeSignedIn()) showState(null); // until the check answers, rather than a pitch that may be wrong
 header.ready.then(({ email, error }) => {
   if (email) return signedIn();
-  prompt.hidden = false;
+  showState('out');
   if (error) say(`Couldn't check whether you're signed in. ${account.sentence(error.message)}`, true);
 });

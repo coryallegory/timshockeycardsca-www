@@ -71,16 +71,31 @@
   .back-to-top svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.5; }
 }
 
-/* ---------- collection tracking (only when built with API_URL): the sign-in prompt beside Print, the status line, row checkboxes ---------- */
-.checklist-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; }
+/* ---------- the link to the Collection page (only when built with API_URL), left of the print buttons ---------- */
+.checklist-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px 16px; }
 .checklist-actions .print-action { margin: 0; }
-.account-msg { margin: 8px 0 12px 14px; font-size: 14px; color: var(--muted); }
-.account-msg:empty { display: none; }
-.account-msg.is-error { color: var(--red); font-weight: 700; }
-.cards .own { flex: none; align-self: center; width: 18px; height: 18px; margin: 0; accent-color: var(--red); cursor: pointer; }
+.track-link {
+  margin: 0 auto 0 0; display: inline-flex; align-items: center; gap: 7px; min-height: 32px;
+  color: var(--red); font-weight: 700; font-size: 16px; text-decoration: none;
+}
+.track-link .ico { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.track-link .arrow { width: 16px; height: 16px; transition: transform 0.12s ease; }
+.track-link small { font: 600 15px/1 var(--body); color: var(--muted); }
+.track-link:hover span { text-decoration: underline; text-underline-offset: 3px; }
+.track-link:hover .arrow { transform: translateX(3px); }
+.track-link:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) { .track-link .arrow { transition: none; } }
 
 @media (max-width: 760px) {
   .checklist-actions { margin-bottom: 16px; }
-  .checklist-actions .print-action { margin: 0; }
-  .account-msg { margin: -6px 0 16px 4px; }
+}
+@media (max-width: 640px) {
+  .track-link { flex: 1 1 100%; }
+}
+
+/* ---------- prizes on narrow phones: tighter cells and slightly smaller text, so the table fits at 320 px ---------- */
+@media (max-width: 480px) {
+  #prizes .data-table { font-size: 15px; }
+  #prizes .data-table th, #prizes .data-table td { padding: 8px 9px; }
+  #prizes .data-table .tag { white-space: normal; }
 }

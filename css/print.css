@@ -1,8 +1,9 @@
-/* Printer-friendly Checklist: paper is the only target; screen styles stay in checklist.css. */
+/* Printer-friendly Checklist and Collection: paper is the only target; screen styles stay in checklist.css (the
+   Collection page adds its own print rules in collection.css). */
 @page { size: letter portrait; margin: 0.5in; }
 
 @media print {
-  .site-header, .stripe, .site-footer, .intro, .toc, .back-to-top, #prizes, .cards .own { display: none !important; }
+  .site-header, .stripe, .site-footer, .intro, .toc, .back-to-top, #prizes { display: none !important; }
   html, body { background: #fff !important; color: #000 !important; font-size: 10pt; }
   .page { max-width: none; margin: 0; padding: 0; }
   .checklist-layout { display: block; }

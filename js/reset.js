@@ -1,7 +1,7 @@
 /* The /reset-password page (built only with API_URL): the emailed link brings the reset token in `?token=`. It is read
    once and removed from the address bar straight away (history.replaceState), so it isn't left in the history entry, a
    bookmark or a copied URL; the page also sends no referrer. Submitting posts it with the new password through
-   account.js; on success this browser is signed in (the header shows it), so the Checklist opens signed in. */
+   account.js; on success this browser is signed in (the header shows it), and the page links to Collection. */
 import * as account from './account.js';
 import * as header from './header-account.js';
 
