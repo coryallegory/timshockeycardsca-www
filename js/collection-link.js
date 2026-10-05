@@ -3,7 +3,7 @@
    only with account.js's hint), so a visitor who never signed in makes no request. The count needs the collection: one
    GET /collection, which the header's menu then reuses (header.collectionCounts). If it fails, the button keeps
    working without a count. */
-import * as header from './header-account.js';
+import * as header from './header-account.js?v=2dc98f880f';
 
 const count = document.getElementById('coll-link-count');
 

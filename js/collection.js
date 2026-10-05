@@ -8,11 +8,11 @@
    No request is made for a visitor who has never signed in on this browser: who is signed in comes from the header's
    one check (`header.ready`), made only with account.js's localStorage hint. The collection is fetched once here and
    handed to the header's menu for its count (header.countWith), so the menu doesn't fetch it again. */
-import * as account from './account.js';
-import * as extras from './extras.js';
-import * as filter from './filter.js';
-import * as header from './header-account.js';
-import { drawProgress } from './progress.js';
+import * as account from './account.js?v=2dc98f880f';
+import * as extras from './extras.js?v=2dc98f880f';
+import * as filter from './filter.js?v=2dc98f880f';
+import * as header from './header-account.js?v=2dc98f880f';
+import { drawProgress } from './progress.js?v=2dc98f880f';
 
 const TOAST_MS = 8000;
 const MSG_MS = 8000;

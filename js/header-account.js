@@ -14,8 +14,8 @@
    For page scripts: `ready` (who is signed in, from that one check), `signedIn(email)` / `signedOut()` to update the
    header after the page signs in or out, `countWith(fn)`, `collectionCounts()` (the menu's counts, shared) and
    `onSignOut(fn)` (the menu's Sign out succeeded). */
-import * as account from './account.js';
-import { signInHref } from './next.js';
+import * as account from './account.js?v=2dc98f880f';
+import { signInHref } from './next.js?v=2dc98f880f';
 
 const MSG_MS = 8000;
 
