@@ -14,9 +14,9 @@
    For page scripts: `ready` (who is signed in, from that one check), `signedIn(email)` / `signedOut()` to update the
    header after the page signs in or out, `collection()` (the set's cards, fetched once), `countWith(fn)`,
    `collectionCounts()` (the menu's counts) and `onSignOut(fn)` (the menu's Sign out succeeded). */
-import * as account from './account.js?v=08063f1e16';
-import { signInHref } from './next.js?v=08063f1e16';
-import { extraCopies, SET_TOTAL, setOnly, tally } from './set.js?v=08063f1e16';
+import * as account from './account.js?v=1c5474a3c2';
+import { signInHref } from './next.js?v=1c5474a3c2';
+import { extraCopies, SET_TOTAL, setOnly, tally } from './set.js?v=1c5474a3c2';
 
 const MSG_MS = 8000;
 
@@ -31,8 +31,11 @@ const signOutButton = $('acct-signout');
 const error = $('acct-error');
 const status = $('acct-status');
 
-// The Sign in pill returns to this page (on /account itself, it keeps the page's own ?next=).
-signInLink.href = location.pathname === '/account' ? location.pathname + location.search : signInHref(location.pathname);
+// The Sign in pill returns to this page (on /account itself, it keeps the page's own ?next=; on /trading, the profile
+// in ?u=).
+signInLink.href = location.pathname === '/account'
+  ? location.pathname + location.search
+  : signInHref(location.pathname + (location.pathname === '/trading' ? location.search : ''));
 
 let user = null; // the signed-in email, or null
 let counter = null; // the page's live counts, () => ({ collected, extras }), when it has the collection
@@ -165,7 +168,7 @@ signOutButton.addEventListener('click', async () => {
 });
 
 // ---------- the tab row's safety net ----------
-// The tabs fit down to 320 px (one step smaller below 390, header-account.css); if they ever don't, the row scrolls
+// The tabs fit down to 320 px (one step smaller below 390 px and another below 360, header-account.css); if they ever don't, the row scrolls
 // sideways (never the page), starts scrolled to the current tab, and fades the edge that hides one.
 const tabs = document.querySelector('.site-header .tabs');
 function fadeTabs() {

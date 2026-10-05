@@ -1,0 +1,258 @@
+/* The Trading page, /trading (built only with API_URL; from temp/mockups/trading): the hub (Following in the main
+   column, Your trade profile beside it; on phones the profile card first, compact) and a trader's profile (the match,
+   haves by set, wants as number chips; contact, collection and safety beside them; on phones match, contact, the
+   lists, then collection and safety). The pitch, stat, bar, binder rows, chips and toast are in components.css. */
+
+.trading-page h1 { margin-bottom: 8px; }
+.trading-page .lede { max-width: 62ch; margin-bottom: 24px; }
+.trading-page .ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.sec-h { font-size: 28px; margin: 0 0 14px; }
+.sec-h::after { content: ""; display: block; width: 56px; height: 5px; margin-top: 8px; background: var(--red); border-radius: 3px; }
+.sec-h .count { font-variant-numeric: tabular-nums; }
+.row-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn.small { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; }
+
+/* Follow / Following: one toggle (aria-pressed); a followed trader shows green "Following", "Unfollow" on hover */
+.follow-btn .when-on, .follow-btn .when-hover { display: none; }
+.follow-btn[aria-pressed="true"] .when-off { display: none; }
+.follow-btn[aria-pressed="true"] .when-on { display: inline-flex; align-items: center; gap: 6px; }
+.follow-btn[aria-pressed="true"] { border-color: var(--available); color: var(--available); background: transparent; }
+button.follow-btn[aria-pressed="true"]:hover { border-color: var(--red); color: var(--red); background: var(--red-soft); }
+button.follow-btn[aria-pressed="true"]:hover .when-on { display: none; }
+button.follow-btn[aria-pressed="true"]:hover .when-hover { display: inline; }
+
+/* a trade id, bold in ink; red on hover */
+.tid { font: 700 19px/1.15 var(--display); color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+a.tid:hover { color: var(--red); text-decoration: underline; text-underline-offset: 3px; }
+.where { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-size: 14px; }
+.where .ico { width: 14px; height: 14px; }
+
+/* the two-way match: "has 7 you need   needs 6 you have", numbers bold */
+.match { display: flex; flex-wrap: wrap; gap: 2px 14px; margin: 0; font-size: 15px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.match b { font: 700 17px/1 var(--display); color: var(--ink); margin-right: 2px; }
+.match .zero b { color: var(--muted); }
+
+/* ======================= the hub ======================= */
+.hub-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px 28px; align-items: start; grid-template-areas: "follow profile"; }
+.hub-follow { grid-area: follow; }
+.hub-profile { grid-area: profile; }
+
+/* Your trade profile: status, the link with Copy, haves and wants tiles, two buttons (private: one) */
+.hub-profile h2 { font-size: 22px; margin: 0 0 8px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; }
+.hub-profile h2 .chip-status { margin-left: auto; }
+.hb-note { margin: 0 0 12px; font-size: 15px; color: var(--ink-2); }
+.share { display: flex; align-items: stretch; gap: 6px; margin: 4px 0 12px; }
+.share .url {
+  flex: 1 1 auto; min-width: 0; display: flex; align-items: center; padding: 6px 10px; border: 2px solid var(--line); border-radius: 10px;
+  background: var(--paper); font-size: 14px; color: var(--ink-2); white-space: nowrap; overflow: hidden;
+}
+.share .url span { overflow: hidden; text-overflow: ellipsis; }
+.share .btn { flex: none; }
+.hb-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.hb-tile {
+  display: flex; flex-direction: column; gap: 2px; padding: 9px 12px 10px; border: 2px solid var(--line); border-radius: 12px;
+  color: var(--ink); text-decoration: none; transition: border-color 0.12s ease, background-color 0.12s ease;
+}
+.hb-tile:hover { border-color: var(--red); background: var(--red-soft); }
+.hb-tile:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.hb-tile .tile-tier { margin-bottom: 2px; }
+.hb-tile b { font: 700 28px/1 var(--display); font-variant-numeric: tabular-nums; }
+.hb-tile small { font-size: 13px; color: var(--muted); line-height: 1.25; }
+.hb-tile .go { font-size: 13px; font-weight: 700; color: var(--red); margin-top: 4px; }
+
+/* Following: a row per trader (the whole row opens the profile; the toggle sits above that link) */
+.list-head { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 8px 14px; margin: 0 0 12px; }
+.list-head .sec-h { margin: 0; flex: 1 1 auto; }
+.sort { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--muted); font-weight: 700; }
+.sort select {
+  font: 700 15px/1 var(--body); color: var(--ink); background-color: var(--panel); border: 2px solid var(--line); border-radius: 999px;
+  min-height: 40px; padding: 0 30px 0 12px; appearance: none; cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 17px) 50%, calc(100% - 12px) 50%; background-size: 5px 5px; background-repeat: no-repeat;
+}
+.sort select:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.traders { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.trader {
+  display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; grid-template-areas: "av main act"; gap: 4px 14px; align-items: center;
+  position: relative; padding: 12px 14px; background: var(--panel); border: 2px solid var(--line); border-radius: 12px;
+  transition: border-color 0.12s ease;
+}
+.trader:hover { border-color: var(--red); }
+.trader:focus-within { border-color: var(--red); }
+.trader .av {
+  grid-area: av; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--paper);
+  border: 1px solid var(--line); font: 700 20px/1 var(--display); color: var(--ink-2); text-transform: uppercase;
+}
+.trader .t-main { grid-area: main; min-width: 0; }
+.trader .t-top { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 10px; margin: 0 0 4px; }
+.trader a.tid::after { content: ""; position: absolute; inset: 0; border-radius: 12px; }
+.trader a.tid:focus-visible { outline: none; }
+.trader .t-act { grid-area: act; position: relative; z-index: 1; }
+.hub-follow .box-empty { padding: 14px 16px; }
+
+/* the signed-out pitch's still preview of Following */
+.preview-h { margin: 0 0 10px; font-size: 19px; }
+.preview .traders { gap: 8px; }
+.preview .trader { padding: 9px 11px; grid-template-columns: 38px minmax(0, 1fr) auto; gap: 2px 10px; }
+.preview .trader .av { width: 38px; height: 38px; font-size: 17px; }
+.preview .tid { font-size: 17px; }
+.preview .match { font-size: 13px; column-gap: 10px; }
+.preview .match b { font-size: 15px; }
+.safety { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; background: var(--paper); border: 1px solid var(--line); font-size: 15px; color: var(--ink-2); }
+.safety .ico { width: 22px; height: 22px; color: var(--available); margin-top: 1px; }
+.safety p { margin: 0; }
+.safety b { color: var(--ink); }
+.pitch .safety { margin: 0 0 22px; }
+
+/* ======================= a profile ======================= */
+.crumb { display: inline-flex; align-items: center; gap: 4px; margin: 0 0 10px; color: var(--red); font-weight: 700; font-size: 16px; text-decoration: none; }
+.crumb:hover { text-decoration: underline; text-underline-offset: 3px; }
+.trading-page .crumb .ico { width: 18px; height: 18px; }
+.own-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 0 0 18px; padding: 10px 14px; border-radius: 12px; background: var(--paper); border: 2px dashed var(--line); }
+.own-banner p { margin: 0; flex: 1 1 260px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.own-banner p small { display: block; font-weight: 600; color: var(--muted); font-size: 14px; }
+.trading-page .own-banner p .ico { width: 18px; height: 18px; color: var(--muted); }
+.prof-top { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 24px; margin: 0 0 22px; }
+.prof-id { flex: 1 1 360px; min-width: 0; }
+.prof-id h1 { margin: 0 0 6px; overflow-wrap: anywhere; }
+.prof-meta { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0; color: var(--ink-2); font-size: 16px; }
+.prof-meta > span { display: inline-flex; align-items: center; gap: 5px; }
+.prof-meta .ico { color: var(--muted); }
+.prof-top .page-actions { margin: 0 0 0 auto; }
+
+.prof-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px 28px; align-items: start; grid-template-areas: "match side" "lists side"; }
+.prof-match { grid-area: match; }
+.prof-lists { grid-area: lists; }
+.prof-side { grid-area: side; display: grid; gap: 18px; }
+/* the owner's preview has no match section: the lists start at the top, beside the side column (no empty first row) */
+.prof-grid:not(:has(> .prof-match:not([hidden]))) { grid-template-areas: "lists side"; }
+.prof-lists > .list-sec:first-child { margin-top: 30px; }
+.prof-grid:not(:has(> .prof-match:not([hidden]))) .prof-lists > .list-sec:first-child { margin-top: 0; }
+
+/* the match: two tiles, each showing its list filtered */
+.match-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mt {
+  display: flex; flex-direction: column; gap: 3px; padding: 12px 16px 14px; background: var(--panel); border: 2px solid var(--line); border-radius: 12px;
+  color: var(--ink); text-decoration: none; transition: border-color 0.12s ease, background-color 0.12s ease;
+}
+.mt:hover { border-color: var(--red); background: var(--red-soft); }
+.mt:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.mt b { font: 700 40px/1 var(--display); font-variant-numeric: tabular-nums; }
+.mt span { font-weight: 700; font-size: 16px; }
+.mt small { font-size: 14px; color: var(--muted); }
+.mt.zero b { color: var(--muted); }
+.match-out { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.match-out p { margin: 0; flex: 1 1 300px; color: var(--ink-2); overflow-wrap: anywhere; }
+.match-out p b { color: var(--ink); }
+
+/* the lists: a heading with its All / You need toggle, a set per box */
+.list-sec { margin-top: 30px; scroll-margin-top: 16px; }
+.list-blurb { margin: -4px 0 12px; color: var(--ink-2); font-size: 15px; overflow-wrap: anywhere; }
+.seg { display: inline-flex; border: 2px solid var(--line); border-radius: 999px; padding: 2px; gap: 2px; background: var(--paper); }
+.seg button {
+  font: 700 14px/1 var(--body); padding: 0 12px; min-height: 32px; display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; border: 0;
+  background: none; color: var(--ink-2); cursor: pointer; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.seg button:hover { background: var(--red-soft); color: var(--red); }
+.seg button[aria-pressed="true"] { background: var(--red); color: var(--on-red); }
+.seg button:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.set-block { margin: 0 0 14px; padding: 12px 16px 10px; }
+.set-block > header { display: flex; align-items: baseline; gap: 10px; margin: 0 0 4px; }
+.set-block h3 { margin: 0; font-size: 18px; flex: 1 1 auto; }
+.set-block .n { font-size: 14px; color: var(--muted); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.set-block .binder { columns: 2 260px; column-gap: 26px; margin: 0; }
+.set-block .binder li { break-inside: avoid; padding: 6px 0; border-top: 1px solid var(--line); }
+.set-block .binder li.hit { background: var(--red-soft); box-shadow: -8px 0 0 var(--red-soft), 8px 0 0 var(--red-soft); border-radius: 4px; }
+.set-block .binder li.hit .who { font-weight: 700; }
+.set-block .binder li.hit .no { color: var(--red); }
+.set-block .binder .no { min-width: 2.6em; }
+.nums { list-style: none; margin: 6px 0 4px; padding: 0; display: flex; flex-wrap: wrap; gap: 5px; }
+.nums li {
+  min-width: 38px; height: 30px; padding: 0 7px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--paper); font: 700 14px/1 var(--body); color: var(--ink-2); font-variant-numeric: tabular-nums;
+}
+.nums li.hit { background: var(--red-soft); border-color: var(--red); color: var(--red); }
+.nums-key { display: flex; align-items: center; gap: 6px; margin: -4px 0 10px; font-size: 14px; color: var(--muted); }
+.nums-key i { width: 18px; height: 14px; border-radius: 4px; background: var(--red-soft); border: 1px solid var(--red); }
+.complete-line { color: var(--available); font-weight: 700; font-size: 15px; margin: 0 0 10px; }
+
+/* the side: contact, collection, safety */
+.side-box h2 { font-size: 20px; margin: 0 0 10px; overflow-wrap: anywhere; }
+.contacts { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.contact { display: flex; align-items: center; gap: 10px; padding: 6px 10px 6px 6px; border-radius: 10px; color: var(--ink); text-decoration: none; border: 2px solid var(--line); }
+.contact:hover { border-color: var(--red); background: var(--red-soft); }
+.contact:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.contact > span:last-child { min-width: 0; overflow-wrap: anywhere; font-weight: 700; line-height: 1.15; }
+.contact small { display: block; font-weight: 600; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.glyph {
+  flex: none; width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; background: var(--board); color: var(--board-ink);
+  font: 700 14px/1 var(--body); letter-spacing: -0.02em;
+}
+.side-box .stat { margin: 0 0 8px; }
+.side-box .stat .big { font-size: 32px; }
+.side-box .stat .big small { font-size: 15px; }
+.side-box .bar-track { height: 10px; margin: 0 0 8px; }
+.side-box .subset-mini { font-size: 14px; gap: 4px 14px; }
+.side-box .safety { margin: 0 0 10px; }
+.report { margin: 0; font-size: 14px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.report a { color: var(--muted); font-weight: 700; }
+.report a:hover { color: var(--red); }
+.trading-page .report .ico { width: 14px; height: 14px; }
+
+/* not found or private (one state: the API answers both alike) */
+.state-box { max-width: 560px; margin: 10px auto 0; text-align: center; padding: 30px 24px; }
+.state-box .big-ico { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; margin: 0 auto 12px; background: var(--paper); border: 1px solid var(--line); color: var(--muted); }
+.trading-page .state-box .big-ico .ico { width: 28px; height: 28px; }
+.state-box h1 { font-size: clamp(28px, 5vw, 36px); margin: 0 0 8px; }
+.state-box p { color: var(--ink-2); margin: 0 0 16px; }
+.state-box .row-actions { justify-content: center; }
+
+/* ======================= narrower screens ======================= */
+@media (max-width: 860px) {
+  .hub-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "profile" "follow"; gap: 22px; }
+  /* profile: match, contact, the lists, then collection and safety */
+  .prof-grid { display: flex; flex-direction: column; gap: 14px; }
+  .prof-grid > *, .prof-side > * { width: 100%; }
+  .prof-side { display: contents; }
+  .prof-match { order: 0; }
+  .sb-contact { order: 1; }
+  .prof-lists { order: 2; }
+  .prof-grid .prof-lists > .list-sec:first-child { margin-top: 10px; }
+  .sb-col { order: 3; }
+  .sb-safe { order: 4; }
+}
+@media (max-width: 640px) {
+  .trading-page .lede { margin-bottom: 16px; }
+  .sec-h { font-size: 24px; }
+  /* Your trade profile, compact: status, the link and Copy, the counts as one line of links, the buttons */
+  .hub-profile { padding: 12px 14px; }
+  .hub-profile h2 { font-size: 19px; margin-bottom: 6px; }
+  .hb-note { display: none; }
+  .hub-profile .share { margin: 2px 0 8px; }
+  .hb-tiles { display: flex; flex-wrap: wrap; gap: 2px 16px; }
+  .hb-tile { flex-direction: row; align-items: baseline; gap: 5px; padding: 0; border: 0; border-radius: 0; color: var(--ink-2); font-weight: 700; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+  .hb-tile:hover { background: none; color: var(--red); }
+  .hb-tile b { order: -1; font-size: 16px; color: var(--ink); }
+  .hb-tile .tile-tier { order: 0; margin: 0; font: 700 14px/1 var(--body); text-transform: lowercase; letter-spacing: 0; color: inherit; }
+  .hb-tile small, .hb-tile .go { display: none; }
+  .hub-profile .box-actions { margin-top: 10px; }
+  .hub-profile .box-actions .btn.primary { flex-basis: 100%; }
+  .trader { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "main act"; padding: 10px 12px; gap: 4px 10px; }
+  .trader .av { display: none; }
+  .trader .tid { font-size: 18px; }
+  .trader .match { font-size: 14px; column-gap: 12px; }
+  .trader .btn { padding: 5px 11px; min-height: 34px; font-size: 13px; }
+  .preview .trader { grid-template-columns: minmax(0, 1fr) auto; }
+  .preview .trader:nth-child(n+3) { display: none; }
+  .sort .sort-label { display: none; }
+
+  .prof-top { margin-bottom: 16px; }
+  .prof-top .page-actions { flex: 1 1 100%; }
+  .mt { padding: 10px 12px 12px; }
+  .mt b { font-size: 32px; }
+  .mt span { font-size: 15px; }
+  .mt small { font-size: 13px; }
+  .list-sec { margin-top: 24px; }
+  .set-block { padding: 10px 12px 8px; }
+  .nums li { min-width: 34px; height: 28px; font-size: 13px; }
+}

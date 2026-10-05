@@ -1,12 +1,13 @@
 /* The /account page (built only with API_URL; docs/DATABASE-AUTH-PLAN.md, Account UI). Signed out, it shows one view
    at a time (data-view): sign in (which switches to create an account; ?view=create opens on it), forgot password and
    its confirmation; signing in goes back to the page in ?next= (next.js allows only paths on this site; otherwise the
-   Collection page). Signed in, it shows the account's panels: the email, Change password (opening in place), and Sign
-   out / Delete account. All API calls go through account.js; who is signed in comes from the header's one check
+   Collection page). Signed in, it shows the account's panels: the email, Change password (opening in place), the Trade
+   profile (trade-profile.js), and Sign out / Delete account. All API calls go through account.js; who is signed in comes from the header's one check
    (header.ready), and the header is told when that changes. */
-import * as account from './account.js?v=08063f1e16';
-import * as header from './header-account.js?v=08063f1e16';
-import { safeNext } from './next.js?v=08063f1e16';
+import * as account from './account.js?v=1c5474a3c2';
+import * as header from './header-account.js?v=1c5474a3c2';
+import { safeNext } from './next.js?v=1c5474a3c2';
+import * as tradeProfile from './trade-profile.js?v=1c5474a3c2';
 
 const $ = (id) => document.getElementById(id);
 const out = $('acct-out');
@@ -94,6 +95,7 @@ modeButton.addEventListener('click', () => {
 /** The signed-out page, with an optional note at the top ("Signed out.", "Your account has been deleted."). */
 function showSignedOut(text = '', isError = false) {
   inside.hidden = true;
+  tradeProfile.reset();
   out.hidden = false;
   closeChange();
   closeDelete();
@@ -147,6 +149,7 @@ function showSignedIn(address) {
   inside.hidden = false;
   $('acct-in-email').textContent = address;
   $('details-email').textContent = address;
+  tradeProfile.load(sessionEnded);
 }
 
 /** The API says the session is gone (expired, or signed out elsewhere): the sign-in view, saying why. */

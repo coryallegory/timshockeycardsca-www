@@ -1,7 +1,7 @@
 /* The header's account control (mockup option B), on every page when the site is built with API_URL (the plain site
    doesn't load this file, so its header stays as it is): signed out a Sign in pill, signed in a round initial button
-   whose small menu is a native popover. Also the header's layout with three tabs: name, tabs and account control on one
-   row from 861 px; below that the control moves up beside the name and the tabs get the row below. Also the
+   whose small menu is a native popover. Also the header's layout with four tabs: name, tabs and account control on one
+   row from 901 px; below that the control moves up beside the name and the tabs get the row below. Also the
    visually-hidden helper the account pages share. */
 
 .visually-hidden {
@@ -67,14 +67,17 @@
 .site-header .tabs a { white-space: nowrap; flex: none; }
 .site-header .tabs a:focus-visible { outline: 3px solid var(--on-red); outline-offset: -3px; }
 
-/* The tagline stays on the name's line or goes, never wrapping under the name: one row needs about 1000 px (name,
-   tagline, three tabs and the Sign in pill), the two-row header's first row about 660 px. */
-@media (min-width: 861px) and (max-width: 1009px), (max-width: 680px) {
-  .brand small { display: none; }
+/* The tagline shows only on the two-row header, where it fits on the name's line (681 to 900 px): beside four tabs it
+   would wrap under the name even at 1280 px signed out (measured in temp/mockups/trading), and one rule for signed in
+   and out keeps the header from changing when you sign in. */
+.brand small { display: none; }
+@media (min-width: 681px) and (max-width: 900px) {
+  .brand small { display: inline; }
 }
 
-/* ---------- below 860 px, two rows: name and account control on the first, the tabs on the second ---------- */
-@media (max-width: 860px) {
+/* ---------- 900 px and below, two rows: name and account control on the first, the tabs on the second (one row
+   from 901 px fits the name, four tabs and the Sign in pill) ---------- */
+@media (max-width: 900px) {
   .site-header .bar { flex-wrap: wrap; row-gap: 8px; column-gap: 10px; }
   .brand { flex: 1 1 auto; min-width: 0; }
   .acct { order: 2; }
@@ -100,10 +103,14 @@
     .acct-menu { inset: auto; top: calc(anchor(bottom) + 10px); right: anchor(right); }
   }
 }
-/* below 390 px, one step smaller, so the tabs still fit at 320 px */
+/* below 390 px, one step smaller, and below 360 px one more (6 px side padding), so the four tabs fit at 320 px */
 @media (max-width: 389px) {
   .tabs { gap: 2px; }
   .tabs a { padding: 7px 9px; font-size: 14px; }
+}
+@media (max-width: 359px) {
+  .tabs { gap: 1px; }
+  .tabs a { padding: 7px 6px; }
 }
 @media (max-width: 370px) {
   .brand b { font-size: 20px; }

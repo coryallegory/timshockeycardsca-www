@@ -10,17 +10,17 @@
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='3' width='20' height='26' rx='3' fill='%23b3261e'/%3E%3Crect x='9' y='6' width='14' height='14' rx='1' fill='%23fff'/%3E%3C/svg%3E">
 <meta name="robots" content="noindex">
-<link rel="stylesheet" href="/css/fonts.css?v=08063f1e16">
-<link rel="stylesheet" href="/css/base.css?v=08063f1e16">
-<link rel="stylesheet" href="/css/layout.css?v=08063f1e16">
-<link rel="stylesheet" href="/css/components.css?v=08063f1e16">
-<link rel="stylesheet" href="/css/header-account.css?v=08063f1e16">
-<link rel="stylesheet" href="/css/account.css?v=08063f1e16">
+<link rel="stylesheet" href="/css/fonts.css?v=1c5474a3c2">
+<link rel="stylesheet" href="/css/base.css?v=1c5474a3c2">
+<link rel="stylesheet" href="/css/layout.css?v=1c5474a3c2">
+<link rel="stylesheet" href="/css/components.css?v=1c5474a3c2">
+<link rel="stylesheet" href="/css/header-account.css?v=1c5474a3c2">
+<link rel="stylesheet" href="/css/account.css?v=1c5474a3c2">
 </head>
 <body class="">
 <header class="site-header"><div class="bar">
   <a class="brand" href="/"><b>Tim Hortons Hockey Cards</b><small><span class="live-dot" aria-hidden="true"></span>2026-27 Live Stock Availability</small></a>
-  <nav class="tabs" aria-label="Pages"><a href="/">Find Packs</a><a href="/checklist">Checklist</a><a href="/collection">Collection</a></nav>
+  <nav class="tabs" aria-label="Pages"><a href="/">Find Packs</a><a href="/checklist">Checklist</a><a href="/collection">Collection</a><a href="/trading">Trading</a></nav>
   <div class="acct" id="acct" data-api-url="https://api.timshockeycards.ca" data-total="234" data-set-prefixes="2026-27-th-base- 2026-27-th-sc- 2026-27-th-fl- 2026-27-th-pp- 2026-27-th-ai- 2026-27-th-aa- 2026-27-th-sk- 2026-27-th-ng- 2026-27-th-po-">
     <a class="signin-link" id="acct-signin" href="/account" aria-current="page"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.2-6.5 8-6.5s7 2 8 6.5"/></svg>Sign in</a>
     <button class="avatar on-page" id="acct-button" type="button" popovertarget="acct-menu" aria-controls="acct-menu" aria-expanded="false" hidden></button>
@@ -90,19 +90,59 @@
       </form>
     </section>
 
+    <section class="box sec trade" id="trade-profile" aria-labelledby="trade-h">
+      <header><h2 id="trade-h">Trade profile</h2><span class="chip-status private" id="tp-chip-private"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Private</span><span class="chip-status public" id="tp-chip-public" hidden><span class="dot"></span>Public</span></header>
+      <p id="tp-done" class="ok-note" role="status" hidden></p>
+      <div id="tp-errors" class="form-error err-summary" role="alert" tabindex="-1" hidden></div>
+      <p id="tp-loading" class="sub">Loading your trade profile…</p>
+      <form id="tp-form" class="acct-form tp-form" novalidate hidden>
+        <div class="switch-row">
+          <div class="sw-text"><b id="tp-public-l">Public profile</b><span id="tp-public-text"></span>
+            <ul class="visible-list" id="tp-visible" aria-label="Shown when public"><li>Trade id</li><li id="tp-vis-area">Your area</li><li>Collection progress</li><li>Haves (extras)</li><li>Wants (missing)</li><li>Contact links</li></ul></div>
+          <span class="switch"><input type="checkbox" role="switch" id="tp-public" aria-labelledby="tp-public-l" aria-describedby="tp-public-text"><i aria-hidden="true"></i></span>
+        </div>
+        <fieldset>
+          <legend>Who you are</legend>
+          <label for="tp-id">Trade id</label>
+          <div class="fx" data-field="id"><span class="pre" aria-hidden="true">…/trading?u=</span><input id="tp-id" name="tradeId" maxlength="8" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-id-msg"></div>
+          <p class="fmsg info" id="tp-id-msg" aria-live="polite"></p>
+          <label for="tp-fsa">Your area</label>
+          <div class="area-row"><div class="fx short" data-field="fsa"><input id="tp-fsa" name="fsa" maxlength="3" placeholder="M5V" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="tp-fsa-msg"></div><span class="shown" id="tp-fsa-shown" hidden></span></div>
+          <p class="fmsg info" id="tp-fsa-msg"></p>
+          <label class="chk" for="tp-adult"><input type="checkbox" id="tp-adult"><span>I'm 18 or older<small>Needed for a public profile, since it shows your area and contact links. Under 18? Track your collection; your profile stays private.</small></span></label>
+          <p class="fmsg err" id="tp-adult-msg" hidden></p>
+        </fieldset>
+        <fieldset>
+          <legend>Contact <span class="opt">optional</span></legend>
+          <p class="lg-note">Usernames only: the site builds the links, so a profile can't carry any other link. Add at least one so traders can reach you.</p>
+          <div class="contact-grid">
+            <div><label for="tp-instagram">Instagram</label><div class="fx" data-field="instagram"><span class="pre" aria-hidden="true">@</span><input id="tp-instagram" name="instagram" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-instagram-msg"></div><p class="fmsg err" id="tp-instagram-msg" hidden></p></div>
+            <div><label for="tp-x">X (Twitter)</label><div class="fx" data-field="x"><span class="pre" aria-hidden="true">@</span><input id="tp-x" name="x" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-x-msg"></div><p class="fmsg err" id="tp-x-msg" hidden></p></div>
+            <div><label for="tp-reddit">Reddit</label><div class="fx" data-field="reddit"><span class="pre" aria-hidden="true">u/</span><input id="tp-reddit" name="reddit" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-reddit-msg"></div><p class="fmsg err" id="tp-reddit-msg" hidden></p></div>
+            <div><label for="tp-ebay">eBay</label><div class="fx" data-field="ebay"><select id="tp-ebay-kind" aria-label="eBay link type"><option value="usr" selected>Profile</option><option value="str">Store</option></select><input id="tp-ebay" name="ebay" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-ebay-msg"></div><p class="fmsg info" id="tp-ebay-hint">Links to ebay.ca/usr/your name</p><p class="fmsg err" id="tp-ebay-msg" hidden></p></div>
+            <div><label for="tp-facebook">Facebook</label><div class="fx" data-field="facebook"><span class="pre" aria-hidden="true">facebook.com/</span><input id="tp-facebook" name="facebook" placeholder="your.page or groups/…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-facebook-msg"></div><p class="fmsg err" id="tp-facebook-msg" hidden></p></div>
+          </div>
+        </fieldset>
+        <div class="preview-link" id="tp-link"><p class="pl-text"><small id="tp-link-label">Your public link</small><b id="tp-link-url"></b></p>
+          <div class="row-actions"><button class="btn small" type="button" id="tp-copy"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>Copy</button><a class="btn small" id="tp-preview" href="/trading"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Preview</a></div></div>
+        <p class="danger-note unlist-note" id="tp-unlist" hidden><b>Saving unlists you right away:</b> your link will say "This profile isn't available", and people who follow you won't see you until you turn this back on. Your trade id, area and contacts are kept.</p>
+        <div class="form-buttons"><button class="btn primary small" type="submit" id="tp-save">Save</button><button class="link-button" type="button" id="tp-cancel" hidden>Cancel</button></div>
+      </form>
+    </section>
+
     <section class="box sec" id="privacy" aria-labelledby="privacy-h">
       <header><h2 id="privacy-h">Privacy</h2></header>
-      <p class="sub">We keep only what your account needs: your email, a hash of your password, your collection and your sign-ins. No name, no advertising or profiling. What we keep, why, for how long and the sign-in cookie are all on the <a class="text-link" href="/privacy">Privacy</a> page.</p>
+      <p class="sub">We keep only what your account needs: your email, a hash of your password, your collection, your sign-ins and, if you set one up, your trade profile and who you follow. A public profile shows your trade id, area, collection and contact usernames; never your email. No name, no advertising or profiling. What we keep, why, for how long and the sign-in cookie are all on the <a class="text-link" href="/privacy">Privacy</a> page.</p>
     </section>
 
     <section class="box sec danger" id="danger" aria-labelledby="danger-h">
       <header><h2 id="danger-h">Danger zone</h2></header>
       <p id="danger-error" class="form-error" role="alert" hidden></p>
       <div class="danger-row"><p><b>Sign out</b><span>Signs out this browser. Your collection stays saved.</span></p><button id="signout-button" class="btn small" type="button">Sign out</button></div>
-      <div class="danger-row"><p><b>Delete account</b><span>Deletes your account and your collection for good.</span></p><button id="delete-open" class="btn small danger" type="button" aria-expanded="false" aria-controls="delete-form">Delete account…</button></div>
+      <div class="danger-row"><p><b>Delete account</b><span>Deletes your account, collection and trade profile for good.</span></p><button id="delete-open" class="btn small danger" type="button" aria-expanded="false" aria-controls="delete-form">Delete account…</button></div>
       <form id="delete-form" class="inline-form acct-form" aria-labelledby="delete-title" hidden>
         <h3 id="delete-title" class="visually-hidden" tabindex="-1">Delete account</h3>
-        <p class="danger-note">This permanently deletes your account and your collection. It can't be undone.</p>
+        <p class="danger-note">This permanently deletes your account, your collection and your trade profile. It can't be undone.</p>
         <p id="delete-error" class="form-error" role="alert" hidden></p>
         <label for="delete-password">Password</label>
         <input id="delete-password" name="password" type="password" autocomplete="current-password" maxlength="128" required>
@@ -110,9 +150,10 @@
       </form>
     </section>
   </div>
+  <p class="toast" id="toast" role="status"></p>
 </main>
 <footer class="site-footer">Unofficial fan project. Not affiliated with Tim Hortons, Upper Deck, the NHL or the NHLPA. <a href="/privacy">Privacy</a></footer>
-<script type="module" src="/js/account-page.js?v=08063f1e16"></script>
-<script type="module" src="/js/header-account.js?v=08063f1e16"></script>
+<script type="module" src="/js/account-page.js?v=1c5474a3c2"></script>
+<script type="module" src="/js/header-account.js?v=1c5474a3c2"></script>
 </body>
 </html>

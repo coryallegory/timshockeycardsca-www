@@ -1,4 +1,4 @@
-/* The only browser code that calls the Stage 2 API (shapes: docs/DATABASE-AUTH-PLAN.md, Endpoints). The API's base URL
+/* The only browser code that calls the API (shapes: docs/DATABASE-AUTH-PLAN.md, Endpoints and Trading endpoints). The API's base URL
    comes from the page's data-api-url attribute (the API_URL build setting). Every call sends the session cookie
    (credentials: 'include'); every state-changing call sends Content-Type: application/json, which the API requires even
    without a body. Failures throw an ApiError carrying the API's { error } message; status 401 means signed out.
@@ -63,6 +63,26 @@ export const resetPassword = (token, password) => call('POST', '/auth/reset-pass
 export const changePassword = (currentPassword, newPassword) => call('POST', '/auth/change-password', { currentPassword, newPassword });
 /** Deletes the account and its collection for good (needs the password); the API also ends the session. */
 export const deleteAccount = (password) => call('DELETE', '/account', { password });
+
+// Trading (docs/DATABASE-AUTH-PLAN.md, "Trading endpoints").
+const tradePath = (base, tradeId) => `${base}/${encodeURIComponent(tradeId)}`;
+/** The signed-in user's trade profile: { tradeId?, fsa?, adult?, public, contacts, updatedAt? }. */
+export const getProfile = () => call('GET', '/profile');
+/** Replaces the trade profile (anything left out is cleared); answers the saved profile. */
+export const saveProfile = (profile) => call('PUT', '/profile', profile);
+/** Whether a trade id is free for the signed-in user: { available, reason? }. */
+export const checkTradeId = (tradeId) => call('GET', tradePath('/trade-ids', tradeId));
+/**
+ * A public trade profile (or the viewer's own, private or not): { tradeId, fsa, contacts, owner, public, cards, copies,
+ * following? } (`following` only for a signed-in visitor who isn't the owner); 404 otherwise.
+ */
+export const getTrader = (tradeId) => call('GET', tradePath('/traders', tradeId));
+/** The public traders the signed-in user follows, with their set cards: [{ tradeId, fsa, contacts, cards, copies }]. */
+export const getFollowing = () => call('GET', '/following').then((res) => res.traders);
+/** Follows a public trader (idempotent). */
+export const follow = (tradeId) => call('PUT', tradePath('/following', tradeId));
+/** Unfollows (idempotent). */
+export const unfollow = (tradeId) => call('DELETE', tradePath('/following', tradeId));
 
 /* The session cookie is HttpOnly, so scripts can't see it. This non-secret localStorage hint records that a sign-in
    happened on this browser; only with it does a page ask the API who is signed in. Storage may be unavailable (private
