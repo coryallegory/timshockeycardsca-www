@@ -10,12 +10,12 @@
    Nothing from the API is inserted as HTML: trade ids, areas and usernames go in as text, links are built only from
    usernames that pass trade.js's checks, and the card grids are rendered at build time (this only sets their classes,
    labels and counts). */
-import * as account from './account.js?v=4661e6fcb2';
-import { copyLink } from './copy.js?v=4661e6fcb2';
-import * as header from './header-account.js?v=4661e6fcb2';
-import { signInHref } from './next.js?v=4661e6fcb2';
-import { extraCopies, inSet, SET_TOTAL, tally } from './set.js?v=4661e6fcb2';
-import { cellState, cellText, collectionMap, contactLinks, match, profilePath, reportHref, sortTraders, TRADE_ID } from './trade.js?v=4661e6fcb2';
+import * as account from './account.js?v=d40d4015b0';
+import { copyLink } from './copy.js?v=d40d4015b0';
+import * as header from './header-account.js?v=d40d4015b0';
+import { signInHref } from './next.js?v=d40d4015b0';
+import { extraCopies, inSet, SET_TOTAL, tally } from './set.js?v=d40d4015b0';
+import { cellState, cellText, collectionMap, contactLinks, match, profilePath, reportHref, sortTraders, TRADE_ID } from './trade.js?v=d40d4015b0';
 
 const $ = (id) => document.getElementById(id);
 const msg = $('trade-msg');
@@ -263,12 +263,9 @@ function drawContacts(contacts) {
   $('ct-empty').hidden = items.length > 0;
 }
 
-/** The owner's preview: the bar (and "Private" while private); no Follow, no match, cells in "you" words. */
+/** The owner viewing their own profile: the page exactly as others see it (owner decision), minus Follow and the match; cells in "you" words. */
 function drawOwner() {
   own = true;
-  $('own-banner').hidden = false;
-  $('own-private').hidden = trader.public;
-  $('prof-actions').hidden = true;
   drawCells();
 }
 

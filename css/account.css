@@ -86,6 +86,9 @@
 .switch i::after { content: ""; position: absolute; left: 4px; top: 4px; width: 24px; height: 24px; border-radius: 50%; background: var(--panel); box-shadow: 0 1px 3px rgb(0 0 0 / 25%); transition: transform 0.15s ease; }
 .switch input:checked + i { background: var(--available); }
 .switch input:checked + i::after { transform: translateX(22px); }
+/* Locked until "I'm 18 or older" is ticked: greyed out and not clickable. */
+.switch-row.locked { opacity: 0.55; }
+.acct-form .switch input:disabled { cursor: not-allowed; }
 .switch input:focus-visible + i { outline: 3px solid var(--red); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .switch i, .switch i::after { transition: none; } }
 .visible-list { margin: 8px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 4px 6px; }

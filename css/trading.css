@@ -108,10 +108,6 @@ a.tid:hover { color: var(--red); text-decoration: underline; text-underline-offs
 .crumb { display: inline-flex; align-items: center; gap: 4px; margin: 0 0 10px; color: var(--red); font-weight: 700; font-size: 16px; text-decoration: none; }
 .crumb:hover { text-decoration: underline; text-underline-offset: 3px; }
 .trading-page .crumb .ico { width: 18px; height: 18px; }
-.own-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 0 0 18px; padding: 10px 14px; border-radius: 12px; background: var(--paper); border: 2px dashed var(--line); }
-.own-banner p { margin: 0; flex: 1 1 260px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-.own-banner p small { display: block; font-weight: 600; color: var(--muted); font-size: 14px; }
-.trading-page .own-banner p .ico { width: 18px; height: 18px; color: var(--muted); }
 .prof-top { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 24px; margin: 0 0 22px; }
 .prof-id { flex: 1 1 360px; min-width: 0; }
 .prof-id h1 { margin: 0 0 6px; overflow-wrap: anywhere; }

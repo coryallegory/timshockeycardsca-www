@@ -7,9 +7,9 @@
    PUT /profile, which replaces the whole profile: the body is the saved profile with that panel's fields changed, so
    saving one panel never loses (or saves) the other's edits. The area is optional; going public needs only 18+. The
    checks mirror the API's (trade.js); its own answer is shown if it still refuses. All API calls go through account.js. */
-import * as account from './account.js?v=4661e6fcb2';
-import { copyLink } from './copy.js?v=4661e6fcb2';
-import { cleanContact, CONTACTS, fsaProblem, profilePath, tradeIdProblem } from './trade.js?v=4661e6fcb2';
+import * as account from './account.js?v=d40d4015b0';
+import { copyLink } from './copy.js?v=d40d4015b0';
+import { cleanContact, CONTACTS, fsaProblem, profilePath, tradeIdProblem } from './trade.js?v=d40d4015b0';
 
 /** How long typing must pause before the trade id is checked with the API. */
 const CHECK_MS = 450;
@@ -119,11 +119,17 @@ function drawSaved() {
 
 /** What follows from the Trade profile panel's state: the switch's text and chips, the link's look, the button. */
 function refreshTrade() {
+  // The switch needs 18+ first (owner decision): disabled and greyed until the box is ticked; unticking turns it off.
+  pub.disabled = !adult.checked;
+  if (!adult.checked) pub.checked = false;
+  $('tp-switch-row').classList.toggle('locked', !adult.checked);
   const { changes } = readTrade();
   const on = pub.checked;
-  $('tp-public-text').textContent = on
-    ? 'Anyone with your link can see the items below. Your email is never shown.'
-    : 'Off: nobody else can see your profile. You can still look at traders\' profiles and follow them.';
+  $('tp-public-text').textContent = !adult.checked
+    ? 'Tick "I\'m 18 or older" above to turn this on. Until then nobody else can see your profile.'
+    : on
+      ? 'Anyone with your link can see the items below. Your email is never shown.'
+      : 'Off: nobody else can see your profile. You can still look at traders\' profiles and follow them.';
   const fsaOk = changes.fsa && !fsaProblem(changes.fsa);
   const visible = [...$('tp-visible').children];
   for (const li of visible) li.classList.toggle('no', !on);
