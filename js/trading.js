@@ -10,12 +10,12 @@
    Nothing from the API is inserted as HTML: trade ids, areas and usernames go in as text, links are built only from
    usernames that pass trade.js's checks, and the card grids are rendered at build time (this only sets their classes,
    labels and counts). */
-import * as account from './account.js?v=157411f666';
-import { copyLink } from './copy.js?v=157411f666';
-import * as header from './header-account.js?v=157411f666';
-import { signInHref } from './next.js?v=157411f666';
-import { extraCopies, inSet, SET_TOTAL, tally } from './set.js?v=157411f666';
-import { cellState, cellText, collectionMap, contactLinks, match, profilePath, reportHref, sortTraders, TRADE_ID } from './trade.js?v=157411f666';
+import * as account from './account.js?v=d1788456b3';
+import { copyLink } from './copy.js?v=d1788456b3';
+import * as header from './header-account.js?v=d1788456b3';
+import { signInHref } from './next.js?v=d1788456b3';
+import { extraCopies, inSet, SET_TOTAL, tally } from './set.js?v=d1788456b3';
+import { cellState, cellText, collectionMap, contactLinks, match, profilePath, reportHref, sortTraders, TRADE_ID } from './trade.js?v=d1788456b3';
 
 const $ = (id) => document.getElementById(id);
 const msg = $('trade-msg');
@@ -254,7 +254,7 @@ function drawContacts(contacts) {
     const a = li.querySelector('a');
     a.href = c.href;
     a.setAttribute('aria-label', `${c.name}: ${c.label} (opens in a new tab)`);
-    li.querySelector('.glyph').textContent = c.glyph;
+    a.dataset.net = c.key; // CSS shows this network's mark in the badge
     li.querySelector('small').textContent = c.name;
     li.querySelector('.handle').textContent = c.label;
     return li;

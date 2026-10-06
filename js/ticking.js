@@ -12,13 +12,13 @@
    No request is made for a visitor who has never signed in on this browser: who is signed in comes from the header's
    one check (`header.ready`), made only with account.js's localStorage hint, and the collection from the header's one
    fetch (`header.collection()`), which the menu shares; the menu then counts from this page (header.countWith). */
-import * as account from './account.js?v=157411f666';
-import * as extras from './extras.js?v=157411f666';
-import * as filter from './filter.js?v=157411f666';
-import * as header from './header-account.js?v=157411f666';
-import { signInHref } from './next.js?v=157411f666';
-import { SET_TOTAL, tally } from './set.js?v=157411f666';
-import { showFrom } from './show.js?v=157411f666';
+import * as account from './account.js?v=d1788456b3';
+import * as extras from './extras.js?v=d1788456b3';
+import * as filter from './filter.js?v=d1788456b3';
+import * as header from './header-account.js?v=d1788456b3';
+import { signInHref } from './next.js?v=d1788456b3';
+import { SET_TOTAL, tally } from './set.js?v=d1788456b3';
+import { showFrom } from './show.js?v=d1788456b3';
 
 const TOAST_MS = 8000;
 const MSG_MS = 8000;

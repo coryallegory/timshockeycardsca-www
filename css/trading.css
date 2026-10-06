@@ -195,8 +195,12 @@ button.cell:focus-visible { outline: 3px solid var(--red); outline-offset: 1px; 
 .contact small { display: block; font-weight: 600; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
 .glyph {
   flex: none; width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; background: var(--board); color: var(--board-ink);
-  font: 700 14px/1 var(--body); letter-spacing: -0.02em;
 }
+/* The badge holds every network's mark; only the link's own shows (data-net set by trading.js). */
+.glyph .brand { display: none; width: 18px; height: 18px; fill: currentColor; }
+.contact[data-net="instagram"] .brand-instagram, .contact[data-net="x"] .brand-x, .contact[data-net="reddit"] .brand-reddit,
+.contact[data-net="ebay"] .brand-ebay, .contact[data-net="facebook"] .brand-facebook { display: block; }
+.contact[data-net="ebay"] .brand-ebay { width: 24px; }
 .side-box .stat { margin: 0 0 8px; }
 .side-box .stat .big { font-size: 32px; }
 .side-box .stat .big small { font-size: 15px; }

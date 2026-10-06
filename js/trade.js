@@ -11,18 +11,18 @@ export const FSA = /^[ABCEGHJ-NPRSTVXY][0-9][ABCEGHJ-NPRSTV-Z]$/;
 /** The contact platforms in display order: the username pattern (the API's), how it is shown, and the link built. */
 const seg = encodeURIComponent;
 export const CONTACTS = [
-  { key: 'instagram', name: 'Instagram', glyph: 'IG', pattern: /^[A-Za-z0-9._]{1,30}$/, show: (u) => `@${u}`, href: (u) => `https://www.instagram.com/${seg(u)}` },
-  { key: 'x', name: 'X', glyph: 'X', pattern: /^[A-Za-z0-9_]{1,15}$/, show: (u) => `@${u}`, href: (u) => `https://x.com/${seg(u)}` },
-  { key: 'reddit', name: 'Reddit', glyph: 'r/', pattern: /^[A-Za-z0-9_-]{3,20}$/, show: (u) => `u/${u}`, href: (u) => `https://www.reddit.com/user/${seg(u)}` },
-  { key: 'ebay', name: 'eBay', glyph: 'eB', pattern: /^[A-Za-z0-9._-]{1,64}$/, show: (u, kind) => (kind === 'str' ? `${u} (store)` : u), href: (u, kind) => `https://www.ebay.ca/${kind}/${seg(u)}` },
+  { key: 'instagram', name: 'Instagram', pattern: /^[A-Za-z0-9._]{1,30}$/, show: (u) => `@${u}`, href: (u) => `https://www.instagram.com/${seg(u)}` },
+  { key: 'x', name: 'X', pattern: /^[A-Za-z0-9_]{1,15}$/, show: (u) => `@${u}`, href: (u) => `https://x.com/${seg(u)}` },
+  { key: 'reddit', name: 'Reddit', pattern: /^[A-Za-z0-9_-]{3,20}$/, show: (u) => `u/${u}`, href: (u) => `https://www.reddit.com/user/${seg(u)}` },
+  { key: 'ebay', name: 'eBay', pattern: /^[A-Za-z0-9._-]{1,64}$/, show: (u, kind) => (kind === 'str' ? `${u} (store)` : u), href: (u, kind) => `https://www.ebay.ca/${kind}/${seg(u)}` },
   // The path after facebook.com/: no leading "/", no "//" or "..", and not the address itself.
-  { key: 'facebook', name: 'Facebook', glyph: 'f', pattern: /^(?!\/)(?!.*\/\/)(?!.*\.\.)(?!.*facebook\.com)[A-Za-z0-9./-]{1,100}$/i, show: (u) => u, href: (u) => `https://www.facebook.com/${u.split('/').map(seg).join('/')}` },
+  { key: 'facebook', name: 'Facebook', pattern: /^(?!\/)(?!.*\/\/)(?!.*\.\.)(?!.*facebook\.com)[A-Za-z0-9./-]{1,100}$/i, show: (u) => u, href: (u) => `https://www.facebook.com/${u.split('/').map(seg).join('/')}` },
 ];
 const BY_KEY = Object.fromEntries(CONTACTS.map((c) => [c.key, c]));
 
 /**
  * A profile's contact links, built only from usernames that pass the rules (anything else is left out, so a stored
- * value can never become another link): [{ key, name, glyph, label, href }] in display order. `contacts` is the API's
+ * value can never become another link): [{ key, name, label, href }] in display order. `contacts` is the API's
  * `{ instagram?, x?, reddit?, ebay?: { name, kind }, facebook? }`.
  */
 export function contactLinks(contacts) {
@@ -33,7 +33,7 @@ export function contactLinks(contacts) {
     const kind = c.key === 'ebay' ? value?.kind : undefined;
     if (typeof name !== 'string' || !c.pattern.test(name)) continue;
     if (c.key === 'ebay' && kind !== 'usr' && kind !== 'str') continue;
-    links.push({ key: c.key, name: c.name, glyph: c.glyph, label: c.show(name, kind), href: c.href(name, kind) });
+    links.push({ key: c.key, name: c.name, label: c.show(name, kind), href: c.href(name, kind) });
   }
   return links;
 }
