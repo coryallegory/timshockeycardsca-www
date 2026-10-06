@@ -91,7 +91,7 @@
 * { box-sizing: border-box; }
 
 html, body { margin: 0; background: var(--bg); color: var(--ink); }
-/* Links to a spot on the same page ("Find packs near you", the checklist contents) glide there instead of jumping. */
+/* Links to a spot on the same page ("Live pack inventory", the checklist contents) glide there instead of jumping. */
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body {

@@ -76,7 +76,11 @@
    preview and Save; field messages in grey, green or red ---------- */
 .sec.trade > header { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; }
 .sec .ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
-.switch-row { display: flex; align-items: flex-start; gap: 14px; padding: 12px 14px; border: 2px solid var(--line); border-radius: 12px; margin: 0 0 6px; background: var(--paper); }
+/* One block for going public: "I'm 18 or older" on top unlocks the switch row under it. */
+.public-block { padding: 12px 14px; border: 2px solid var(--line); border-radius: 12px; margin: 0 0 6px; background: var(--paper); }
+.acct-form .public-block label.chk { margin: 0; }
+.public-block .fmsg { margin: 6px 0 0; }
+.switch-row { display: flex; align-items: flex-start; gap: 14px; margin: 12px 0 0; padding: 12px 0 0; border-top: 2px solid var(--line); }
 .switch-row .sw-text { flex: 1 1 auto; min-width: 0; }
 .switch-row .sw-text b { display: block; font-size: 17px; }
 .switch-row .sw-text > span { color: var(--ink-2); font-size: 15px; }
