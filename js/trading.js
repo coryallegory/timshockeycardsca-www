@@ -10,12 +10,12 @@
    Nothing from the API is inserted as HTML: trade ids, areas and usernames go in as text, links are built only from
    usernames that pass trade.js's checks, and the card grids are rendered at build time (this only sets their classes,
    labels and counts). */
-import * as account from './account.js?v=d1788456b3';
-import { copyLink } from './copy.js?v=d1788456b3';
-import * as header from './header-account.js?v=d1788456b3';
-import { signInHref } from './next.js?v=d1788456b3';
-import { extraCopies, inSet, SET_TOTAL, tally } from './set.js?v=d1788456b3';
-import { cellState, cellText, collectionMap, contactLinks, match, profilePath, reportHref, sortTraders, TRADE_ID } from './trade.js?v=d1788456b3';
+import * as account from './account.js?v=dd28015aed';
+import { copyLink } from './copy.js?v=dd28015aed';
+import * as header from './header-account.js?v=dd28015aed';
+import { signInHref } from './next.js?v=dd28015aed';
+import { extraCopies, inSet, SET_TOTAL, tally } from './set.js?v=dd28015aed';
+import { cellState, cellText, collectionMap, contactLinks, match, profilePath, reportHref, sortTraders, TRADE_ID } from './trade.js?v=dd28015aed';
 
 const $ = (id) => document.getElementById(id);
 const msg = $('trade-msg');

@@ -8,10 +8,10 @@
    Nothing is edited here, so the menu's count comes from the same fetch. No request is made for a visitor who has
    never signed in on this browser: who is signed in comes from the header's one check (`header.ready`), made only with
    account.js's localStorage hint, and the collection from the header's one fetch (`header.collection()`). */
-import * as account from './account.js?v=d1788456b3';
-import * as header from './header-account.js?v=d1788456b3';
-import { drawProgress } from './progress.js?v=d1788456b3';
-import { SET_TOTAL, tally } from './set.js?v=d1788456b3';
+import * as account from './account.js?v=dd28015aed';
+import * as header from './header-account.js?v=dd28015aed';
+import { drawProgress } from './progress.js?v=dd28015aed';
+import { SET_TOTAL, tally } from './set.js?v=dd28015aed';
 
 /** The trade binder box lists at most this many cards. */
 const BINDER_ROWS = 10;

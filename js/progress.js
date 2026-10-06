@@ -3,7 +3,7 @@
    the percentage, the progress bar and Base / Inserts / Short prints. Each part lists its subsets' card-id prefixes
    (ids are `2026-27-th-<subset>-...`, permanent), so an owned id is placed without the cards list. No API calls:
    collection.js hands it the collection (the set's cards only, set.js). */
-import { extraCopies, tally } from './set.js?v=d1788456b3';
+import { extraCopies, tally } from './set.js?v=dd28015aed';
 
 const $ = (id) => document.getElementById(id);
 const count = $('coll-count');

@@ -37,7 +37,7 @@ a.tid:hover { color: var(--red); text-decoration: underline; text-underline-offs
 .hub-follow { grid-area: follow; }
 .hub-profile { grid-area: profile; }
 
-/* Your trade profile: status, the link with Copy, haves and wants tiles, two buttons (private: one) */
+/* Your trade profile: status, the link with Copy, public actions, spares and wants tiles (private: one action below) */
 .hub-profile h2 { font-size: 22px; margin: 0 0 8px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; }
 .hub-profile h2 .chip-status { margin-left: auto; }
 .hb-note { margin: 0 0 12px; font-size: 15px; color: var(--ink-2); }
@@ -48,6 +48,7 @@ a.tid:hover { color: var(--red); text-decoration: underline; text-underline-offs
 }
 .share .url span { overflow: hidden; text-overflow: ellipsis; }
 .share .btn { flex: none; }
+#mp-actions-public { margin-bottom: 12px; }
 .hb-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .hb-tile {
   display: flex; flex-direction: column; gap: 2px; padding: 9px 12px 10px; border: 2px solid var(--line); border-radius: 12px;
@@ -237,7 +238,7 @@ button.cell:focus-visible { outline: 3px solid var(--red); outline-offset: 1px; 
 @media (max-width: 640px) {
   .trading-page .lede { margin-bottom: 16px; }
   .sec-h { font-size: 24px; }
-  /* Your trade profile, compact: status, the link and Copy, the counts as one line of links, the buttons */
+  /* Your trade profile, compact: status, the link and Copy, public actions, counts as one line of links */
   .hub-profile { padding: 12px 14px; }
   .hub-profile h2 { font-size: 19px; margin-bottom: 6px; }
   .hb-note { display: none; }
