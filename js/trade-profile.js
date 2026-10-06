@@ -7,10 +7,10 @@
    PUT /profile, which replaces the whole profile: the body is the saved profile with that panel's fields changed, so
    saving one panel never loses (or saves) the other's edits. The area is optional; going public needs only 18+. The
    checks mirror the API's (trade.js); its own answer is shown if it still refuses. All API calls go through account.js. */
-import * as account from './account.js?v=190e2f344a';
-import { areaProblem, loadAreas, nearestArea } from './areas.js?v=190e2f344a';
-import { copyLink } from './copy.js?v=190e2f344a';
-import { cleanContact, CONTACTS, fsaProblem, profilePath, tradeIdProblem } from './trade.js?v=190e2f344a';
+import * as account from './account.js?v=3d28d63c36';
+import { areaProblem, loadAreas, nearestArea } from './areas.js?v=3d28d63c36';
+import { copyLink } from './copy.js?v=3d28d63c36';
+import { cleanContact, CONTACTS, fsaProblem, profilePath, tradeIdProblem } from './trade.js?v=3d28d63c36';
 
 /** How long typing must pause before the trade id is checked with the API. */
 const CHECK_MS = 450;

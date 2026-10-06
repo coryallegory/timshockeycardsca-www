@@ -11,13 +11,13 @@
    Nothing from the API is inserted as HTML: trade ids, areas and usernames go in as text, links are built only from
    usernames that pass trade.js's checks, and the card grids are rendered at build time (this only sets their classes,
    labels and counts). */
-import * as account from './account.js?v=190e2f344a';
-import { areaProblem, distanceText, loadAreas, nearestArea } from './areas.js?v=190e2f344a';
-import { copyLink } from './copy.js?v=190e2f344a';
-import * as header from './header-account.js?v=190e2f344a';
-import { signInHref } from './next.js?v=190e2f344a';
-import { extraCopies, inSet, SET_TOTAL, tally } from './set.js?v=190e2f344a';
-import { cellState, cellText, collectionMap, contactLinks, match, profilePath, reportHref, sortTraders, TRADE_ID } from './trade.js?v=190e2f344a';
+import * as account from './account.js?v=3d28d63c36';
+import { areaProblem, distanceText, loadAreas, nearestArea } from './areas.js?v=3d28d63c36';
+import { copyLink } from './copy.js?v=3d28d63c36';
+import * as header from './header-account.js?v=3d28d63c36';
+import { signInHref } from './next.js?v=3d28d63c36';
+import { extraCopies, inSet, SET_TOTAL, tally } from './set.js?v=3d28d63c36';
+import { cellState, cellText, collectionMap, contactLinks, match, profilePath, reportHref, sortTraders, TRADE_ID } from './trade.js?v=3d28d63c36';
 
 const $ = (id) => document.getElementById(id);
 const msg = $('trade-msg');
