@@ -14,9 +14,9 @@
    For page scripts: `ready` (who is signed in, from that one check), `signedIn(email)` / `signedOut()` to update the
    header after the page signs in or out, `collection()` (the set's cards, fetched once), `countWith(fn)`,
    `collectionCounts()` (the menu's counts) and `onSignOut(fn)` (the menu's Sign out succeeded). */
-import * as account from './account.js?v=c464393174';
-import { signInHref } from './next.js?v=c464393174';
-import { extraCopies, SET_TOTAL, setOnly, tally } from './set.js?v=c464393174';
+import * as account from './account.js?v=4661e6fcb2';
+import { signInHref } from './next.js?v=4661e6fcb2';
+import { extraCopies, SET_TOTAL, setOnly, tally } from './set.js?v=4661e6fcb2';
 
 const MSG_MS = 8000;
 

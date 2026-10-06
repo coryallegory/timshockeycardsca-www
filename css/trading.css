@@ -1,7 +1,7 @@
 /* The Trading page, /trading (built only with API_URL; from temp/mockups/trading): the hub (Following in the main
-   column, Your trade profile beside it; on phones the profile card first, compact) and a trader's profile (the match,
-   haves by set, wants as number chips; contact, collection and safety beside them; on phones match, contact, the
-   lists, then collection and safety). The pitch, stat, bar, binder rows, chips and toast are in components.css. */
+   column, Your trade profile beside it; on phones the profile card first, compact) and a trader's profile (the match
+   tiles, one card grid per set; external links, collection and safety beside them; on phones match, links, the grids,
+   then collection and safety). The pitch, stat, bar, binder rows, chips and toast are in components.css. */
 
 .trading-page h1 { margin-bottom: 8px; }
 .trading-page .lede { max-width: 62ch; margin-bottom: 24px; }
@@ -129,14 +129,16 @@ a.tid:hover { color: var(--red); text-decoration: underline; text-underline-offs
 .prof-lists > .list-sec:first-child { margin-top: 30px; }
 .prof-grid:not(:has(> .prof-match:not([hidden]))) .prof-lists > .list-sec:first-child { margin-top: 0; }
 
-/* the match: two tiles, each showing its list filtered */
+/* the match: two tiles, each a toggle that dims the grid's other cells (pressed: red border and tint) */
 .match-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .mt {
-  display: flex; flex-direction: column; gap: 3px; padding: 12px 16px 14px; background: var(--panel); border: 2px solid var(--line); border-radius: 12px;
-  color: var(--ink); text-decoration: none; transition: border-color 0.12s ease, background-color 0.12s ease;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 12px 16px 14px; background: var(--panel); border: 2px solid var(--line); border-radius: 12px;
+  font: inherit; text-align: left; color: var(--ink); cursor: pointer; transition: border-color 0.12s ease, background-color 0.12s ease;
 }
-.mt:hover { border-color: var(--red); background: var(--red-soft); }
+.mt:hover:not(:disabled), .mt[aria-pressed="true"] { border-color: var(--red); background: var(--red-soft); }
+.mt[aria-pressed="true"] { box-shadow: inset 0 0 0 1px var(--red); }
 .mt:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.mt:disabled { cursor: default; }
 .mt b { font: 700 40px/1 var(--display); font-variant-numeric: tabular-nums; }
 .mt span { font-weight: 700; font-size: 16px; }
 .mt small { font-size: 14px; color: var(--muted); }
@@ -145,36 +147,47 @@ a.tid:hover { color: var(--red); text-decoration: underline; text-underline-offs
 .match-out p { margin: 0; flex: 1 1 300px; color: var(--ink-2); overflow-wrap: anywhere; }
 .match-out p b { color: var(--ink); }
 
-/* the lists: a heading with its All / You need toggle, a set per box */
+/* the cards: one grid per set with every number. Missing: the number in ink, no border (the main signal); has it: faded
+   number and border; spare: faded number, a normal border and the spare count in the corner; for a signed-in visitor, a
+   filled red disc with a light number = their spare that you need, an outline red ring around a dark number = they need
+   it and you have a spare. A pressed tile dims the rest. */
 .list-sec { margin-top: 30px; scroll-margin-top: 16px; }
-.list-blurb { margin: -4px 0 12px; color: var(--ink-2); font-size: 15px; overflow-wrap: anywhere; }
-.seg { display: inline-flex; border: 2px solid var(--line); border-radius: 999px; padding: 2px; gap: 2px; background: var(--paper); }
-.seg button {
-  font: 700 14px/1 var(--body); padding: 0 12px; min-height: 32px; display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; border: 0;
-  background: none; color: var(--ink-2); cursor: pointer; font-variant-numeric: tabular-nums; white-space: nowrap;
-}
-.seg button:hover { background: var(--red-soft); color: var(--red); }
-.seg button[aria-pressed="true"] { background: var(--red); color: var(--on-red); }
-.seg button:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
-.set-block { margin: 0 0 14px; padding: 12px 16px 10px; }
-.set-block > header { display: flex; align-items: baseline; gap: 10px; margin: 0 0 4px; }
+.list-blurb { margin: -4px 0 10px; color: var(--ink-2); font-size: 15px; overflow-wrap: anywhere; }
+.grid-key { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 12px; padding: 0; font-size: 14px; color: var(--ink-2); }
+.grid-key li { display: inline-flex; align-items: center; gap: 6px; }
+.grid-key .cell { min-width: 40px; height: 32px; }
+.dim-note { margin: 0 0 12px; font-size: 15px; font-weight: 700; color: var(--ink); }
+.dim-note:empty { display: none; }
+.set-block { margin: 0 0 14px; padding: 12px 16px 12px; }
+.set-block > header { display: flex; align-items: baseline; gap: 10px; margin: 0 0 8px; }
 .set-block h3 { margin: 0; font-size: 18px; flex: 1 1 auto; }
 .set-block .n { font-size: 14px; color: var(--muted); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.set-block .binder { columns: 2 260px; column-gap: 26px; margin: 0; }
-.set-block .binder li { break-inside: avoid; padding: 6px 0; border-top: 1px solid var(--line); }
-.set-block .binder li.hit { background: var(--red-soft); box-shadow: -8px 0 0 var(--red-soft), 8px 0 0 var(--red-soft); border-radius: 4px; }
-.set-block .binder li.hit .who { font-weight: 700; }
-.set-block .binder li.hit .no { color: var(--red); }
-.set-block .binder .no { min-width: 2.6em; }
-.nums { list-style: none; margin: 6px 0 4px; padding: 0; display: flex; flex-wrap: wrap; gap: 5px; }
-.nums li {
-  min-width: 38px; height: 30px; padding: 0 7px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px;
-  border: 1px solid var(--line); background: var(--paper); font: 700 14px/1 var(--body); color: var(--ink-2); font-variant-numeric: tabular-nums;
+.grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 5px; }
+.grid li { position: relative; display: flex; }
+.cell {
+  position: relative; flex: 1 1 auto; min-width: 40px; height: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center;
+  border: 2px solid transparent; border-radius: 8px; background: var(--paper); color: var(--ink); cursor: pointer;
+  font: 700 15px/1 var(--body); font-variant-numeric: tabular-nums; transition: opacity 0.12s ease;
 }
-.nums li.hit { background: var(--red-soft); border-color: var(--red); color: var(--red); }
-.nums-key { display: flex; align-items: center; gap: 6px; margin: -4px 0 10px; font-size: 14px; color: var(--muted); }
-.nums-key i { width: 18px; height: 14px; border-radius: 4px; background: var(--red-soft); border: 1px solid var(--red); }
-.complete-line { color: var(--available); font-weight: 700; font-size: 15px; margin: 0 0 10px; }
+.cell .num { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; padding: 0 3px; border-radius: 999px; }
+.cell.have, .cell.spare { color: var(--cell-have); font-weight: 600; }
+.cell.have { border-color: var(--have-edge); }
+.cell.spare { border-color: var(--spare-edge); }
+.cell .cnt { position: absolute; top: 1px; right: 2px; font: 700 10px/1 var(--body); color: var(--muted); }
+.cell .cnt:empty { display: none; }
+.cell.get .num { background: var(--disc); color: var(--on-disc); font-weight: 700; }
+.cell.give .num { box-shadow: inset 0 0 0 2px var(--red); }
+.cell.dim { opacity: 0.22; }
+button.cell:hover { border-color: var(--muted); }
+button.cell:focus-visible { outline: 3px solid var(--red); outline-offset: 1px; }
+.cell-tip {
+  position: absolute; z-index: 5; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); width: max-content; max-width: 240px; margin: 0;
+  padding: 7px 10px; border-radius: 8px; background: var(--board); color: var(--board-ink); font-size: 14px; font-weight: 600; line-height: 1.3;
+  box-shadow: var(--shadow); pointer-events: none;
+}
+.cell-tip.at-start { left: 0; transform: none; }
+.cell-tip.at-end { left: auto; right: 0; transform: none; }
+@media (prefers-reduced-motion: reduce) { .cell { transition: none; } }
 
 /* the side: contact, collection, safety */
 .side-box h2 { font-size: 20px; margin: 0 0 10px; overflow-wrap: anywhere; }
@@ -210,7 +223,7 @@ a.tid:hover { color: var(--red); text-decoration: underline; text-underline-offs
 /* ======================= narrower screens ======================= */
 @media (max-width: 860px) {
   .hub-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "profile" "follow"; gap: 22px; }
-  /* profile: match, contact, the lists, then collection and safety */
+  /* profile: match, contact, the card grids, then collection and safety */
   .prof-grid { display: flex; flex-direction: column; gap: 14px; }
   .prof-grid > *, .prof-side > * { width: 100%; }
   .prof-side { display: contents; }
@@ -254,5 +267,6 @@ a.tid:hover { color: var(--red); text-decoration: underline; text-underline-offs
   .mt small { font-size: 13px; }
   .list-sec { margin-top: 24px; }
   .set-block { padding: 10px 12px 8px; }
-  .nums li { min-width: 34px; height: 28px; font-size: 13px; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); }
+  .cell { min-width: 38px; height: 34px; font-size: 14px; }
 }

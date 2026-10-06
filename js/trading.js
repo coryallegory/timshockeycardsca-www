@@ -8,13 +8,14 @@
    and a profile also loads the collection (for the match; GET /traders/{id} itself says whether you follow them).
 
    Nothing from the API is inserted as HTML: trade ids, areas and usernames go in as text, links are built only from
-   usernames that pass trade.js's checks, and the card lists are rendered at build time, hidden, then shown here. */
-import * as account from './account.js?v=c464393174';
-import { copyLink } from './copy.js?v=c464393174';
-import * as header from './header-account.js?v=c464393174';
-import { signInHref } from './next.js?v=c464393174';
-import { extraCopies, inSet, SET_TOTAL, tally } from './set.js?v=c464393174';
-import { collectionMap, contactLinks, match, profilePath, reportHref, sortTraders, TRADE_ID } from './trade.js?v=c464393174';
+   usernames that pass trade.js's checks, and the card grids are rendered at build time (this only sets their classes,
+   labels and counts). */
+import * as account from './account.js?v=4661e6fcb2';
+import { copyLink } from './copy.js?v=4661e6fcb2';
+import * as header from './header-account.js?v=4661e6fcb2';
+import { signInHref } from './next.js?v=4661e6fcb2';
+import { extraCopies, inSet, SET_TOTAL, tally } from './set.js?v=4661e6fcb2';
+import { cellState, cellText, collectionMap, contactLinks, match, profilePath, reportHref, sortTraders, TRADE_ID } from './trade.js?v=4661e6fcb2';
 
 const $ = (id) => document.getElementById(id);
 const msg = $('trade-msg');
@@ -159,13 +160,16 @@ function traderRow(r, recount) {
 
 // ======================================================================= a profile
 const prof = $('prof');
-/** What the lists show: 'all', or 'match' (the cards you need / the cards you have extras of). */
-const lists = { haves: 'all', wants: 'all' };
+const cards = $('cards');
+const cells = [...cards.querySelectorAll('button.cell')];
+const tip = $('cell-tip');
 let theirs = new Map(); // the trader's set cards: id -> copies
-let need = new Set(); // their extras you don't have
-let give = new Set(); // their missing cards you have extras of
-let matched = false; // a signed-in visitor (not the owner) whose collection loaded
+let mine = null; // a signed-in visitor's collection (not the owner's), once loaded: the ring, the disc and the tiles
+let own = false; // the owner's preview
+let dim = ''; // the match tile pressed: '' (none), 'get' (you need) or 'give' (you can give)
 let trader = null;
+let tipFor = null; // the cell whose player popover is open
+let pinned = false; // opened by a tap, click or Enter (not just a mouse over it)
 
 function gone() {
   prof.hidden = true;
@@ -207,7 +211,7 @@ async function profilePage(id) {
   });
 }
 
-/** What everyone sees: name, area, progress, contacts, report link, the lists. */
+/** What everyone sees: name, area, progress, contacts, report link, the grids. */
 function drawProfile() {
   const t = trader;
   document.title = `${t.tradeId} · ${document.title}`;
@@ -215,12 +219,10 @@ function drawProfile() {
   for (const el of document.querySelectorAll('[data-trader-name]')) el.textContent = t.tradeId;
   $('prof-area-wrap').hidden = !t.fsa;
   $('prof-area').textContent = t.fsa ? `${t.fsa} area` : '';
-  const { collected, extras } = tally(theirs);
+  const { collected } = tally(theirs);
   const haves = [...theirs.values()].filter((n) => n > 1).length;
   $('prof-collected').textContent = `${collected} of ${SET_TOTAL} collected`;
-  $('prof-counts').textContent = `${haves} haves · ${SET_TOTAL - collected} wants`;
-  $('haves-count').textContent = `${plural(haves, 'card', 'cards')} · ${extraCopies(extras)}`;
-  $('wants-count').textContent = plural(SET_TOTAL - collected, 'card', 'cards');
+  $('prof-counts').textContent = `${haves} spares · ${SET_TOTAL - collected} wants`;
   // Collection: the count, the bar, Base / Inserts / Short prints.
   $('pc-count').textContent = String(collected);
   $('pc-bar').value = collected;
@@ -234,18 +236,15 @@ function drawProfile() {
   const report = $('report');
   report.href = reportHref(t.tradeId, report.dataset.to);
   for (const b of document.querySelectorAll('[data-copy-profile]')) b.addEventListener('click', () => copyLink(fullUrl(t.tradeId)));
-  for (const [list, seg] of [['haves', $('haves-seg')], ['wants', $('wants-seg')]]) {
-    for (const b of seg.querySelectorAll('button')) b.addEventListener('click', () => pick(list, b.dataset.show));
+  for (const tile of document.querySelectorAll('.mt[data-dim]')) {
+    tile.addEventListener('click', () => {
+      dim = dim === tile.dataset.dim ? '' : tile.dataset.dim;
+      drawCells();
+      if (dim) revealMatches();
+    });
   }
-  for (const tile of document.querySelectorAll('.mt[data-pick]')) tile.addEventListener('click', () => pick(tile.dataset.pick, 'match'));
-  drawBlurbs(false);
-  drawLists();
-}
-
-function drawBlurbs(own) {
-  const who = own ? 'you' : trader.tradeId;
-  $('haves-blurb').textContent = `Copies beyond ${own ? 'your' : 'their'} first: what ${who} can trade away.`;
-  $('wants-blurb').textContent = `Set cards ${own ? "you don't" : `${who} doesn't`} have yet, by card number. Hover or tap and hold a number for the player.`;
+  wireCells();
+  drawCells();
 }
 
 const contactTemplate = $('contact-item');
@@ -264,19 +263,19 @@ function drawContacts(contacts) {
   $('ct-empty').hidden = items.length > 0;
 }
 
-/** The owner's preview: the bar (and "Private" while private); no Follow, no match. */
+/** The owner's preview: the bar (and "Private" while private); no Follow, no match, cells in "you" words. */
 function drawOwner() {
+  own = true;
   $('own-banner').hidden = false;
   $('own-private').hidden = trader.public;
   $('prof-actions').hidden = true;
-  drawBlurbs(true);
+  drawCells();
 }
 
 /** A visitor who isn't signed in: Sign in to follow, and to see the match (both returning to this profile). */
 function drawSignedOut() {
-  matched = false;
-  need = new Set();
-  give = new Set();
+  mine = null;
+  dim = '';
   const back = signInHref(location.pathname + location.search);
   $('prof-follow').hidden = true;
   $('prof-signin').hidden = false;
@@ -284,8 +283,7 @@ function drawSignedOut() {
   $('match-signin').href = back;
   $('prof-match').hidden = true;
   $('prof-match-out').hidden = false;
-  for (const list of ['haves', 'wants']) lists[list] = 'all';
-  drawLists();
+  drawCells();
 }
 
 function drawFollow(on) {
@@ -297,93 +295,142 @@ function drawFollow(on) {
   button.onclick = () => toggleFollow(button, trader.tradeId, (now) => button.classList.toggle('primary', !now));
 }
 
-/** The two-way match with the viewer's collection: two tiles, the highlights and the lists' toggles. */
-function drawMatch(mine) {
-  const m = match(mine, theirs, inSet);
-  need = new Set(m.has);
-  give = new Set(m.needs);
-  matched = true;
-  $('mt-has').textContent = String(need.size);
-  $('mt-needs').textContent = String(give.size);
-  $('mt-has-note').textContent = need.size ? 'Their extras on your missing list' : 'None of their extras are on your missing list';
-  $('mt-needs-note').textContent = give.size ? 'Your extras on their missing list' : 'None of your extras are on their list';
-  for (const [tile, n] of [[$('mt-has'), need.size], [$('mt-needs'), give.size]]) tile.closest('.mt').classList.toggle('zero', n === 0);
+/** The two-way match with the viewer's collection: the two tiles (toggles that dim the other cells), rings and discs. */
+function drawMatch(collection) {
+  const m = match(collection, theirs, inSet);
+  mine = collection;
+  const tiles = [
+    [$('mt-has'), $('mt-has-note'), m.has.length, 'Their spares on your missing list', 'None of their spares are on your missing list'],
+    [$('mt-needs'), $('mt-needs-note'), m.needs.length, 'Your spares on their missing list', 'None of your spares are on their list'],
+  ];
+  for (const [count, note, n, some, none] of tiles) {
+    const tile = count.closest('.mt');
+    count.textContent = String(n);
+    note.textContent = n ? `${some}. Tap to pick them out.` : none;
+    tile.classList.toggle('zero', n === 0);
+    tile.disabled = n === 0;
+  }
   $('prof-match').hidden = false;
   $('prof-match-out').hidden = true;
-  drawLists();
+  drawCells();
 }
 
-function pick(list, show) {
-  lists[list] = show;
-  drawLists();
-}
-
-/** Shows the trader's haves (cards with extras, "+N") and wants (missing set cards), each set with its counts. */
-function drawLists() {
-  // Haves
-  let shownHaves = 0;
-  for (const block of document.querySelectorAll('#haves .set-block')) {
-    let cards = 0;
-    let hits = 0;
-    let shown = 0;
-    for (const li of block.querySelectorAll('li[data-card-id]')) {
-      const n = theirs.get(li.dataset.cardId) ?? 0;
-      const hit = matched && need.has(li.dataset.cardId);
-      if (n > 1) cards++;
-      if (n > 1 && hit) hits++;
-      li.hidden = !(n > 1 && (lists.haves === 'all' || hit));
-      if (!li.hidden) shown++;
-      li.classList.toggle('hit', hit);
-      li.querySelector('.xn').textContent = n > 1 ? `+${n - 1}` : '';
+/**
+ * Marks every cell from the trader's collection (and the visitor's, for the ring and disc), labels it, dims the cells a
+ * pressed tile doesn't pick, and fills each set's count, the section's count, the legend and the tiles.
+ */
+function drawCells() {
+  let missing = 0;
+  let spares = 0;
+  let picked = 0;
+  for (const block of cards.querySelectorAll('.set-block')) {
+    const inBlock = block.querySelectorAll('.cell');
+    let m = 0;
+    let s = 0;
+    let lit = 0;
+    for (const b of inBlock) {
+      const cell = cellState(b.dataset.cardId, theirs, mine);
+      const on = !dim || cell[dim];
+      b.className = `cell ${cell.state}${cell.get ? ' get' : ''}${cell.give ? ' give' : ''}${on ? '' : ' dim'}`;
+      b.querySelector('.cnt').textContent = cell.spare ? String(cell.spare) : '';
+      b.setAttribute('aria-label', cellText(b.dataset.no, b.dataset.who, cell, own));
+      if (cell.state === 'want') m++;
+      if (cell.state === 'spare') s++;
+      if (dim && on) lit++;
     }
-    block.hidden = shown === 0;
-    shownHaves += shown;
-    block.querySelector('.n').textContent = lists.haves === 'match' ? plural(shown, 'card', 'cards') : `${plural(cards, 'card', 'cards')}${hits ? ` · ${hits} you need` : ''}`;
+    const spareText = s ? ` · ${s} spare` : '';
+    block.querySelector('.n').textContent = dim
+      ? `${lit} ${dim === 'get' ? 'you need' : 'you can give'}`
+      : m ? `${m} of ${inBlock.length} missing${spareText}` : `✓ Complete${spareText}`;
+    missing += m;
+    spares += s;
+    picked += lit;
   }
-  const haveTotal = [...theirs.values()].filter((n) => n > 1).length;
-  drawSeg('haves', haveTotal, need.size);
-  $('haves-key').hidden = !(matched && need.size && lists.haves === 'all');
-  $('haves-empty').hidden = shownHaves > 0;
-  $('haves-empty').textContent = lists.haves === 'match' ? 'None of their extras are on your missing list.' : 'No extras yet.';
-
-  // Wants
-  let shownWants = 0;
-  const complete = [];
-  for (const block of document.querySelectorAll('#wants .set-block')) {
-    let missing = 0;
-    let hits = 0;
-    let shown = 0;
-    const chips = block.querySelectorAll('li[data-card-id]');
-    for (const li of chips) {
-      const owned = theirs.has(li.dataset.cardId);
-      const hit = matched && give.has(li.dataset.cardId);
-      if (!owned) missing++;
-      if (!owned && hit) hits++;
-      li.hidden = !(!owned && (lists.wants === 'all' || hit));
-      if (!li.hidden) shown++;
-      li.classList.toggle('hit', hit);
-    }
-    if (missing === 0) complete.push(block.dataset.name);
-    block.hidden = shown === 0;
-    shownWants += shown;
-    block.querySelector('.n').textContent = lists.wants === 'match' ? plural(shown, 'card', 'cards') : `${missing} of ${chips.length} missing${hits ? ` · ${hits} you have` : ''}`;
-  }
-  drawSeg('wants', SET_TOTAL - theirs.size, give.size);
-  $('wants-key').hidden = !(matched && give.size && lists.wants === 'all');
-  $('wants-complete').hidden = !complete.length || lists.wants === 'match';
-  $('wants-complete').textContent = `✓ Complete: ${complete.join(', ')}`;
-  $('wants-empty').hidden = shownWants > 0;
-  $('wants-empty').textContent = lists.wants === 'match' ? 'None of your extras are on their missing list.' : 'Nothing missing: the set is complete.';
+  $('cards-count').textContent = `${missing} missing · ${spares} spare`;
+  for (const li of cards.querySelectorAll('.grid-key [data-key]')) li.hidden = !mine;
+  for (const tile of document.querySelectorAll('.mt[data-dim]')) tile.setAttribute('aria-pressed', String(tile.dataset.dim === dim));
+  $('dim-note').textContent = !dim ? '' : `Showing the ${plural(picked, 'card', 'cards')} ${dim === 'get' ? `you need from ${trader.tradeId}` : `you can give ${trader.tradeId}`}. Tap the tile again to show all.`;
+  if (tipFor) tip.textContent = tipFor.getAttribute('aria-label');
 }
 
-/** A list's All / You need toggle: only with a match; counts in each half. */
-function drawSeg(list, all, hits) {
-  const seg = $(`${list}-seg`);
-  seg.hidden = !matched;
-  for (const b of seg.querySelectorAll('button')) {
-    b.setAttribute('aria-pressed', String(b.dataset.show === lists[list]));
-    b.querySelector('[data-n]').textContent = String(b.dataset.show === 'all' ? all : hits);
-  }
+/** After a tile is pressed: brings the first picked cell's set into view if it's off screen (phones: below the links). */
+function revealMatches() {
+  const block = cells.find((b) => !b.classList.contains('dim'))?.closest('.set-block');
+  if (!block) return;
+  const r = block.getBoundingClientRect();
+  if (r.top > innerHeight * 0.75 || r.bottom < 0) block.scrollIntoView({ block: 'start' });
+}
+
+// The player popover: one at a time, under the cell's own <li> so it scrolls with it. Hover (a mouse) shows it while
+// over the cell; a tap, click or Enter pins it until tapped again, Escape, or a tap elsewhere. It repeats the cell's
+// label (which screen readers already get), so it's hidden from them.
+function showTip(b, pin) {
+  tipFor = b;
+  pinned = pin;
+  tip.textContent = b.getAttribute('aria-label');
+  tip.classList.remove('at-start', 'at-end');
+  b.parentElement.append(tip);
+  tip.hidden = false;
+  // Centred over the cell unless that would cross the grid's edge: then lined up with the cell's start or end.
+  const grid = b.closest('.grid').getBoundingClientRect();
+  const r = tip.getBoundingClientRect();
+  if (r.left < grid.left) tip.classList.add('at-start');
+  else if (r.right > grid.right) tip.classList.add('at-end');
+}
+
+function hideTip() {
+  tipFor = null;
+  pinned = false;
+  tip.hidden = true;
+}
+
+/** Moves the grid's one Tab stop to `b` and focuses it (a pinned popover follows). */
+function focusCell(b) {
+  for (const c of b.closest('.grid').querySelectorAll('.cell')) c.tabIndex = c === b ? 0 : -1;
+  b.focus();
+  if (pinned) showTip(b, true);
+}
+
+/** Arrow keys, Home and End within a set's grid (up and down by the row's length as laid out). */
+function arrowTarget(b, key) {
+  const list = [...b.closest('.grid').querySelectorAll('.cell')];
+  const i = list.indexOf(b);
+  const cols = Math.max(1, list.filter((c) => c.offsetTop === list[0].offsetTop).length);
+  const to = { ArrowLeft: i - 1, ArrowRight: i + 1, ArrowUp: i - cols, ArrowDown: i + cols, Home: 0, End: list.length - 1 }[key];
+  return to === undefined ? null : list[Math.min(Math.max(to, 0), list.length - 1)];
+}
+
+function wireCells() {
+  const cellOf = (e) => e.target.closest?.('button.cell'); // not the legend's samples
+  cards.addEventListener('click', (e) => {
+    const b = cellOf(e);
+    if (!b) return;
+    if (tipFor === b && pinned) return hideTip();
+    focusCell(b);
+    showTip(b, true);
+  });
+  cards.addEventListener('pointerover', (e) => {
+    const b = cellOf(e);
+    if (b && e.pointerType === 'mouse' && !pinned) showTip(b, false);
+  });
+  cards.addEventListener('pointerout', (e) => {
+    const b = cellOf(e);
+    if (b && e.pointerType === 'mouse' && !pinned && tipFor === b && !b.contains(e.relatedTarget)) hideTip();
+  });
+  cards.addEventListener('keydown', (e) => {
+    const b = cellOf(e);
+    if (!b) return;
+    const next = arrowTarget(b, e.key);
+    if (!next) return;
+    e.preventDefault();
+    focusCell(next);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && tipFor) hideTip();
+  });
+  document.addEventListener('pointerdown', (e) => {
+    if (tipFor && !cellOf(e)) hideTip();
+  });
 }
 
 // ======================================================================= which one

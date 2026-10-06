@@ -1,6 +1,6 @@
 /* Trading rules in the browser (docs/TRADING-PLAN.md; the API's rules are apps/api/src/trader.ts, mirrored here so
    the account form can say what's wrong before saving, and so a profile page only ever builds links from usernames
-   that pass them). Also the two-way match and the Following list's sort orders. No DOM access and no API calls, so
+   that pass them). Also the two-way match, a profile grid's cells and the Following list's sort orders. No DOM access and no API calls, so
    tests import it. */
 
 /** A trade id: 3 to 8 letters or digits (whether it is free, reserved or allowed is the API's to say). */
@@ -102,6 +102,40 @@ export function match(mine, theirs, inSet) {
   for (const [id, n] of theirs) if (n > 1 && !mine.has(id) && inSet(id)) has.push(id);
   for (const [id, n] of mine) if (n > 1 && !theirs.has(id) && inSet(id)) needs.push(id);
   return { has, needs };
+}
+
+/**
+ * One cell of a profile's card grid: what the profile owner (`theirs`, card id -> copies) has of card `id`, and, when a
+ * signed-in visitor who isn't the owner is looking (`mine`, their collection; null otherwise), how it matches theirs.
+ * { state: 'want' | 'have' | 'spare', spare: copies beyond the first, get: their spare that you're missing (the red
+ * disc), give: missing from theirs and you have a spare (the red ring) }. Agrees with match().
+ * @param {string} id
+ * @param {Map<string, number>} theirs
+ * @param {Map<string, number> | null} [mine]
+ */
+export function cellState(id, theirs, mine = null) {
+  const copies = theirs.get(id) ?? 0;
+  const state = copies === 0 ? 'want' : copies === 1 ? 'have' : 'spare';
+  return {
+    state,
+    spare: Math.max(copies - 1, 0),
+    get: Boolean(mine) && state === 'spare' && !mine.has(id),
+    give: Boolean(mine) && state === 'want' && (mine.get(id) ?? 0) > 1,
+  };
+}
+
+/**
+ * What a cell says (its popover, and its accessible label): "#7 Brady Tkachuk — has 2 spare". `own` = the owner looking
+ * at their own profile ("you"); otherwise the trader is "they".
+ */
+export function cellText(number, player, cell, own = false) {
+  const words = {
+    want: own ? 'you need it' : 'needs it',
+    have: own ? 'you have it' : 'has it',
+    spare: `${own ? 'you have' : 'has'} ${cell.spare} spare`,
+  }[cell.state];
+  const says = cell.give ? 'they need it, and you have a spare' : cell.get ? `${words}, and you need it` : words;
+  return `#${number} ${player} — ${says}`;
 }
 
 /**

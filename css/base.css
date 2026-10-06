@@ -42,6 +42,16 @@
   --xbadge-fill: var(--board);
   --xbadge-ink: var(--board-ink);
 
+  /* a trade profile's card grid (Trading), on the cell (--paper): a missing card's number --ink (14.1:1), no border; an
+     owned one's number faded (3.3:1) with a faded border (1.45:1); a spare's number faded with a normal border (3.3:1)
+     and its count, --muted (5.3:1); the disc (their spare, you need it) --red with a white number (6.7:1); the ring
+     (they need it, you have a spare) --red (6.4:1) */
+  --cell-have: #968780;
+  --have-edge: #ddcfc4;
+  --spare-edge: #9a857a;
+  --disc: var(--red);
+  --on-disc: #ffffff;
+
   /* type */
   --display: "Zilla Slab", Georgia, serif;
   --body: "Source Sans 3", system-ui, sans-serif;
@@ -69,6 +79,11 @@
     --untracked: #8c817b;
     --xbadge-fill: var(--board-title);
     --xbadge-ink: var(--board);
+    /* the card grid on --paper: number 13.6:1, faded number 3.5:1, faded border 1.5:1, normal border 4.7:1, count 6.3:1,
+       disc number 4.7:1, ring 3.4:1 */
+    --cell-have: #83706a;
+    --have-edge: #4f392f;
+    --spare-edge: #9c8578;
     color-scheme: dark;
   }
 }
