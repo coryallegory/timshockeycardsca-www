@@ -21,12 +21,12 @@
 <meta name="twitter:image" content="https://timshockeycards.ca/social-card.png">
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='3' width='20' height='26' rx='3' fill='%23b3261e'/%3E%3Crect x='9' y='6' width='14' height='14' rx='1' fill='%23fff'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="/css/fonts.css?v=dd28015aed">
-<link rel="stylesheet" href="/css/base.css?v=dd28015aed">
-<link rel="stylesheet" href="/css/layout.css?v=dd28015aed">
-<link rel="stylesheet" href="/css/components.css?v=dd28015aed">
-<link rel="stylesheet" href="/css/header-account.css?v=dd28015aed">
-<link rel="stylesheet" href="/css/privacy.css?v=dd28015aed">
+<link rel="stylesheet" href="/css/fonts.css?v=4af6e76bf0">
+<link rel="stylesheet" href="/css/base.css?v=4af6e76bf0">
+<link rel="stylesheet" href="/css/layout.css?v=4af6e76bf0">
+<link rel="stylesheet" href="/css/components.css?v=4af6e76bf0">
+<link rel="stylesheet" href="/css/header-account.css?v=4af6e76bf0">
+<link rel="stylesheet" href="/css/privacy.css?v=4af6e76bf0">
 </head>
 <body class="">
 <header class="site-header"><div class="bar">
@@ -48,7 +48,7 @@
 <div class="stripe" aria-hidden="true"></div>
 <main class="page privacy-page">
   <h1>Privacy</h1>
-  <p class="updated">Last updated October 5, 2026</p>
+  <p class="updated">Last updated October 6, 2026</p>
   <p class="lede">This is an unofficial fan site. The stock map and the checklist work without an account, and we don't know who you are. If you create an account to track your collection, this page says what we keep, why, where, for how long, and how to delete it.</p>
 
   <h2>Without an account</h2>
@@ -79,6 +79,7 @@
     <li><b>Off until you turn it on.</b> Your trade profile is private unless you switch it to public on your account page, and you can switch it off again at any time. Going public needs you to confirm you're 18 or older.</li>
     <li><b>What a public profile shows,</b> to anyone with the link, signed in or not: your trade id, your area (like "M5V area") if you added one, your collection's progress, your spares (extra copies) and wants (missing cards), and the external links you added, as links to those sites. Never your email.</li>
     <li><b>Following is private.</b> Nobody sees who you follow or who follows you, and the person you follow isn't told.</li>
+    <li><b>Nearby traders</b> lets signed-in collectors find public profiles that have an area. Distances are between postal-area centres, rounded up to 5 km. You can search while your profile is private. If you choose Use my location, your browser finds the nearest postal area; only that area is sent for the search. Coordinates are never sent or saved.</li>
   </ul>
 
   <h2>Cookies and browser storage</h2>
@@ -95,7 +96,7 @@
   <p>There are no tracking or advertising cookies.</p>
 
   <h2>Stopping abuse</h2>
-  <p>To slow down password guessing and floods of requests, the server counts attempts: per IP address (sign-in, creating an account, forgotten and reset passwords), per email address (sign-in, forgotten password) and per account (changing the password, deleting the account, checking or claiming trade ids). Each count is stored with the IP address, email address or account ID it belongs to, and is deleted automatically once its 15-minute or 1-hour window is over (the database's automatic clean-up can take up to 2 days).</p>
+  <p>To slow down password guessing and floods of requests, the server counts attempts: per IP address (sign-in, creating an account, forgotten and reset passwords), per email address (sign-in, forgotten password) and per account (changing the password, deleting the account, checking or claiming trade ids, and Nearby searches). Each count is stored with the IP address, email address or account ID it belongs to, and is deleted automatically once its 1-minute, 15-minute or 1-hour window is over (the database's automatic clean-up can take up to 2 days).</p>
 
   <h2>Server logs</h2>
   <p>The account server's logs are kept for 2 weeks. They record:</p>
@@ -117,15 +118,16 @@
       <tr><td>Email, password hash, collection, trade profile, who you follow</td><td>Until you delete your account</td></tr>
       <tr><td>Sign-ins (sessions)</td><td>30 days from your last visit that renewed them, or until you sign out, change or reset your password, or delete your account</td></tr>
       <tr><td>Password-reset links</td><td>1 hour, or until used, until your password changes, or until you delete your account</td></tr>
-      <tr><td>Abuse counters</td><td>Their 15-minute or 1-hour window (deleted within about 2 days)</td></tr>
+      <tr><td>Abuse counters</td><td>Their 1-minute, 15-minute or 1-hour window (deleted within about 2 days)</td></tr>
       <tr><td>Server logs</td><td>2 weeks</td></tr>
     </tbody>
   </table>
   </div>
-  <p>We keep no backups of the account database, so deleted data is gone for good.</p>
+  <p>Deleted account data is removed from the active database immediately after deletion succeeds. Recovery backups may retain it for up to 35 days; we don't use them to restore deleted accounts.</p>
 
   <h2>Deleting your account</h2>
-  <p>On your <a href="/account">account page</a> (the round button with your initial at the top of any page, then <b>Account settings</b>), choose <b>Delete account</b> and enter your password. Your account, email address, collection, trade profile, follows, sign-ins and reset links are deleted straight away, and you're signed out everywhere. The email address can be used for a new account afterwards. Only the server log lines (2 weeks) and abuse counters (above) outlast it.</p>
+  <p>On your <a href="/account">account page</a> (the round button with your initial at the top of any page, then <b>Account settings</b>), choose <b>Delete account</b> and enter your password. When deletion succeeds, your account, email address, collection, trade profile, follows, sign-ins and reset links are removed from the active database, and you're signed out everywhere. The email address can be used for a new account afterwards. Server log lines (2 weeks), abuse counters and recovery backups can remain for the periods above.</p>
+  <p>If deletion fails after it starts, your trade profile stays hidden and collection and profile edits are blocked. Sign in again and retry deleting your account to finish removing the remaining data.</p>
 
   <h2>Sharing</h2>
   <p>We don't sell your data or share it with anyone. The only other parties involved are the services that run the site, named above: Amazon Web Services, Cloudflare, GitHub and OpenStreetMap.</p>
@@ -135,6 +137,6 @@
   <p>If this page changes, the date at the top changes too.</p>
 </main>
 <footer class="site-footer">Unofficial fan project. Not affiliated with Tim Hortons, Upper Deck, the NHL or the NHLPA. <a href="/privacy">Privacy</a></footer>
-<script type="module" src="/js/header-account.js?v=dd28015aed"></script>
+<script type="module" src="/js/header-account.js?v=4af6e76bf0"></script>
 </body>
 </html>

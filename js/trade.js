@@ -72,6 +72,7 @@ export function tradeIdProblem(typed) {
   if (!id) return 'Choose a trade id: 3 to 8 letters or digits.';
   if (!/^[A-Za-z0-9]+$/.test(id)) return 'Letters and digits only (no spaces, dots or symbols).';
   if (!TRADE_ID.test(id)) return `3 to 8 letters or digits (this one has ${id.length}).`;
+  if (id.toLowerCase() === 'nearby') return 'That trade id is reserved.';
   return null;
 }
 
@@ -146,6 +147,7 @@ export const SORTS = {
   best: (a, b) => Math.min(b.has, b.needs) - Math.min(a.has, a.needs) || b.has + b.needs - (a.has + a.needs),
   has: (a, b) => b.has - a.has || b.needs - a.needs,
   needs: (a, b) => b.needs - a.needs || b.has - a.has,
+  near: (a, b) => (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity),
 };
 export function sortTraders(list, order) {
   const by = SORTS[order] ?? SORTS.best;

@@ -7,9 +7,10 @@
    PUT /profile, which replaces the whole profile: the body is the saved profile with that panel's fields changed, so
    saving one panel never loses (or saves) the other's edits. The area is optional; going public needs only 18+. The
    checks mirror the API's (trade.js); its own answer is shown if it still refuses. All API calls go through account.js. */
-import * as account from './account.js?v=dd28015aed';
-import { copyLink } from './copy.js?v=dd28015aed';
-import { cleanContact, CONTACTS, fsaProblem, profilePath, tradeIdProblem } from './trade.js?v=dd28015aed';
+import * as account from './account.js?v=4af6e76bf0';
+import { areaProblem, loadAreas } from './areas.js?v=4af6e76bf0';
+import { copyLink } from './copy.js?v=4af6e76bf0';
+import { cleanContact, CONTACTS, fsaProblem, profilePath, tradeIdProblem } from './trade.js?v=4af6e76bf0';
 
 /** How long typing must pause before the trade id is checked with the API. */
 const CHECK_MS = 450;
@@ -44,7 +45,7 @@ const ebayKind = $('tp-ebay-kind');
 const contactKeys = CONTACTS.map((c) => c.key);
 const FIELD_NAMES = { fsa: 'Area', adult: '18 or older', instagram: 'Instagram', x: 'X', reddit: 'Reddit', ebay: 'eBay', facebook: 'Facebook' };
 const ID_INFO = '3 to 8 letters or digits, not case sensitive. Changing it breaks links you\'ve shared.';
-const FSA_INFO = 'Nearby, coming later, will list only profiles with an area. The first 3 characters of your postal code, never the whole thing.';
+const FSA_INFO = 'Nearby lists public profiles with an area. The first 3 characters of your postal code, never the whole thing.';
 const origin = location.origin.replace(/^https?:\/\//, '');
 
 let saved = null; // the profile as saved (GET, POST or PUT /profile's answer)
@@ -52,6 +53,7 @@ let onSessionEnded = () => {};
 /** The trade id check: the id it is about and what the API said ({ available, reason? }), or null while unknown. */
 let idCheck = null;
 let checkTimer;
+let centres = null;
 
 const show = (el, text) => {
   el.textContent = text;
@@ -87,7 +89,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 function readTrade() {
   const problems = {};
   const fsa = fsaInput.value.trim().toUpperCase();
-  const p = fsa ? fsaProblem(fsa) : null;
+  const p = fsa ? (centres ? areaProblem(fsa, centres) : fsaProblem(fsa)) : null;
   if (p) problems.fsa = p;
   if (pub.checked && !adult.checked) problems.adult = 'Public profiles are for 18 and over. Tick the box, or keep your profile private.';
   return { changes: { fsa: fsa || null, adult: adult.checked, public: pub.checked }, problems };
@@ -130,7 +132,7 @@ function refreshTrade() {
     : on
       ? 'Anyone with your link can see the items below. Your email is never shown.'
       : 'Off: nobody else can see your profile. You can still look at traders\' profiles and follow them.';
-  const fsaOk = changes.fsa && !fsaProblem(changes.fsa);
+  const fsaOk = changes.fsa && centres && !areaProblem(changes.fsa, centres);
   const visible = [...$('tp-visible').children];
   for (const li of visible) li.classList.toggle('no', !on);
   $('tp-vis-area').hidden = !fsaOk;
@@ -153,7 +155,7 @@ function refreshLinks() {
 function fsaChanged() {
   fsaInput.value = fsaInput.value.toUpperCase();
   const fsa = fsaInput.value.trim();
-  const problem = fsa.length === 3 ? fsaProblem(fsa) : null;
+  const problem = fsa.length === 3 ? (centres ? areaProblem(fsa, centres) : fsaProblem(fsa)) : null;
   markField('fsa', problem ? 'bad' : fsa.length === 3 ? 'good' : null);
   fieldMsg(fsaMsg, problem ? 'err' : 'info', problem ?? FSA_INFO);
 }
@@ -238,6 +240,10 @@ async function put(changes, button, fail) {
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   show(done, '');
+  if (fsaInput.value.trim() && !centres) {
+    try { centres = await loadAreas(); }
+    catch (err) { return showProblems(errors, { fsa: err.message }, ['fsa']); }
+  }
   const { changes, problems } = readTrade();
   if (Object.keys(problems).length) {
     return showProblems(errors, problems, ['fsa'], pub.checked ? 'Fix this before your profile can go public:' : undefined);
@@ -374,6 +380,8 @@ export async function load(sessionEnded) {
   try {
     saved = await account.getProfile();
     if (!saved.tradeId) saved = await account.assignTradeId();
+    try { centres = await loadAreas(); }
+    catch { /* Saving a nonempty area retries validation; other profile fields remain editable. */ }
   } catch (err) {
     if (err.signedOut) return onSessionEnded();
     if (!saved) return show(loading, `Couldn't load your trade profile. ${account.sentence(err.message)}`);

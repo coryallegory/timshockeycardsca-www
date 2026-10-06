@@ -81,6 +81,8 @@ export const checkTradeId = (tradeId) => call('GET', tradePath('/trade-ids', tra
 export const getTrader = (tradeId) => call('GET', tradePath('/traders', tradeId));
 /** The public traders the signed-in user follows, with their set cards: [{ tradeId, fsa, contacts, cards, copies }]. */
 export const getFollowing = () => call('GET', '/following').then((res) => res.traders);
+/** Nearby public traders, using postal areas only, never browser coordinates. */
+export const getNearby = (fsa, radius) => call('GET', `/traders/nearby?${new URLSearchParams({ fsa, radius: String(radius) })}`).then((res) => res.traders);
 /** Follows a public trader (idempotent). */
 export const follow = (tradeId) => call('PUT', tradePath('/following', tradeId));
 /** Unfollows (idempotent). */

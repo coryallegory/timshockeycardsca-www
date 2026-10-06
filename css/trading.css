@@ -34,7 +34,7 @@ a.tid:hover { color: var(--red); text-decoration: underline; text-underline-offs
 
 /* ======================= the hub ======================= */
 .hub-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px 28px; align-items: start; grid-template-areas: "follow profile"; }
-.hub-follow { grid-area: follow; }
+.hub-lists { grid-area: follow; min-width: 0; display: grid; gap: 30px; }
 .hub-profile { grid-area: profile; }
 
 /* Your trade profile: status, the link with Copy, public actions, spares and wants tiles (private: one action below) */
@@ -90,6 +90,19 @@ a.tid:hover { color: var(--red); text-decoration: underline; text-underline-offs
 .trader a.tid:focus-visible { outline: none; }
 .trader .t-act { grid-area: act; position: relative; z-index: 1; }
 .hub-follow .box-empty { padding: 14px 16px; }
+.hub-near .box-empty { padding: 14px 16px; }
+.near-form { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 0 0 12px; }
+.near-area label, .near-radius legend { display: block; margin-bottom: 5px; font-size: 14px; font-weight: 700; color: var(--ink-2); }
+.area-box { display: flex; align-items: stretch; gap: 6px; }
+.area-box input { width: 78px; min-width: 0; font: 700 17px/1 var(--body); padding: 8px; border: 2px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--ink); text-transform: uppercase; }
+.area-box input:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.near-radius { border: 0; padding: 0; margin: 0; min-width: 0; }
+.radius-chips { display: inline-flex; gap: 2px; padding: 2px; border: 2px solid var(--line); border-radius: 999px; background: var(--paper); }
+.radius-chips .btn { border: 0; border-radius: 999px; padding: 0 13px; min-height: 34px; background: transparent; color: var(--ink-2); font-size: 15px; font-variant-numeric: tabular-nums; }
+.radius-chips .btn:hover { background: var(--red-soft); color: var(--red); }
+.radius-chips .btn[aria-pressed="true"] { background: var(--red); color: var(--on-red); }
+.near-hint { flex-basis: 100%; margin: 0; font-size: 13px; color: var(--muted); }
+.hub-near .near-summary { display: none; }
 
 /* the signed-out pitch's still preview of Following */
 .preview-h { margin: 0 0 10px; font-size: 19px; }
@@ -259,6 +272,13 @@ button.cell:focus-visible { outline: 3px solid var(--red); outline-offset: 1px; 
   .preview .trader { grid-template-columns: minmax(0, 1fr) auto; }
   .preview .trader:nth-child(n+3) { display: none; }
   .sort .sort-label { display: none; }
+  .hub-near .near-summary { display: flex; width: 100%; justify-content: flex-start; margin-bottom: 10px; }
+  .near-summary span:last-child { margin-left: auto; }
+  .near-closed .near-form { display: none; }
+  .near-form { gap: 10px 8px; }
+  .near-radius { flex: 1 1 100%; }
+  .radius-chips { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .radius-chips .btn { padding: 0 8px; font-size: 14px; }
 
   .prof-top { margin-bottom: 16px; }
   .prof-top .page-actions { flex: 1 1 100%; }

@@ -5,17 +5,19 @@
    Requests (all through account.js): a visitor who never signed in on this browser makes none on the hub, and only
    the public GET /traders/{id} on a profile. With the signed-in hint the header asks who is signed in (header.ready);
    then the hub loads the collection (the header's one fetch, shared with the menu), GET /profile and GET /following,
-   and a profile also loads the collection (for the match; GET /traders/{id} itself says whether you follow them).
+   and Nearby searches by postal area. A profile also loads the collection (for the match; GET /traders/{id} itself
+   says whether you follow them and supplies distance from your saved postal area).
 
    Nothing from the API is inserted as HTML: trade ids, areas and usernames go in as text, links are built only from
    usernames that pass trade.js's checks, and the card grids are rendered at build time (this only sets their classes,
    labels and counts). */
-import * as account from './account.js?v=dd28015aed';
-import { copyLink } from './copy.js?v=dd28015aed';
-import * as header from './header-account.js?v=dd28015aed';
-import { signInHref } from './next.js?v=dd28015aed';
-import { extraCopies, inSet, SET_TOTAL, tally } from './set.js?v=dd28015aed';
-import { cellState, cellText, collectionMap, contactLinks, match, profilePath, reportHref, sortTraders, TRADE_ID } from './trade.js?v=dd28015aed';
+import * as account from './account.js?v=4af6e76bf0';
+import { areaProblem, distanceText, loadAreas, nearestArea } from './areas.js?v=4af6e76bf0';
+import { copyLink } from './copy.js?v=4af6e76bf0';
+import * as header from './header-account.js?v=4af6e76bf0';
+import { signInHref } from './next.js?v=4af6e76bf0';
+import { extraCopies, inSet, SET_TOTAL, tally } from './set.js?v=4af6e76bf0';
+import { cellState, cellText, collectionMap, contactLinks, match, profilePath, reportHref, sortTraders, TRADE_ID } from './trade.js?v=4af6e76bf0';
 
 const $ = (id) => document.getElementById(id);
 const msg = $('trade-msg');
@@ -23,6 +25,13 @@ const hubOut = $('hub-out');
 const hubIn = $('hub-in');
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 const fullUrl = (tradeId) => location.origin + profilePath(tradeId);
+let followingRows = [];
+let nearbyRows = [];
+let hubCollection = new Map();
+let searchVersion = 0;
+let radius = 50;
+let nearbyWired = false;
+const pendingFollows = new Set();
 
 function say(text) {
   msg.textContent = text;
@@ -72,6 +81,7 @@ function hub() {
     if (error) say(`Couldn't check whether you're signed in. ${account.sentence(error.message)}`);
   });
   header.onSignOut(() => {
+    searchVersion++;
     hubIn.hidden = true;
     hubOut.hidden = false;
     say('Signed out.');
@@ -85,11 +95,14 @@ async function loadHub() {
     hubOut.hidden = false;
     return sessionEnded();
   }
+  if (!account.maybeSignedIn()) return;
   hubIn.hidden = false;
   if (failures.length) say(`Couldn't load everything. ${account.sentence(failures[0].message)}`);
   const collection = mine.status === 'fulfilled' ? mine.value : null;
+  hubCollection = collection ?? new Map();
   if (profile.status === 'fulfilled') drawMyProfile(profile.value, collection);
   if (following.status === 'fulfilled') drawFollowing(following.value, collection);
+  startNearby(profile.status === 'fulfilled' ? profile.value : null);
 }
 
 /** Your trade profile: public or private, the link with Copy, haves and wants counts (no card lists). */
@@ -116,26 +129,121 @@ function drawFollowing(traders, collection) {
   const mine = collection ?? new Map();
   const rows = traders.map((t) => {
     const m = match(mine, collectionMap(t), inSet);
-    return { tradeId: t.tradeId, fsa: t.fsa, has: m.has.length, needs: m.needs.length, following: true };
+    return { tradeId: t.tradeId, fsa: t.fsa, distanceKm: t.distanceKm, has: m.has.length, needs: m.needs.length, following: true };
   });
-  const list = $('fl-list');
-  const sort = $('fl-sort');
-  const count = () => {
-    const n = rows.filter((r) => r.following).length;
-    $('fl-count').textContent = n ? String(n) : '';
-  };
-  const draw = () => {
-    list.replaceChildren(...sortTraders(rows, sort.value).map((r) => traderRow(r, count)));
-  };
-  $('fl-empty').hidden = rows.length > 0;
+  followingRows = rows;
   $('fl-sort-wrap').hidden = rows.length < 2 || !collection;
-  sort.addEventListener('change', draw);
-  count();
-  draw();
+  $('fl-sort').addEventListener('change', drawHubLists);
+  drawHubLists();
+}
+
+function drawHubLists() {
+  const n = followingRows.filter((r) => r.following).length;
+  $('fl-count').textContent = n ? String(n) : '';
+  $('fl-empty').hidden = followingRows.length > 0;
+  $('fl-sort-wrap').hidden = followingRows.length < 2;
+  $('fl-list').replaceChildren(...sortTraders(followingRows, $('fl-sort').value).map((r) => traderRow(r)));
+  $('near-list').replaceChildren(...sortTraders(nearbyRows, $('near-sort').value).map((r) => traderRow(r)));
+}
+
+function syncFollow(row, on) {
+  if (on && !followingRows.some((r) => r.tradeId.toLowerCase() === row.tradeId.toLowerCase())) {
+    // Following distances are relative to the viewer's saved area, not a typed search area.
+    followingRows.push({ ...row, distanceKm: undefined });
+  }
+  for (const r of [...followingRows, ...nearbyRows]) if (r.tradeId.toLowerCase() === row.tradeId.toLowerCase()) r.following = on;
+  drawHubLists();
+}
+
+function nearMessage(text) {
+  $('near-msg').textContent = text;
+  $('near-msg').hidden = !text;
+}
+function invalidateNearby() {
+  searchVersion++;
+  nearbyRows = [];
+  $('near-list').replaceChildren();
+  $('near-count').textContent = '';
+  $('near-sort-wrap').hidden = true;
+}
+function startNearby(profile) {
+  $('near-private').hidden = Boolean(profile?.public);
+  if (!nearbyWired) {
+    nearbyWired = true;
+    $('near-form').addEventListener('submit', (e) => { e.preventDefault(); searchNearby(); });
+    $('near-area').addEventListener('input', () => {
+      $('near-area').value = $('near-area').value.toUpperCase();
+      invalidateNearby();
+      nearMessage('Enter a postal area and press Search.');
+    });
+    $('near-sort').addEventListener('change', drawHubLists);
+    $('near-toggle').addEventListener('click', () => {
+      const open = $('near-toggle').getAttribute('aria-expanded') !== 'true';
+      $('near-toggle').setAttribute('aria-expanded', String(open));
+      $('near').classList.toggle('near-closed', !open);
+      if (open) $('near-area').focus();
+    });
+    for (const button of document.querySelectorAll('[data-radius]')) button.addEventListener('click', () => {
+      radius = Number(button.dataset.radius);
+      for (const b of document.querySelectorAll('[data-radius]')) b.setAttribute('aria-pressed', String(b === button));
+      searchNearby();
+    });
+    $('near-locate').addEventListener('click', locateNearby);
+  }
+  $('near-area').value = profile?.fsa ?? '';
+  if (profile?.fsa) searchNearby();
+}
+async function searchNearby() {
+  invalidateNearby();
+  const version = searchVersion;
+  const fsa = $('near-area').value.trim().toUpperCase();
+  if (!fsa) return nearMessage('Enter a postal area or use your location to find nearby traders.');
+  nearMessage('Loading nearby traders…');
+  try {
+    const centres = await loadAreas();
+    if (version !== searchVersion) return;
+    const problem = areaProblem(fsa, centres);
+    $('near-area').setAttribute('aria-invalid', String(Boolean(problem)));
+    if (problem) return nearMessage(problem);
+    const traders = await account.getNearby(fsa, radius);
+    if (version !== searchVersion) return;
+    nearbyRows = traders.map((t) => {
+      const m = match(hubCollection, collectionMap(t), inSet);
+      const followed = followingRows.find((r) => r.tradeId.toLowerCase() === t.tradeId.toLowerCase());
+      return { ...t, has: m.has.length, needs: m.needs.length, following: followed ? followed.following : t.following };
+    });
+    $('near-summary').textContent = `${fsa} · ${radius} km`;
+    $('near-count').textContent = nearbyRows.length ? String(nearbyRows.length) : '';
+    $('near-sort-wrap').hidden = nearbyRows.length < 2;
+    nearMessage(nearbyRows.length ? '' : `Nobody within ${radius} km of ${fsa} yet. Try a wider radius, or share your trade profile so collectors can find you.`);
+    drawHubLists();
+    $('near').classList.add('near-closed');
+    $('near-toggle').setAttribute('aria-expanded', 'false');
+  } catch (err) {
+    if (version !== searchVersion) return;
+    if (err.signedOut) return sessionEnded();
+    nearMessage(`Couldn't find nearby traders. ${account.sentence(err.message)} Press Search to try again.`);
+  }
+}
+async function locateNearby() {
+  invalidateNearby();
+  const version = searchVersion;
+  const button = $('near-locate');
+  if (!navigator.geolocation) return nearMessage('Location is unavailable in this browser. Enter a postal area instead.');
+  button.disabled = true;
+  nearMessage('Finding your postal area…');
+  try {
+    const [centres, position] = await Promise.all([loadAreas(), new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000, maximumAge: 60000 }))]);
+    if (version !== searchVersion) return;
+    $('near-area').value = nearestArea(position.coords.latitude, position.coords.longitude, centres);
+    searchNearby();
+  } catch {
+    if (version === searchVersion) nearMessage('Could not use your location. Enter the first 3 characters of your postal code instead.');
+  } finally { button.disabled = false; }
 }
 
 const rowTemplate = $('trader-row');
-function traderRow(r, recount) {
+function traderRow(r) {
   const li = rowTemplate.content.firstElementChild.cloneNode(true);
   li.querySelector('.av').textContent = r.tradeId[0];
   const link = li.querySelector('.tid');
@@ -143,6 +251,9 @@ function traderRow(r, recount) {
   link.href = profilePath(r.tradeId);
   li.querySelector('.where').hidden = !r.fsa; // the area is optional
   li.querySelector('.fsa').textContent = r.fsa ? `${r.fsa} area` : '';
+  const distance = li.querySelector('.distance');
+  distance.textContent = distanceText(r.distanceKm);
+  distance.hidden = !distance.textContent;
   for (const [cls, n] of [['.m-has', r.has], ['.m-needs', r.needs]]) {
     const part = li.querySelector(cls);
     part.querySelector('b').textContent = String(n);
@@ -150,11 +261,27 @@ function traderRow(r, recount) {
   }
   const button = li.querySelector('.follow-btn');
   setPressed(button, r.following);
+  button.disabled = pendingFollows.has(r.tradeId.toLowerCase());
   button.setAttribute('aria-label', `Follow ${r.tradeId}`);
-  button.addEventListener('click', () => toggleFollow(button, r.tradeId, (on) => {
-    r.following = on;
-    recount();
-  }));
+  button.addEventListener('click', async () => {
+    const key = r.tradeId.toLowerCase();
+    pendingFollows.add(key);
+    await toggleFollow(button, r.tradeId, (on) => syncFollow(r, on));
+    if (r.following && !hubIn.hidden) {
+      try {
+        const traders = await account.getFollowing();
+        for (const row of followingRows) {
+          const t = traders.find((t) => t.tradeId.toLowerCase() === row.tradeId.toLowerCase());
+          if (t) row.distanceKm = t.distanceKm;
+        }
+      } catch (err) {
+        if (err.signedOut) sessionEnded();
+        else say(`Following saved, but distances couldn't refresh. ${account.sentence(err.message)}`);
+      }
+    }
+    pendingFollows.delete(key);
+    drawHubLists();
+  });
   return li;
 }
 
@@ -219,6 +346,8 @@ function drawProfile() {
   for (const el of document.querySelectorAll('[data-trader-name]')) el.textContent = t.tradeId;
   $('prof-area-wrap').hidden = !t.fsa;
   $('prof-area').textContent = t.fsa ? `${t.fsa} area` : '';
+  $('prof-distance').textContent = distanceText(t.distanceKm);
+  $('prof-distance').hidden = !$('prof-distance').textContent;
   const { collected } = tally(theirs);
   const haves = [...theirs.values()].filter((n) => n > 1).length;
   $('prof-collected').textContent = `${collected} of ${SET_TOTAL} collected`;
@@ -271,6 +400,7 @@ function drawOwner() {
 
 /** A visitor who isn't signed in: Sign in to follow, and to see the match (both returning to this profile). */
 function drawSignedOut() {
+  $('prof-distance').hidden = true;
   mine = null;
   dim = '';
   const back = signInHref(location.pathname + location.search);
