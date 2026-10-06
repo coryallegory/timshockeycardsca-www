@@ -7,10 +7,10 @@
    PUT /profile, which replaces the whole profile: the body is the saved profile with that panel's fields changed, so
    saving one panel never loses (or saves) the other's edits. The area is optional; going public needs only 18+. The
    checks mirror the API's (trade.js); its own answer is shown if it still refuses. All API calls go through account.js. */
-import * as account from './account.js?v=4af6e76bf0';
-import { areaProblem, loadAreas } from './areas.js?v=4af6e76bf0';
-import { copyLink } from './copy.js?v=4af6e76bf0';
-import { cleanContact, CONTACTS, fsaProblem, profilePath, tradeIdProblem } from './trade.js?v=4af6e76bf0';
+import * as account from './account.js?v=190e2f344a';
+import { areaProblem, loadAreas, nearestArea } from './areas.js?v=190e2f344a';
+import { copyLink } from './copy.js?v=190e2f344a';
+import { cleanContact, CONTACTS, fsaProblem, profilePath, tradeIdProblem } from './trade.js?v=190e2f344a';
 
 /** How long typing must pause before the trade id is checked with the API. */
 const CHECK_MS = 450;
@@ -25,6 +25,7 @@ const errors = $('tp-errors');
 const pub = $('tp-public');
 const fsaInput = $('tp-fsa');
 const fsaMsg = $('tp-fsa-msg');
+const locateButton = $('tp-locate');
 const adult = $('tp-adult');
 const adultMsg = $('tp-adult-msg');
 const save = $('tp-save');
@@ -54,6 +55,7 @@ let onSessionEnded = () => {};
 let idCheck = null;
 let checkTimer;
 let centres = null;
+let locationVersion = 0;
 
 const show = (el, text) => {
   el.textContent = text;
@@ -160,6 +162,30 @@ function fsaChanged() {
   fieldMsg(fsaMsg, problem ? 'err' : 'info', problem ?? FSA_INFO);
 }
 
+/** Finds the nearest Canadian postal area in the browser; only the selected FSA is put in the field. */
+async function locateFsa() {
+  const attempt = ++locationVersion;
+  show(done, '');
+  if (!navigator.geolocation) return fieldMsg(fsaMsg, 'err', 'Location is unavailable in this browser. Enter a postal area instead.');
+  locateButton.disabled = true;
+  fieldMsg(fsaMsg, 'info', 'Finding your postal area…');
+  try {
+    const [areas, position] = await Promise.all([
+      centres ? Promise.resolve(centres) : loadAreas(),
+      new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000, maximumAge: 60000 })),
+    ]);
+    if (attempt !== locationVersion) return;
+    centres = areas;
+    fsaInput.value = nearestArea(position.coords.latitude, position.coords.longitude, areas);
+    fsaChanged();
+    refreshTrade();
+  } catch {
+    if (attempt === locationVersion) fieldMsg(fsaMsg, 'err', 'Could not use your location. Enter the first 3 characters of your postal code instead.');
+  } finally {
+    locateButton.disabled = false;
+  }
+}
+
 /** Puts the saved profile into the Trade profile panel. */
 function fillTrade() {
   pub.checked = Boolean(saved.public);
@@ -257,9 +283,11 @@ form.addEventListener('submit', async (e) => {
     : unlisting ? 'Saved. Your profile is private: nobody else can see it.' : 'Saved.');
 });
 fsaInput.addEventListener('input', () => {
+  locationVersion++;
   fsaChanged();
   refreshTrade();
 });
+locateButton.addEventListener('click', locateFsa);
 for (const el of [pub, adult]) el.addEventListener('change', refreshTrade);
 pub.addEventListener('change', () => show(done, ''));
 cancel.addEventListener('click', () => {
@@ -401,6 +429,7 @@ export async function load(sessionEnded) {
 /** Signed out: forgets the profile and empties the panels. */
 export function reset() {
   saved = null;
+  locationVersion++;
   clearTimeout(checkTimer);
   form.reset();
   linksForm.reset();

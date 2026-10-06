@@ -1,5 +1,5 @@
 /* Official postal-area centres, shared by the account form and browser-only location lookup. */
-import { fsaProblem } from './trade.js?v=4af6e76bf0';
+import { fsaProblem } from './trade.js?v=190e2f344a';
 
 let centresPromise;
 export function loadAreas() {

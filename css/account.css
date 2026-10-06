@@ -122,6 +122,8 @@
 .fmsg.info { color: var(--muted); }
 .area-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .area-row .shown { font-size: 15px; color: var(--ink-2); }
+.area-row .locate-area { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; }
+.area-row .locate-area:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
 .contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; }
 .contact-grid label { margin-top: 10px; }
 .preview-link { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 20px 0 0; padding: 12px 14px; border-radius: 12px; background: var(--paper); border: 1px solid var(--line); }
