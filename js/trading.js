@@ -9,12 +9,12 @@
 
    Nothing from the API is inserted as HTML: trade ids, areas and usernames go in as text, links are built only from
    usernames that pass trade.js's checks, and the card lists are rendered at build time, hidden, then shown here. */
-import * as account from './account.js?v=1c5474a3c2';
-import { copyLink } from './copy.js?v=1c5474a3c2';
-import * as header from './header-account.js?v=1c5474a3c2';
-import { signInHref } from './next.js?v=1c5474a3c2';
-import { extraCopies, inSet, SET_TOTAL, tally } from './set.js?v=1c5474a3c2';
-import { collectionMap, contactLinks, match, profilePath, reportHref, sortTraders, TRADE_ID } from './trade.js?v=1c5474a3c2';
+import * as account from './account.js?v=c464393174';
+import { copyLink } from './copy.js?v=c464393174';
+import * as header from './header-account.js?v=c464393174';
+import { signInHref } from './next.js?v=c464393174';
+import { extraCopies, inSet, SET_TOTAL, tally } from './set.js?v=c464393174';
+import { collectionMap, contactLinks, match, profilePath, reportHref, sortTraders, TRADE_ID } from './trade.js?v=c464393174';
 
 const $ = (id) => document.getElementById(id);
 const msg = $('trade-msg');
@@ -140,7 +140,8 @@ function traderRow(r, recount) {
   const link = li.querySelector('.tid');
   link.textContent = r.tradeId;
   link.href = profilePath(r.tradeId);
-  li.querySelector('.fsa').textContent = `${r.fsa} area`;
+  li.querySelector('.where').hidden = !r.fsa; // the area is optional
+  li.querySelector('.fsa').textContent = r.fsa ? `${r.fsa} area` : '';
   for (const [cls, n] of [['.m-has', r.has], ['.m-needs', r.needs]]) {
     const part = li.querySelector(cls);
     part.querySelector('b').textContent = String(n);

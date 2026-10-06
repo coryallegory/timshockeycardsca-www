@@ -4,10 +4,10 @@
    Collection page). Signed in, it shows the account's panels: the email, Change password (opening in place), the Trade
    profile (trade-profile.js), and Sign out / Delete account. All API calls go through account.js; who is signed in comes from the header's one check
    (header.ready), and the header is told when that changes. */
-import * as account from './account.js?v=1c5474a3c2';
-import * as header from './header-account.js?v=1c5474a3c2';
-import { safeNext } from './next.js?v=1c5474a3c2';
-import * as tradeProfile from './trade-profile.js?v=1c5474a3c2';
+import * as account from './account.js?v=c464393174';
+import * as header from './header-account.js?v=c464393174';
+import { safeNext } from './next.js?v=c464393174';
+import * as tradeProfile from './trade-profile.js?v=c464393174';
 
 const $ = (id) => document.getElementById(id);
 const out = $('acct-out');

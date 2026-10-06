@@ -68,7 +68,9 @@ export const deleteAccount = (password) => call('DELETE', '/account', { password
 const tradePath = (base, tradeId) => `${base}/${encodeURIComponent(tradeId)}`;
 /** The signed-in user's trade profile: { tradeId?, fsa?, adult?, public, contacts, updatedAt? }. */
 export const getProfile = () => call('GET', '/profile');
-/** Replaces the trade profile (anything left out is cleared); answers the saved profile. */
+/** Gives the signed-in user a random trade id if they have none (idempotent); answers the profile. */
+export const assignTradeId = () => call('POST', '/profile/trade-id');
+/** Replaces the trade profile (anything left out is cleared, except the trade id); answers the saved profile. */
 export const saveProfile = (profile) => call('PUT', '/profile', profile);
 /** Whether a trade id is free for the signed-in user: { available, reason? }. */
 export const checkTradeId = (tradeId) => call('GET', tradePath('/trade-ids', tradeId));

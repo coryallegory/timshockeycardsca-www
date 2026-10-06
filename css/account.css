@@ -134,3 +134,12 @@
   .contact-grid { grid-template-columns: minmax(0, 1fr); }
   .switch-row { padding: 10px 12px; }
 }
+
+/* ---------- the profile link with Copy, the pencil (opening the trade id editor) and Preview; External links ---------- */
+.sec h2 .opt, .acct-form label .opt { font: 600 14px/1 var(--body); color: var(--muted); margin-left: 4px; }
+.sec.trade .preview-link { margin: 0 0 14px; }
+.btn.icon-only { padding: 6px 10px; }
+.id-editor { margin: -4px 0 16px; padding: 12px 14px; border: 2px dashed var(--line); border-radius: 12px; }
+.id-editor label { margin-top: 0; }
+.id-editor .form-buttons { margin-top: 12px; }
+.sec.links .lg-note { margin-top: 0; }

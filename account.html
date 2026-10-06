@@ -10,12 +10,12 @@
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='3' width='20' height='26' rx='3' fill='%23b3261e'/%3E%3Crect x='9' y='6' width='14' height='14' rx='1' fill='%23fff'/%3E%3C/svg%3E">
 <meta name="robots" content="noindex">
-<link rel="stylesheet" href="/css/fonts.css?v=1c5474a3c2">
-<link rel="stylesheet" href="/css/base.css?v=1c5474a3c2">
-<link rel="stylesheet" href="/css/layout.css?v=1c5474a3c2">
-<link rel="stylesheet" href="/css/components.css?v=1c5474a3c2">
-<link rel="stylesheet" href="/css/header-account.css?v=1c5474a3c2">
-<link rel="stylesheet" href="/css/account.css?v=1c5474a3c2">
+<link rel="stylesheet" href="/css/fonts.css?v=c464393174">
+<link rel="stylesheet" href="/css/base.css?v=c464393174">
+<link rel="stylesheet" href="/css/layout.css?v=c464393174">
+<link rel="stylesheet" href="/css/components.css?v=c464393174">
+<link rel="stylesheet" href="/css/header-account.css?v=c464393174">
+<link rel="stylesheet" href="/css/account.css?v=c464393174">
 </head>
 <body class="">
 <header class="site-header"><div class="bar">
@@ -95,44 +95,55 @@
       <p id="tp-done" class="ok-note" role="status" hidden></p>
       <div id="tp-errors" class="form-error err-summary" role="alert" tabindex="-1" hidden></div>
       <p id="tp-loading" class="sub">Loading your trade profile…</p>
-      <form id="tp-form" class="acct-form tp-form" novalidate hidden>
-        <div class="switch-row">
-          <div class="sw-text"><b id="tp-public-l">Public profile</b><span id="tp-public-text"></span>
-            <ul class="visible-list" id="tp-visible" aria-label="Shown when public"><li>Trade id</li><li id="tp-vis-area">Your area</li><li>Collection progress</li><li>Haves (extras)</li><li>Wants (missing)</li><li>Contact links</li></ul></div>
-          <span class="switch"><input type="checkbox" role="switch" id="tp-public" aria-labelledby="tp-public-l" aria-describedby="tp-public-text"><i aria-hidden="true"></i></span>
+      <div id="tp-body" hidden>
+        <div class="preview-link" id="tp-link">
+          <p class="pl-text"><small id="tp-link-label">Your profile link</small><b id="tp-link-url"></b></p>
+          <div class="row-actions"><button class="btn small" type="button" id="tp-copy"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>Copy</button><button class="btn small icon-only" type="button" id="tp-id-edit" aria-expanded="false" aria-controls="tp-id-editor" aria-label="Change your trade id"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg></button><a class="btn small" id="tp-preview" href="/trading"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Preview</a></div>
         </div>
-        <fieldset>
-          <legend>Who you are</legend>
+        <div class="id-editor acct-form" id="tp-id-editor" hidden>
           <label for="tp-id">Trade id</label>
           <div class="fx" data-field="id"><span class="pre" aria-hidden="true">…/trading?u=</span><input id="tp-id" name="tradeId" maxlength="8" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-id-msg"></div>
           <p class="fmsg info" id="tp-id-msg" aria-live="polite"></p>
-          <label for="tp-fsa">Your area</label>
+          <div class="form-buttons"><button class="btn primary small" type="button" id="tp-id-save">Save trade id</button><button class="link-button" type="button" id="tp-id-cancel">Cancel</button></div>
+        </div>
+        <form id="tp-form" class="acct-form tp-form" novalidate>
+          <div class="switch-row">
+            <div class="sw-text"><b id="tp-public-l">Public profile</b><span id="tp-public-text"></span>
+              <ul class="visible-list" id="tp-visible" aria-label="Shown when public"><li>Trade id</li><li id="tp-vis-area">Your area</li><li>Collection progress</li><li>Haves (extras)</li><li>Wants (missing)</li><li>External links</li></ul></div>
+            <span class="switch"><input type="checkbox" role="switch" id="tp-public" aria-labelledby="tp-public-l" aria-describedby="tp-public-text"><i aria-hidden="true"></i></span>
+          </div>
+          <label for="tp-fsa">Your area <span class="opt">optional</span></label>
           <div class="area-row"><div class="fx short" data-field="fsa"><input id="tp-fsa" name="fsa" maxlength="3" placeholder="M5V" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="tp-fsa-msg"></div><span class="shown" id="tp-fsa-shown" hidden></span></div>
           <p class="fmsg info" id="tp-fsa-msg"></p>
-          <label class="chk" for="tp-adult"><input type="checkbox" id="tp-adult"><span>I'm 18 or older<small>Needed for a public profile, since it shows your area and contact links. Under 18? Track your collection; your profile stays private.</small></span></label>
+          <label class="chk" for="tp-adult"><input type="checkbox" id="tp-adult"><span>I'm 18 or older<small>Needed for a public profile. Under 18? Track your collection; your profile stays private.</small></span></label>
           <p class="fmsg err" id="tp-adult-msg" hidden></p>
-        </fieldset>
-        <fieldset>
-          <legend>Contact <span class="opt">optional</span></legend>
-          <p class="lg-note">Usernames only: the site builds the links, so a profile can't carry any other link. Add at least one so traders can reach you.</p>
-          <div class="contact-grid">
-            <div><label for="tp-instagram">Instagram</label><div class="fx" data-field="instagram"><span class="pre" aria-hidden="true">@</span><input id="tp-instagram" name="instagram" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-instagram-msg"></div><p class="fmsg err" id="tp-instagram-msg" hidden></p></div>
-            <div><label for="tp-x">X (Twitter)</label><div class="fx" data-field="x"><span class="pre" aria-hidden="true">@</span><input id="tp-x" name="x" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-x-msg"></div><p class="fmsg err" id="tp-x-msg" hidden></p></div>
-            <div><label for="tp-reddit">Reddit</label><div class="fx" data-field="reddit"><span class="pre" aria-hidden="true">u/</span><input id="tp-reddit" name="reddit" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-reddit-msg"></div><p class="fmsg err" id="tp-reddit-msg" hidden></p></div>
-            <div><label for="tp-ebay">eBay</label><div class="fx" data-field="ebay"><select id="tp-ebay-kind" aria-label="eBay link type"><option value="usr" selected>Profile</option><option value="str">Store</option></select><input id="tp-ebay" name="ebay" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-ebay-msg"></div><p class="fmsg info" id="tp-ebay-hint">Links to ebay.ca/usr/your name</p><p class="fmsg err" id="tp-ebay-msg" hidden></p></div>
-            <div><label for="tp-facebook">Facebook</label><div class="fx" data-field="facebook"><span class="pre" aria-hidden="true">facebook.com/</span><input id="tp-facebook" name="facebook" placeholder="your.page or groups/…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-facebook-msg"></div><p class="fmsg err" id="tp-facebook-msg" hidden></p></div>
-          </div>
-        </fieldset>
-        <div class="preview-link" id="tp-link"><p class="pl-text"><small id="tp-link-label">Your public link</small><b id="tp-link-url"></b></p>
-          <div class="row-actions"><button class="btn small" type="button" id="tp-copy"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>Copy</button><a class="btn small" id="tp-preview" href="/trading"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Preview</a></div></div>
-        <p class="danger-note unlist-note" id="tp-unlist" hidden><b>Saving unlists you right away:</b> your link will say "This profile isn't available", and people who follow you won't see you until you turn this back on. Your trade id, area and contacts are kept.</p>
-        <div class="form-buttons"><button class="btn primary small" type="submit" id="tp-save">Save</button><button class="link-button" type="button" id="tp-cancel" hidden>Cancel</button></div>
+          <p class="danger-note unlist-note" id="tp-unlist" hidden><b>Saving unlists you right away:</b> your link will say "This profile isn't available", and people who follow you won't see you until you turn this back on. Your trade id, area and external links are kept.</p>
+          <div class="form-buttons"><button class="btn primary small" type="submit" id="tp-save">Save</button><button class="link-button" type="button" id="tp-cancel" hidden>Cancel</button></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="box sec links" id="external-links" aria-labelledby="links-h">
+      <header><h2 id="links-h">External links <span class="opt">(optional)</span></h2></header>
+      <p class="sub">Visible on your public trade profile page.</p>
+      <p id="xl-done" class="ok-note" role="status" hidden></p>
+      <div id="xl-errors" class="form-error err-summary" role="alert" tabindex="-1" hidden></div>
+      <form id="xl-form" class="acct-form tp-form" novalidate hidden>
+        <p class="lg-note">Usernames only: the site builds the links, so a profile can't carry any other link. Add at least one so traders can reach you.</p>
+        <div class="contact-grid">
+          <div><label for="tp-instagram">Instagram</label><div class="fx" data-field="instagram"><span class="pre" aria-hidden="true">@</span><input id="tp-instagram" name="instagram" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-instagram-msg"></div><p class="fmsg err" id="tp-instagram-msg" hidden></p></div>
+          <div><label for="tp-x">X (Twitter)</label><div class="fx" data-field="x"><span class="pre" aria-hidden="true">@</span><input id="tp-x" name="x" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-x-msg"></div><p class="fmsg err" id="tp-x-msg" hidden></p></div>
+          <div><label for="tp-reddit">Reddit</label><div class="fx" data-field="reddit"><span class="pre" aria-hidden="true">u/</span><input id="tp-reddit" name="reddit" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-reddit-msg"></div><p class="fmsg err" id="tp-reddit-msg" hidden></p></div>
+          <div><label for="tp-ebay">eBay</label><div class="fx" data-field="ebay"><select id="tp-ebay-kind" aria-label="eBay link type"><option value="usr" selected>Profile</option><option value="str">Store</option></select><input id="tp-ebay" name="ebay" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-ebay-msg"></div><p class="fmsg info" id="tp-ebay-hint">Links to ebay.ca/usr/your name</p><p class="fmsg err" id="tp-ebay-msg" hidden></p></div>
+          <div><label for="tp-facebook">Facebook</label><div class="fx" data-field="facebook"><span class="pre" aria-hidden="true">facebook.com/</span><input id="tp-facebook" name="facebook" placeholder="your.page or groups/…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="tp-facebook-msg"></div><p class="fmsg err" id="tp-facebook-msg" hidden></p></div>
+        </div>
+        <div class="form-buttons"><button class="btn primary small" type="submit" id="xl-save">Save links</button><button class="link-button" type="button" id="xl-cancel" hidden>Cancel</button></div>
       </form>
     </section>
 
     <section class="box sec" id="privacy" aria-labelledby="privacy-h">
       <header><h2 id="privacy-h">Privacy</h2></header>
-      <p class="sub">We keep only what your account needs: your email, a hash of your password, your collection, your sign-ins and, if you set one up, your trade profile and who you follow. A public profile shows your trade id, area, collection and contact usernames; never your email. No name, no advertising or profiling. What we keep, why, for how long and the sign-in cookie are all on the <a class="text-link" href="/privacy">Privacy</a> page.</p>
+      <p class="sub">We keep only what your account needs: your email, a hash of your password, your collection, your sign-ins, your trade profile and who you follow. A public profile shows your trade id, your area if you add it, your collection and your external links; never your email. No name, no advertising or profiling. What we keep, why, for how long and the sign-in cookie are all on the <a class="text-link" href="/privacy">Privacy</a> page.</p>
     </section>
 
     <section class="box sec danger" id="danger" aria-labelledby="danger-h">
@@ -153,7 +164,7 @@
   <p class="toast" id="toast" role="status"></p>
 </main>
 <footer class="site-footer">Unofficial fan project. Not affiliated with Tim Hortons, Upper Deck, the NHL or the NHLPA. <a href="/privacy">Privacy</a></footer>
-<script type="module" src="/js/account-page.js?v=1c5474a3c2"></script>
-<script type="module" src="/js/header-account.js?v=1c5474a3c2"></script>
+<script type="module" src="/js/account-page.js?v=c464393174"></script>
+<script type="module" src="/js/header-account.js?v=c464393174"></script>
 </body>
 </html>
