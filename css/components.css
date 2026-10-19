@@ -1,0 +1,145 @@
+/* Reusable pieces used on more than one page. */
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-block; font: 700 17px/1 var(--body); text-decoration: none; cursor: pointer;
+  padding: 13px 22px; border-radius: 999px; border: 2px solid var(--ink); background: transparent; color: var(--ink); white-space: nowrap;
+}
+.btn:hover { background: var(--paper); }
+.btn:disabled { opacity: 0.6; cursor: progress; }
+.btn.primary { background: var(--red); border-color: var(--red); color: var(--on-red); }
+.btn.primary:hover { background: var(--red-deep); border-color: var(--red-deep); }
+.btn.small { font-size: 14px; padding: 6px 13px; }
+
+/* ---------- a page's action buttons under its title (Checklist, Collection): matching pills in one row,
+   right-aligned; on phones they share the width evenly, the main (red) one on a row of its own ---------- */
+.page-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; margin: 0 0 16px; }
+.page-actions .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; }
+.page-actions .ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+/* a count inside a pill ("Your collection | 42 of 234"), set off by a faint divider in the text colour */
+.btn-count { margin-left: 3px; padding-left: 9px; border-left: 1px solid color-mix(in srgb, currentColor 50%, transparent); font-weight: 600; font-variant-numeric: tabular-nums; }
+@media (max-width: 640px) {
+  .page-actions .btn { flex: 1 1 auto; min-height: 40px; }
+  .page-actions .btn.primary { flex-basis: 100%; }
+}
+
+/* ---------- a page's status line under its title (Checklist and Collection, with accounts: save failures, a session
+   that ended) ---------- */
+.account-msg { margin: 0 0 14px; font-size: 15px; color: var(--muted); }
+.account-msg:empty { display: none; }
+.account-msg.is-error { color: var(--red); font-weight: 700; }
+
+/* ---------- tags ---------- */
+.tag {
+  font: 700 12px/1 var(--body); text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 4px 9px; border-radius: 999px; background: var(--red-soft); color: var(--red); white-space: nowrap;
+}
+.tag.sp { background: var(--red); color: var(--on-red); }
+
+/* ---------- boxes: rounded, lightly bordered panels ---------- */
+.box { background: var(--panel); border: 2px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+
+/* ---------- tables ---------- */
+.data-table { width: 100%; border-collapse: separate; border-spacing: 0; border: 2px solid var(--line); border-radius: 14px; overflow: hidden; font-size: 16px; }
+.data-table th, .data-table td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--line); vertical-align: baseline; }
+.data-table thead th { background: var(--board); color: var(--board-ink); font: 700 15px/1.2 var(--display); letter-spacing: 0.02em; border-bottom: 0; }
+.data-table tbody tr:nth-child(even) td { background: var(--paper); }
+.data-table td:nth-child(n+2) { font-variant-numeric: tabular-nums; }
+.data-table tr:last-child td { border-bottom: 0; }
+
+/* ---------- live dot: always pulses, a visual cue for the live map (not tied to data age) ---------- */
+.live-dot { display: inline-block; position: relative; width: 10px; height: 10px; margin-right: 8px; border-radius: 50%; background: var(--available); vertical-align: 0.05em; flex: none; }
+.live-dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: inherit; animation: live-pulse 2s ease-out infinite; }
+@keyframes live-pulse { from { transform: scale(1); opacity: 0.7; } to { transform: scale(2.8); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .live-dot::after { animation: none; } }
+
+/* COMC's requested credit where its card photos appear (Checklist, trader profiles): a quiet footnote */
+.photo-credit { margin: 28px 0 0; font-size: 14px; color: var(--muted); }
+.photo-credit a { color: inherit; }
+
+/* ---------- popovers: a small panel opened by a button (native `popover`; the page's CSS positions each one) ---------- */
+.popover {
+  width: min(340px, calc(100vw - 32px)); margin: auto; padding: 18px 20px 16px;
+  background: var(--panel); color: var(--ink); border: 2px solid var(--line); border-radius: 14px; box-shadow: var(--shadow);
+}
+.popover-note { color: var(--ink-2); font-size: 15px; margin: 0 0 12px; overflow-wrap: anywhere; }
+.popover-links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; margin: 12px 0 0; }
+
+/* ---------- forms ---------- */
+.field-hint { color: var(--muted); font-size: 14px; margin: 4px 0 0; }
+.form-error { background: var(--red-soft); color: var(--red); font-weight: 700; font-size: 15px; border-radius: 10px; padding: 8px 12px; margin: 0 0 4px; }
+/* A button that reads as a link (actions that aren't the main one). */
+.link-button { font: inherit; font-size: 15px; color: var(--red); background: none; border: 0; padding: 2px 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.link-button:hover { color: var(--red-deep); }
+.btn:focus-visible, .link-button:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+
+/* ---------- account pages (Collection, Trading, account): a big count, a progress bar and its split, a box's buttons
+   and its empty line, a tile's small label, a list of cards with "+N" (extra copies), the signed-out pitch beside a
+   still preview, a status chip, and the "Link copied" toast ---------- */
+.stat { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 18px; margin: 0 0 10px; }
+.stat .big { font: 700 44px/1 var(--display); }
+.stat .big small { font: 600 18px/1 var(--body); color: var(--muted); margin-left: 6px; }
+.bar-track {
+  display: block; width: 100%; height: 12px; margin: 2px 0 10px; appearance: none;
+  border-radius: 999px; background: var(--paper); border: 1px solid var(--line); overflow: hidden; color: var(--red);
+}
+.bar-track::-webkit-progress-bar { background: var(--paper); }
+.bar-track::-webkit-progress-value { background: var(--red); border-radius: 999px; }
+.bar-track::-moz-progress-bar { background: var(--red); border-radius: 999px; }
+.subset-mini { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 0; color: var(--muted); font-size: 15px; }
+.subset-mini b { color: var(--ink-2); }
+.tile-tier { font: 700 11px/1 var(--body); text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
+.box-empty { margin: 0; color: var(--ink-2); font-size: 15px; }
+.box-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.box-actions .btn { flex: 1 1 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; }
+
+.binder { list-style: none; margin: 6px 0 0; padding: 0; }
+.binder li { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line); }
+.binder li:first-child { border-top: 0; }
+.binder .no { flex: none; min-width: 3.1em; font-weight: 700; font-size: 15px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.binder .who { flex: 1 1 auto; min-width: 0; line-height: 1.2; overflow-wrap: anywhere; }
+.binder .who small { display: block; font-size: 13px; color: var(--muted); }
+/* "+2": the Checklist's badge number and colours, not a button */
+.xn {
+  flex: none; min-width: 34px; height: 26px; padding: 0 8px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center;
+  font: 700 15px/1 var(--display); background: var(--xbadge-fill); color: var(--xbadge-ink); font-variant-numeric: tabular-nums;
+}
+
+.pitch { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 36px; align-items: center; margin-top: 8px; }
+.pitch-list { list-style: none; margin: 0 0 26px; padding: 0; }
+.pitch-list li { display: flex; gap: 14px; align-items: flex-start; margin: 0 0 18px; }
+.pitch-ico { flex: none; width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--red-soft); color: var(--red); }
+.pitch-ico .ico { width: 24px; height: 24px; }
+.pitch-list h2 { font-size: 21px; margin: 2px 0 3px; }
+.pitch-list p { margin: 0; color: var(--ink-2); }
+.pitch-actions { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: center; margin: 0; }
+.pitch-actions .btn { display: inline-flex; align-items: center; min-height: 44px; }
+.pitch-foot { margin: 16px 0 0; color: var(--muted); font-size: 15px; }
+.pitch-foot a { color: var(--red); font-weight: 700; }
+.preview-wrap { margin: 0; }
+.preview { padding: 16px 18px 14px; user-select: none; box-shadow: var(--shadow); }
+.preview-cap { text-align: center; color: var(--muted); font-size: 13px; margin: 8px 0 0; }
+
+.chip-status {
+  display: inline-flex; align-items: center; gap: 6px; font: 700 12px/1 var(--body); text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 5px 10px; border-radius: 999px; white-space: nowrap;
+}
+.chip-status.public { background: color-mix(in srgb, var(--available) 16%, transparent); color: var(--available); }
+.chip-status.private { background: var(--paper); color: var(--muted); border: 1px solid var(--line); }
+.chip-status .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.chip-status .ico { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 74px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; z-index: 4000;
+  max-width: calc(100vw - 32px); background: var(--board); color: var(--board-ink); padding: 9px 16px; border-radius: 999px;
+  font-weight: 700; font-size: 15px; box-shadow: var(--shadow); transition: opacity 0.15s ease, transform 0.15s ease; margin: 0;
+}
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+
+@media (max-width: 760px) {
+  .pitch { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+}
+@media (max-width: 640px) {
+  .pitch-list h2 { font-size: 19px; }
+}

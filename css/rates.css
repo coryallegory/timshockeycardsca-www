@@ -1,0 +1,28 @@
+/* Pull rates: the tables on /pull-rates. */
+
+.rates { width: 100%; border-collapse: separate; border-spacing: 0; border: 2px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--panel); }
+.rates th, .rates td { text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--line); vertical-align: baseline; }
+.rates thead th { background: var(--board); color: var(--board-ink); font: 700 15px/1.25 var(--display); letter-spacing: 0.02em; border-bottom: 0; }
+.rates tbody tr:nth-child(even) > * { background: var(--paper); }
+.rates tbody tr:last-child > * { border-bottom: 0; }
+.rates tbody th { font-weight: 400; }
+.rates b { display: block; font-variant-numeric: tabular-nums; }
+.rates tbody th b { font: 700 18px/1.2 var(--display); }
+.rates td b { font-size: 17px; }
+.rates small { display: block; color: var(--muted); font-size: 13px; line-height: 1.3; }
+.rates .copies { text-align: right; }
+
+.rates-page .blurb { max-width: 62ch; }
+.rates-page .how ul { max-width: 66ch; padding-left: 20px; line-height: 1.5; color: var(--ink-2); }
+.rates-page .how li { margin-bottom: 6px; }
+
+@media (max-width: 640px) {
+  /* all four columns stay on a phone: tighter padding and type, and the headings wrap */
+  .rates th, .rates td { padding: 9px 6px; }
+  .rates th:first-child, .rates td:first-child { padding-left: 10px; }
+  .rates th:last-child, .rates td:last-child { padding-right: 10px; }
+  .rates thead th { font-size: 11px; line-height: 1.2; }
+  .rates tbody th b { font-size: 14px; }
+  .rates td b { font-size: 14px; }
+  .rates small { font-size: 11px; }
+}

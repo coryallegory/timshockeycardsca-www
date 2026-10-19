@@ -1,0 +1,12 @@
+/* The Contact page: the account form's look (account.css) plus the dropdown, the message box, the "about this profile"
+   line and the spam-trap field, which is off-screen rather than display:none so that bots still fill it in. */
+.contact-page { padding-top: 8px; padding-bottom: 28px; }
+.acct-form select, .acct-form textarea {
+  width: 100%; font: inherit; font-size: 16px; padding: 8px 12px; min-height: 42px;
+  border: 2px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink);
+}
+.acct-form textarea { resize: vertical; min-height: 130px; line-height: 1.4; }
+.acct-form select:focus, .acct-form textarea:focus { outline: none; border-color: var(--red); }
+.about-chip { margin: 10px 0 0; padding: 8px 12px; border-radius: 10px; background: var(--red-soft); font-size: 15px; }
+.contact-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.contact-links { margin: 14px 0 0; }

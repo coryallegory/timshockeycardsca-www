@@ -1,0 +1,154 @@
+/* The /account page (built only with API_URL; mockup layout 1): one column of panels. Signed out, a single panel
+   with the sign-in, create-account and forgot-password views; signed in, Sign-in details, Privacy and the Danger zone.
+   Form fields look like the reset page's (reset-password.css). */
+
+.account-page { max-width: 720px; }
+.account-page h1:focus, .account-page h3:focus { outline: none; }
+.acct-lede { color: var(--ink-2); margin: 0 0 26px; font-size: 18px; overflow-wrap: anywhere; }
+.acct-lede b { color: var(--ink); }
+
+/* ---------- panels ---------- */
+.sec { padding: 20px 22px; margin-bottom: 18px; scroll-margin-top: 16px; }
+.sec > header { margin-bottom: 10px; }
+.sec h2 { font-size: 24px; margin: 0; }
+.sec p { margin: 0 0 12px; }
+.sec .sub { color: var(--ink-2); font-size: 16px; }
+.sec a.text-link { color: var(--red); font-weight: 700; }
+
+/* a label and value pair */
+.kv { display: grid; grid-template-columns: 9em minmax(0, 1fr); gap: 4px 12px; align-items: baseline; margin: 0 0 14px; }
+.kv dt { color: var(--muted); font-size: 15px; font-weight: 700; }
+.kv dd { margin: 0; overflow-wrap: anywhere; font-weight: 600; }
+.row-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+/* ---------- forms: the signed-out views, and Change password / Delete account opening in place ---------- */
+.inline-form { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); max-width: 420px; }
+.inline-form h3 { font-size: 19px; margin: 0 0 4px; }
+.acct-form label { display: block; font-weight: 700; font-size: 15px; margin: 12px 0 4px; }
+.acct-form input {
+  width: 100%; font: inherit; font-size: 16px; padding: 8px 12px; min-height: 42px;
+  border: 2px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink);
+}
+.acct-form input:focus { outline: none; border-color: var(--red); }
+.form-buttons { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 16px; }
+.ok-note {
+  background: color-mix(in srgb, var(--available) 14%, transparent); color: var(--ink); font-size: 15px;
+  border-left: 4px solid var(--available); border-radius: 10px; padding: 8px 12px; margin: 0 0 12px;
+}
+
+/* ---------- danger zone: sign out and delete account ---------- */
+.sec.danger { border-color: color-mix(in srgb, var(--red) 45%, var(--line)); }
+.sec.danger h2 { color: var(--red); }
+.danger-row { display: flex; align-items: center; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; padding: 12px 0; border-top: 1px solid var(--line); }
+.danger-row:first-of-type { border-top: 0; padding-top: 0; }
+.sec .danger-row p { margin: 0; flex: 1 1 260px; }
+.danger-row p b { display: block; }
+.danger-row p span { color: var(--muted); font-size: 15px; }
+/* a warning, and a destructive button that looks unlike the red primary one (outlined, filling on hover) */
+.sec .danger-note {
+  background: var(--red-soft); color: var(--ink); font-size: 15px;
+  border-left: 4px solid var(--red); border-radius: 10px; padding: 8px 12px; margin: 0 0 8px;
+}
+.btn.danger { background: transparent; border-color: var(--red); color: var(--red); }
+.btn.danger:hover { background: var(--red); color: var(--on-red); }
+
+/* ---------- signed out: one panel, centred ---------- */
+.signed-out-wrap { display: flex; justify-content: center; }
+.auth-panel { width: 100%; max-width: 460px; padding: 24px 24px 20px; }
+.auth-panel h1 { font-size: clamp(30px, 6vw, 38px); margin: 0 0 8px; }
+.auth-panel .note { color: var(--ink-2); margin: 0 0 6px; overflow-wrap: anywhere; }
+.auth-panel .form-error { margin-top: 8px; }
+.auth-panel .acct-form .btn[type="submit"] { width: 100%; margin-top: 18px; }
+.auth-panel .popover-links { margin-top: 14px; }
+.auth-privacy { text-align: center; margin-top: 12px; }
+.auth-privacy a { color: var(--red); }
+
+@media (max-width: 640px) {
+  .sec { padding: 16px; }
+  .sec h2 { font-size: 22px; }
+  .kv { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .kv dd { margin-bottom: 8px; }
+  .auth-panel { padding: 18px 16px 16px; }
+  .row-actions .btn, .danger-row .btn, .form-buttons .btn { min-height: 38px; display: inline-flex; align-items: center; }
+}
+
+/* ---------- Trade profile: the public switch, the fields (a fixed prefix before the input), 18+, contacts, the link
+   preview and Save; field messages in grey, green or red ---------- */
+.sec.trade > header { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; }
+.sec .ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+/* One block for going public: "I'm 18 or older" on top unlocks the switch row under it. */
+.public-block { padding: 12px 14px; border: 2px solid var(--line); border-radius: 12px; margin: 0 0 6px; background: var(--paper); }
+.acct-form .public-block label.chk { margin: 0; }
+.public-block .fmsg { margin: 6px 0 0; }
+.switch-row { display: flex; align-items: flex-start; gap: 14px; margin: 12px 0 0; padding: 12px 0 0; border-top: 2px solid var(--line); }
+.switch-row .sw-text { flex: 1 1 auto; min-width: 0; }
+.switch-row .sw-text b { display: block; font-size: 17px; }
+.switch-row .sw-text > span { color: var(--ink-2); font-size: 15px; }
+.switch { position: relative; flex: none; width: 54px; height: 32px; margin-top: 2px; }
+.acct-form .switch input { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; opacity: 0; margin: 0; padding: 0; cursor: pointer; z-index: 1; }
+.switch i { position: absolute; inset: 0; border-radius: 999px; background: var(--line); transition: background-color 0.15s ease; }
+.switch i::after { content: ""; position: absolute; left: 4px; top: 4px; width: 24px; height: 24px; border-radius: 50%; background: var(--panel); box-shadow: 0 1px 3px rgb(0 0 0 / 25%); transition: transform 0.15s ease; }
+.switch input:checked + i { background: var(--available); }
+.switch input:checked + i::after { transform: translateX(22px); }
+/* Locked until "I'm 18 or older" is ticked: greyed out and not clickable. */
+.switch-row.locked { opacity: 0.55; }
+.acct-form .switch input:disabled { cursor: not-allowed; }
+.switch input:focus-visible + i { outline: 3px solid var(--red); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .switch i, .switch i::after { transition: none; } }
+.visible-list { margin: 8px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 4px 6px; }
+.visible-list li { font-size: 13px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); color: var(--ink-2); }
+.visible-list li.no { text-decoration: line-through; color: var(--muted); }
+
+.tp-form fieldset { border: 0; padding: 0; margin: 18px 0 0; min-width: 0; }
+.tp-form legend { font: 700 18px/1.2 var(--display); padding: 0; margin: 0 0 2px; }
+.tp-form legend .opt { font: 600 14px/1 var(--body); color: var(--muted); margin-left: 6px; }
+.tp-form .lg-note { color: var(--muted); font-size: 14px; margin: 0 0 6px; }
+.fx { display: flex; align-items: stretch; border: 2px solid var(--line); border-radius: 10px; background: var(--bg); overflow: hidden; max-width: 460px; }
+.fx:focus-within { border-color: var(--red); }
+.fx.bad { border-color: var(--red); }
+.fx.good { border-color: color-mix(in srgb, var(--available) 70%, var(--line)); }
+.fx .pre { display: flex; align-items: center; padding: 0 8px 0 10px; color: var(--muted); font-size: 15px; white-space: nowrap; background: var(--paper); border-right: 1px solid var(--line); }
+.acct-form .fx input, .fx select { flex: 1 1 auto; width: auto; min-width: 0; border: 0; border-radius: 0; font: inherit; font-size: 16px; padding: 8px 10px; min-height: 40px; background: transparent; color: var(--ink); }
+.acct-form .fx input:focus, .fx select:focus { outline: none; }
+.fx select { flex: none; border-right: 1px solid var(--line); background: var(--paper); font-size: 15px; font-weight: 700; cursor: pointer; }
+.fx.short { max-width: 150px; }
+.acct-form .fx.short input { text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.acct-form label.chk { display: flex; align-items: flex-start; gap: 10px; font-size: 16px; cursor: pointer; margin: 16px 0 2px; }
+.acct-form .chk input { width: 22px; height: 22px; min-height: 0; margin: 1px 0 0; padding: 0; accent-color: var(--red); flex: none; }
+.chk span small { display: block; font-weight: 600; color: var(--muted); font-size: 14px; }
+.fmsg { margin: 5px 0 0; font-size: 14px; }
+.fmsg.ok { color: var(--available); font-weight: 700; }
+.fmsg.err { color: var(--red); font-weight: 700; }
+.fmsg.info { color: var(--muted); }
+.area-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.area-row .shown { font-size: 15px; color: var(--ink-2); }
+.area-row .locate-area { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; }
+.area-row .locate-area:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; }
+.contact-grid label { margin-top: 10px; }
+.preview-link { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 20px 0 0; padding: 12px 14px; border-radius: 12px; background: var(--paper); border: 1px solid var(--line); }
+.preview-link .pl-text { flex: 1 1 260px; min-width: 0; margin: 0; }
+.preview-link small { display: block; color: var(--muted); font-size: 13px; font-weight: 700; }
+.preview-link b { overflow-wrap: anywhere; font-size: 15px; }
+.preview-link.off b { color: var(--muted); }
+.preview-link .btn { display: inline-flex; align-items: center; gap: 6px; }
+.sec .unlist-note { margin: 16px 0 0; }
+.err-summary { margin: 0 0 12px; }
+.err-summary:focus { outline: none; }
+.err-summary ul { margin: 4px 0 0; padding-left: 20px; font-weight: 600; }
+.err-summary a { color: var(--red); }
+.sec .form-buttons { margin-top: 20px; }
+
+@media (max-width: 640px) {
+  .contact-grid { grid-template-columns: minmax(0, 1fr); }
+  .switch-row { padding: 10px 12px; }
+}
+
+/* ---------- the profile link with Copy, the pencil (opening the trade id editor) and Preview; Contact links ---------- */
+.sec h2 .opt, .acct-form label .opt { font: 600 14px/1 var(--body); color: var(--muted); margin-left: 4px; }
+.sec.trade .preview-link { margin: 0 0 14px; }
+.btn.icon-only { padding: 6px 10px; }
+.id-editor { margin: -4px 0 16px; padding: 12px 14px; border: 2px dashed var(--line); border-radius: 12px; }
+.id-editor label { margin-top: 0; }
+.id-editor .form-buttons { margin-top: 12px; }
+.sec.links .lg-note { margin-top: 0; }

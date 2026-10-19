@@ -1,0 +1,134 @@
+/* The Collection dashboard, /collection (loaded only when the site is built with API_URL; print.css comes last): the
+   lede and its action button (components.css .page-actions), the progress panel, the set tiles, the Missing and trade
+   binder boxes, signed out the pitch with its still preview, and the print-only list. `.visually-hidden` is in
+   header-account.css, which every account page loads. */
+
+.coll-page h1 { margin-bottom: 8px; }
+.coll-page .lede { margin-bottom: 20px; max-width: 62ch; }
+/* signed in: the lede, with Tick cards on the Checklist on its right (under it on phones) */
+.coll-top { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 24px; margin: 0 0 20px; }
+.coll-top .lede { flex: 1 1 360px; margin: 0; }
+.coll-top .page-actions { margin: 0 0 0 auto; }
+.coll-page .ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* ---------- progress: count and extra copies, the percentage on the right, the bar, Base / Inserts / Short prints ---------- */
+.coll-summary {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 24px; align-items: end;
+  padding: 18px 22px 16px; margin-bottom: 30px;
+}
+.stat .extra { font-weight: 700; color: var(--ink-2); }
+.pct { font: 700 28px/1 var(--display); color: var(--red); margin: 0 0 10px; text-align: right; }
+.pct small { display: block; font: 600 13px/1.3 var(--body); color: var(--muted); }
+.coll-summary .bar-track, .coll-summary .subset-mini { grid-column: 1 / -1; }
+
+/* ---------- the dashboard: sets in the main column, Missing and the trade binder in a sidebar ---------- */
+.dash-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) 340px; grid-template-rows: auto 1fr; gap: 20px 28px; align-items: start;
+  grid-template-areas: "sets missing" "sets binder";
+}
+.dash-sets { grid-area: sets; }
+.dash-missing { grid-area: missing; }
+.dash-binder { grid-area: binder; }
+.dash-sets > h2 { font-size: 28px; margin: 0 0 14px; }
+.dash-sets > h2::after { content: ""; display: block; width: 56px; height: 5px; margin-top: 8px; background: var(--red); border-radius: 3px; }
+.dash-sets > h2 .count, .dash-box h2 .count { font-variant-numeric: tabular-nums; }
+
+/* a tile per set: kind, name, "4 / 18" and what's left, a thin bar; the whole tile opens the set on the Checklist */
+.set-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.set-grid > li { display: flex; min-width: 0; }
+/* the base set, about half the cards, gets a full-width tile; the eight others then fill the rows evenly */
+.set-grid > li.wide { grid-column: 1 / -1; }
+.set-tile {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; padding: 11px 14px 13px; min-height: 104px;
+  background: var(--panel); border: 2px solid var(--line); border-radius: 12px; color: var(--ink); text-decoration: none;
+  transition: border-color 0.12s ease, background-color 0.12s ease;
+}
+.wide .set-tile { min-height: 0; }
+a.set-tile:hover { border-color: var(--red); background: var(--red-soft); }
+a.set-tile:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.tile-name { flex: 1; font: 700 18px/1.15 var(--display); }
+.wide .tile-name { flex: none; }
+.tile-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 4px; }
+.tile-foot b { font-size: 15px; font-variant-numeric: tabular-nums; }
+.tile-left { font-size: 14px; color: var(--muted); white-space: nowrap; }
+.tile-left.done { color: var(--available); font-weight: 700; }
+.tile-bar {
+  display: block; width: 100%; height: 6px; appearance: none; border: 0; border-radius: 999px; overflow: hidden;
+  background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); color: var(--red);
+}
+.wide .tile-bar { height: 8px; }
+.tile-bar::-webkit-progress-bar { background: var(--paper); }
+.tile-bar::-webkit-progress-value { background: var(--red); border-radius: 999px; }
+.tile-bar::-moz-progress-bar { background: var(--red); border-radius: 999px; }
+.is-done .tile-bar { color: var(--available); }
+.is-done .tile-bar::-webkit-progress-value { background: var(--available); }
+.is-done .tile-bar::-moz-progress-bar { background: var(--available); }
+.set-tile.is-done { border-color: color-mix(in srgb, var(--available) 45%, var(--line)); }
+.set-tile.is-none .tile-foot b { color: var(--muted); }
+
+/* the side boxes: Missing and the trade binder */
+.dash-box { padding: 16px 18px 18px; }
+.dash-box h2 { font-size: 22px; margin: 0 0 6px; }
+.dash-box h2 .count { margin-left: 6px; font-size: 14px; white-space: nowrap; display: inline-block; }
+.dash-big { font: 700 40px/1 var(--display); margin: 4px 0 6px; font-variant-numeric: tabular-nums; }
+.dash-big small { font: 600 17px/1 var(--body); color: var(--muted); margin-left: 6px; }
+.dash-note { margin: 0; color: var(--ink-2); font-size: 15px; }
+
+.binder-more { margin: 8px 0 0; font-size: 15px; }
+.binder-more a { color: var(--red); font-weight: 700; }
+
+/* ---------- signed out: the pitch (components.css), beside a still preview of the dashboard ---------- */
+.preview .stat { margin: 0 0 8px; }
+.preview .stat .big { font-size: 32px; }
+.preview .stat .big small { font-size: 15px; }
+.preview .bar-track { margin: 0 0 14px; height: 10px; }
+.preview .set-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.preview .set-tile { min-height: 84px; padding: 9px 11px; }
+.preview .tile-name { font-size: 16px; }
+
+@media (max-width: 860px) {
+  /* one column: progress, Missing, the sets, the trade binder */
+  .dash-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "missing" "sets" "binder"; gap: 18px; }
+}
+@media (max-width: 760px) {
+  .coll-summary { padding: 14px 16px; margin-bottom: 22px; }
+  .stat .big { font-size: 36px; }
+  .pct { font-size: 22px; }
+}
+@media (max-width: 640px) {
+  .coll-top .page-actions { flex: 1 1 100%; }
+  /* a compact progress panel */
+  .coll-summary { padding: 10px 14px 12px; margin-bottom: 16px; column-gap: 12px; }
+  .stat { gap: 2px 12px; margin-bottom: 8px; }
+  .stat .big { font-size: 28px; }
+  .stat .big small { font-size: 15px; margin-left: 4px; }
+  .stat .extra { font-size: 15px; }
+  .pct { font-size: 18px; margin-bottom: 8px; }
+  .pct small { font-size: 12px; }
+  .bar-track { height: 10px; margin: 0 0 8px; }
+  .subset-mini { font-size: 14px; gap: 4px 14px; }
+  /* sets two to a row */
+  .set-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .set-tile { padding: 9px 11px 11px; min-height: 92px; }
+  .tile-name { font-size: 16px; }
+  .tile-left { font-size: 13px; }
+  .dash-sets > h2 { font-size: 24px; }
+  .dash-big { font-size: 34px; }
+}
+@media (max-width: 360px) {
+  .tile-foot { flex-wrap: wrap; gap: 0 8px; }
+}
+
+/* ---------- printing from the dashboard: only the print-only list (laid out by print.css like the Checklist's
+   printout), under its title; without a list chosen, the page itself without its buttons ---------- */
+.print-list { display: none; }
+@media print {
+  .printing-list .print-list { display: block; color: #000; }
+  .printing-list .coll-page > :not(#coll-in), .printing-list #coll-in > :not(.print-list) { display: none !important; }
+  .coll-page .page-actions, .coll-page .box-actions, .binder-more { display: none !important; }
+  .print-head { font: 700 16pt/1.2 var(--display); margin: 0 0 2pt; }
+  .print-sub { font-size: 9pt; margin: 0 0 0.15in; }
+  .print-list .subset > header { gap: 6pt; }
+  .print-list .subset-count { font-size: 9pt; font-weight: 400; }
+  .print-list .xn { height: auto; min-width: 0; margin-left: auto; padding: 0 4pt; font-size: 8pt; background: none; color: #000; border: 1px solid #000; }
+}

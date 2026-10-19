@@ -1,0 +1,25 @@
+/* The /privacy page (built only with API_URL): plain prose at a readable width, two small tables (components.css,
+   .data-table) that scroll sideways on narrow phones rather than squeezing. */
+
+.privacy-page { max-width: 760px; }
+.privacy-page .updated { color: var(--muted); font-size: 15px; margin: 0 0 18px; }
+.privacy-page .lede { font-size: 19px; color: var(--ink-2); }
+.privacy-page h2 { font-size: 26px; margin: 34px 0 10px; }
+.privacy-page ul { padding-left: 22px; }
+.privacy-page li { margin: 0 0 8px; }
+.privacy-page a { color: var(--red); }
+.privacy-page code { overflow-wrap: anywhere; }
+.privacy-page .table-wrap { overflow-x: auto; margin: 12px 0; }
+.privacy-page td:first-child code { white-space: nowrap; }
+.privacy-page .data-table td:nth-child(n+2) { font-variant-numeric: normal; }
+
+/* Phones: the three-column cookie table becomes one block per row (name, what it is, then "How long: ..."). */
+@media (max-width: 640px) {
+  .privacy-page .data-table.stack thead { display: none; }
+  .privacy-page .data-table.stack tr, .privacy-page .data-table.stack td { display: block; }
+  .privacy-page .data-table.stack td { border-bottom: 0; padding: 4px 14px; }
+  .privacy-page .data-table.stack td:first-child { padding-top: 12px; font-weight: 700; }
+  .privacy-page .data-table.stack td:last-child { padding-bottom: 12px; border-bottom: 1px solid var(--line); color: var(--ink-2); }
+  .privacy-page .data-table.stack tr:last-child td:last-child { border-bottom: 0; }
+  .privacy-page .data-table.stack td[data-label]::before { content: attr(data-label) ": "; font-weight: 700; }
+}
